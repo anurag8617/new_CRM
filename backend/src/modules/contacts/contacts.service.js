@@ -1,4 +1,5 @@
 import { getPool } from '../../config/db.js';
+import { eventBus } from '../../services/eventBus.js';
 
 export class ContactsService {
   /**
@@ -182,7 +183,18 @@ export class ContactsService {
       [orgId, ownerId || null, contactId, JSON.stringify(data)]
     );
 
-    return this.getById({ orgId, id: contactId });
+    const createdContact = await this.getById({ orgId, id: contactId });
+
+    // Dispatch domain event to Workflow Automation Engine (Spec §15)
+    eventBus.emitEvent('contact.created', {
+      orgId,
+      recordType: 'contact',
+      recordId: contactId,
+      record: createdContact,
+      actorId: ownerId,
+    });
+
+    return createdContact;
   }
 
   /**
@@ -247,7 +259,19 @@ export class ContactsService {
       [orgId, actorId || null, id, JSON.stringify(existing), JSON.stringify(data)]
     );
 
-    return this.getById({ orgId, id });
+    const updatedContact = await this.getById({ orgId, id });
+
+    // Dispatch domain event to Workflow Automation Engine (Spec §15)
+    eventBus.emitEvent('contact.updated', {
+      orgId,
+      recordType: 'contact',
+      recordId: id,
+      record: updatedContact,
+      changedFields: fieldsToUpdate,
+      actorId,
+    });
+
+    return updatedContact;
   }
 
   /**

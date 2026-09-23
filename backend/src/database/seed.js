@@ -331,6 +331,302 @@ export const seedDatabase = async () => {
       );
     }
 
+    // -------------------------------------------------------------------
+    // 11. Seed Sales Pipeline & Stages (Spec §9)
+    // -------------------------------------------------------------------
+    console.log('[Seed] Seeding sales pipeline and stages...');
+    const [existingPipelines] = await connection.query(
+      'SELECT id FROM pipelines WHERE organization_id = ? AND is_default = TRUE LIMIT 1;',
+      [orgId]
+    );
+
+    let pipelineId;
+    if (existingPipelines.length === 0) {
+      const [pipeResult] = await connection.query(
+        'INSERT INTO pipelines (organization_id, name, is_default) VALUES (?, ?, TRUE);',
+        [orgId, 'Direct Sales Pipeline']
+      );
+      pipelineId = pipeResult.insertId;
+
+      const stages = [
+        { name: 'Discovery / Qualification', order: 1, probability: 10, color: '#94a3b8' },
+        { name: 'Demo / Technical Fit', order: 2, probability: 30, color: '#60a5fa' },
+        { name: 'Proposal / Pricing', order: 3, probability: 60, color: '#818cf8' },
+        { name: 'Contract Negotiation', order: 4, probability: 80, color: '#f59e0b' },
+        { name: 'Closed Won', order: 5, probability: 100, color: '#10b981' },
+        { name: 'Closed Lost', order: 6, probability: 0, color: '#ef4444' },
+      ];
+
+      for (const st of stages) {
+        await connection.query(
+          'INSERT INTO pipeline_stages (pipeline_id, name, stage_order, probability, color) VALUES (?, ?, ?, ?, ?);',
+          [pipelineId, st.name, st.order, st.probability, st.color]
+        );
+      }
+    } else {
+      pipelineId = existingPipelines[0].id;
+    }
+
+    // -------------------------------------------------------------------
+    // 12. Seed Deals (§9)
+    // -------------------------------------------------------------------
+    console.log('[Seed] Seeding sample enterprise deals...');
+    const [stagesList] = await connection.query(
+      'SELECT id, name, stage_order FROM pipeline_stages WHERE pipeline_id = ? ORDER BY stage_order ASC;',
+      [pipelineId]
+    );
+
+    const stageMap = {};
+    stagesList.forEach((s) => {
+      stageMap[s.stage_order] = s.id;
+    });
+
+    const [compRows] = await connection.query('SELECT id, name FROM companies WHERE organization_id = ?;', [orgId]);
+    const compMap = {};
+    compRows.forEach((c) => {
+      compMap[c.name] = c.id;
+    });
+
+    const [contRows] = await connection.query('SELECT id, email FROM contacts WHERE organization_id = ?;', [orgId]);
+    const contMap = {};
+    contRows.forEach((c) => {
+      contMap[c.email] = c.id;
+    });
+
+    const sampleDeals = [
+      {
+        title: 'Apex Global Platform Expansion (250 Seats)',
+        companyId: compMap['Apex Technologies Inc.'] || null,
+        contactId: contMap['sarah.connor@apextech.io'] || null,
+        stageId: stageMap[4] || stagesList[0].id, // Negotiation
+        value: 125000.00,
+        expectedCloseDate: '2026-10-31',
+        status: 'open',
+      },
+      {
+        title: 'Nexus Logistics AI Dispatch Integration',
+        companyId: compMap['Nexus Global Logistics'] || null,
+        contactId: contMap['david.miller@nexuslogistics.com'] || null,
+        stageId: stageMap[3] || stagesList[0].id, // Proposal
+        value: 84000.00,
+        expectedCloseDate: '2026-11-15',
+        status: 'open',
+      },
+      {
+        title: 'Apex Cloud Security & Audit Suite',
+        companyId: compMap['Apex Cloud Services'] || null,
+        contactId: contMap['elena.rostova@apextech.io'] || null,
+        stageId: stageMap[2] || stagesList[0].id, // Demo / Fit
+        value: 48000.00,
+        expectedCloseDate: '2026-12-05',
+        status: 'open',
+      },
+      {
+        title: 'Brody Capital Operations CRM Pilot',
+        companyId: null,
+        contactId: contMap['marcus.brody@brodycapital.com'] || null,
+        stageId: stageMap[1] || stagesList[0].id, // Discovery
+        value: 22500.00,
+        expectedCloseDate: '2026-12-20',
+        status: 'open',
+      },
+    ];
+
+    const [existingDeals] = await connection.query('SELECT COUNT(*) as count FROM deals WHERE organization_id = ?;', [orgId]);
+    if (existingDeals[0].count === 0) {
+      for (const d of sampleDeals) {
+        const [dealRes] = await connection.query(
+          `INSERT INTO deals (organization_id, pipeline_id, stage_id, company_id, contact_id, owner_id, title, value, currency, expected_close_date, status)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'USD', ?, ?);`,
+          [orgId, pipelineId, d.stageId, d.companyId, d.contactId, adminUserId, d.title, d.value, d.expectedCloseDate, d.status]
+        );
+
+        // Activity log on deal creation
+        await connection.query(
+          `INSERT INTO activities (organization_id, record_type, record_id, activity_type, payload_json, actor_id)
+           VALUES (?, 'deal', ?, 'creation', JSON_OBJECT('message', CONCAT('Opportunity created: ', ?)), ?);`,
+          [orgId, dealRes.insertId, d.title, adminUserId]
+        );
+      }
+    }
+
+    // -------------------------------------------------------------------
+    // 13. Seed Custom Objects Engine (Spec §2 Core Differentiator)
+    // -------------------------------------------------------------------
+    console.log('[Seed] Seeding Custom Objects and Dynamic Tables (§2)...');
+    const [existingCustomObj] = await connection.query(
+      'SELECT id FROM custom_objects WHERE organization_id = ? AND slug = ? LIMIT 1;',
+      [orgId, 'commercial-properties']
+    );
+
+    let propertyObjId;
+    if (existingCustomObj.length === 0) {
+      const [customObjRes] = await connection.query(
+        `INSERT INTO custom_objects (organization_id, name, singular_name, slug, description, icon, color)
+         VALUES (?, 'Commercial Properties', 'Property', 'commercial-properties', 'Corporate real estate facilities, offices, and distribution centers portfolio.', 'Building', '#0ea5e9');`,
+        [orgId]
+      );
+      propertyObjId = customObjRes.insertId;
+
+      // Seed Custom Fields for Properties
+      const fields = [
+        { key: 'property_type', label: 'Property Type', type: 'select', options: JSON.stringify(['Office Space', 'Distribution Warehouse', 'Data Center', 'R&D Lab']), required: true, order: 1 },
+        { key: 'square_footage', label: 'Square Footage (sq ft)', type: 'number', options: null, required: true, order: 2 },
+        { key: 'monthly_lease_usd', label: 'Monthly Lease (USD)', type: 'currency', options: null, required: true, order: 3 },
+        { key: 'occupancy_status', label: 'Occupancy Status', type: 'select', options: JSON.stringify(['Fully Leased', 'Partially Vacant', 'Under Renovation', 'Available']), required: false, order: 4 },
+        { key: 'lease_expiration', label: 'Lease Expiration Date', type: 'date', options: null, required: false, order: 5 },
+      ];
+
+      for (const f of fields) {
+        await connection.query(
+          `INSERT INTO custom_fields (organization_id, custom_object_id, field_key, label, field_type, options_json, is_required, is_filterable, sort_order)
+           VALUES (?, ?, ?, ?, ?, ?, ?, TRUE, ?);`,
+          [orgId, propertyObjId, f.key, f.label, f.type, f.options, f.required, f.order]
+        );
+      }
+
+      // Seed Custom Records
+      const records = [
+        {
+          name: 'Apex Horizon Tower - Suite 800',
+          data: {
+            property_type: 'Office Space',
+            square_footage: 16500,
+            monthly_lease_usd: 48000,
+            occupancy_status: 'Fully Leased',
+            lease_expiration: '2028-06-30',
+          },
+        },
+        {
+          name: 'Nexus Central Logistic Terminal',
+          data: {
+            property_type: 'Distribution Warehouse',
+            square_footage: 92000,
+            monthly_lease_usd: 115000,
+            occupancy_status: 'Fully Leased',
+            lease_expiration: '2029-12-31',
+          },
+        },
+        {
+          name: 'Apex Silicon Hyperscale Facility',
+          data: {
+            property_type: 'Data Center',
+            square_footage: 35000,
+            monthly_lease_usd: 98000,
+            occupancy_status: 'Under Renovation',
+            lease_expiration: '2027-09-15',
+          },
+        },
+      ];
+
+      const insertedRecordIds = [];
+      for (const rec of records) {
+        const [recRes] = await connection.query(
+          `INSERT INTO custom_records (organization_id, custom_object_id, record_name, data_json, created_by)
+           VALUES (?, ?, ?, ?, ?);`,
+          [orgId, propertyObjId, rec.name, JSON.stringify(rec.data), adminUserId]
+        );
+        insertedRecordIds.push(recRes.insertId);
+
+        // Append initial timeline activity
+        await connection.query(
+          `INSERT INTO activities (organization_id, record_type, record_id, activity_type, payload_json, actor_id)
+           VALUES (?, 'custom_record', ?, 'creation', JSON_OBJECT('message', CONCAT('Custom record created: ', ?)), ?);`,
+          [orgId, recRes.insertId, rec.name, adminUserId]
+        );
+      }
+
+      // Seed Relationship: Companies -> Commercial Properties (One-to-Many)
+      const [relRes] = await connection.query(
+        `INSERT INTO object_relationships (organization_id, name, from_object, to_object, relationship_type)
+         VALUES (?, 'Company Real Estate Assets', 'companies', CONCAT('custom_', ?), 'one_to_many');`,
+        [orgId, propertyObjId]
+      );
+
+      const relId = relRes.insertId;
+      if (compMap['Apex Technologies Inc.'] && insertedRecordIds[0]) {
+        await connection.query(
+          `INSERT INTO relationship_links (relationship_id, from_record_id, to_record_id)
+           VALUES (?, ?, ?), (?, ?, ?);`,
+          [relId, compMap['Apex Technologies Inc.'], insertedRecordIds[0], relId, compMap['Apex Technologies Inc.'], insertedRecordIds[2]]
+        );
+      }
+      if (compMap['Nexus Global Logistics'] && insertedRecordIds[1]) {
+        await connection.query(
+          `INSERT INTO relationship_links (relationship_id, from_record_id, to_record_id)
+           VALUES (?, ?, ?);`,
+          [relId, compMap['Nexus Global Logistics'], insertedRecordIds[1]]
+        );
+      }
+    }
+
+    // -------------------------------------------------------------------
+    // 12. Seed Default Workflow Automations (Spec §15)
+    // -------------------------------------------------------------------
+    console.log('[Seed] Seeding sample workflow automations...');
+    const [existingWf] = await connection.query('SELECT id FROM workflows WHERE organization_id = ?;', [orgId]);
+    if (existingWf.length === 0) {
+      // 1. High-Value Deal Desk Alert
+      const [wf1Res] = await connection.query(
+        `INSERT INTO workflows (organization_id, name, description, object_type, trigger_type, status, created_by)
+         VALUES (?, ?, ?, 'deal', 'stage_changed', 'published', ?);`,
+        [
+          orgId,
+          'High-Value Deal Desk Alert',
+          'Automatically flags enterprise deals above $50k advancing through the pipeline and logs an executive notification note.',
+          adminUserId,
+        ]
+      );
+      const wf1Id = wf1Res.insertId;
+
+      await connection.query(
+        `INSERT INTO workflow_conditions (workflow_id, condition_group, field, operator, value, logic, sort_order)
+         VALUES (?, 1, 'value', 'greater_than', '50000', 'AND', 1);`,
+        [wf1Id]
+      );
+
+      await connection.query(
+        `INSERT INTO workflow_actions (workflow_id, sort_order, action_type, config_json)
+         VALUES (?, 1, 'create_note', ?);`,
+        [
+          wf1Id,
+          JSON.stringify({
+            note: '⚡ [Automated Deal Desk] High-Value Opportunity "{{title}}" ($"{{value}}") advanced to stage "{{stage_name}}". Priority executive review assigned.',
+          }),
+        ]
+      );
+
+      // 2. New Customer Onboarding Protocol
+      const [wf2Res] = await connection.query(
+        `INSERT INTO workflows (organization_id, name, description, object_type, trigger_type, status, created_by)
+         VALUES (?, ?, ?, 'contact', 'record_created', 'published', ?);`,
+        [
+          orgId,
+          'New Customer Onboarding Protocol',
+          'Automatically schedules welcome and kickoff materials when a new contact is onboarded as a Customer.',
+          adminUserId,
+        ]
+      );
+      const wf2Id = wf2Res.insertId;
+
+      await connection.query(
+        `INSERT INTO workflow_conditions (workflow_id, condition_group, field, operator, value, logic, sort_order)
+         VALUES (?, 1, 'lifecycle_stage', 'equals', 'customer', 'AND', 1);`,
+        [wf2Id]
+      );
+
+      await connection.query(
+        `INSERT INTO workflow_actions (workflow_id, sort_order, action_type, config_json)
+         VALUES (?, 1, 'create_note', ?);`,
+        [
+          wf2Id,
+          JSON.stringify({
+            note: '⚡ [Automated Onboarding] Customer account activated for {{first_name}} {{last_name}}. Welcome email packet dispatched and CSM assigned.',
+          }),
+        ]
+      );
+    }
+
     console.log('\n======================================================');
     console.log('✅ DATABASE SEEDING COMPLETED SUCCESSFULLY!');
     console.log('------------------------------------------------------');

@@ -9,6 +9,10 @@ const startServer = async () => {
     // Check Database connection on start
     await checkDbConnection();
 
+    // Initialize Workflow Automation Engine (Spec §15)
+    const { WorkflowEngine } = await import('./modules/workflows/workflow.engine.js');
+    WorkflowEngine.init();
+
     app.listen(config.port, () => {
       console.log(`[Server] CRM Backend API running in ${config.nodeEnv} mode at http://localhost:${config.port}`);
       console.log(`[Server] Health Check available at http://localhost:${config.port}/api/health`);

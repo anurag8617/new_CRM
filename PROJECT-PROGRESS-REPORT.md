@@ -68,9 +68,28 @@ The core permission and identity engine enforces a 3-layer authorization model (
 - **Automated Stage Change Detection:** Updating a contact's lifecycle stage or lead status automatically appends a `status_change` entry to the timeline!
 - **Frontend UI:** Interactive Contacts Directory, Companies Directory, and Contact Detail Drawer with live timeline feed and note logging.
 
+### ✅ Step 5: Deals & Sales Pipelines Engine (§9)
+- **Pipelines & Stages Schema:** Added `pipelines`, `pipeline_stages`, `deals`, and `deal_line_items`.
+- **Automated Stage Forecasting:** Weighted pipeline revenue calculations (`value * probability / 100`) dynamically computed per stage.
+- **Automated Timeline Integration:** Dragging or advancing a deal through stages automatically records a `status_change` activity with probability details.
+- **Frontend Interactive Kanban Board:** Drag-and-drop / single-click stage transitions, pipeline switcher, metrics KPI bar, deal quick drawer, and new opportunity modal.
+
+### ✅ Step 6: Custom Objects & Dynamic Table Builder (§2 Core Differentiator)
+- **Dynamic Entity Engine:** Added `custom_objects`, `custom_fields`, `custom_records`, `object_relationships`, and `relationship_links` (total 26 tables in `crm_db`).
+- **Hybrid JSON Datastore:** JSON data storage with instant zero-migration field expansion across text, number, currency, date, select, and boolean data types.
+- **Cross-Object Relationships:** Established relational links connecting standard CRM entities (e.g. Companies) to custom entities (e.g. Commercial Properties).
+- **Frontend No-Code Studio:** Dynamic data table view with custom attributes, live schema designer to add/remove fields on the fly, and modal for creating new custom entity tables in seconds.
+
+### ✅ Step 7: Workflow Automation Engine (§15 Core Platform Service)
+- **Event-Driven Dispatcher (`eventBus.js`):** Central domain event bus emitting domain events (`deal.created`, `deal.stage_changed`, `contact.created`, `contact.updated`, `custom_record.created`, `custom_record.updated`).
+- **Automation Engine (`workflow.engine.js`):** Multi-step trigger execution with visual rule condition evaluator (supporting `equals`, `not_equals`, `contains`, `greater_than`, `less_than`, `is_empty`, `is_not_empty` with `AND`/`OR` logic) and template variable interpolation (e.g. `{{title}}`, `{{value}}`, `{{first_name}}`).
+- **Action Execution Workers:** Action pipeline supporting `create_note` (appends directly to §10 unified timeline), `update_field` (updates standard or JSON custom fields), `send_notification`, and `webhook`.
+- **Execution & Audit History (§15 requirement):** Complete audit trail in `workflow_executions` and `workflow_execution_steps` recording duration in milliseconds, inputs, outputs, error messages, and skipped reasons ("why didn't my workflow run?").
+- **Frontend Studio UI (`WorkflowsView.jsx`):** Interactive automation studio with workflow status toggles (published/paused), visual rule builder modal, live test run / simulator against real records, and execution history drilldown drawer.
+
 ---
 
-## 3. MySQL Database Schema (17 Tables)
+## 3. MySQL Database Schema (31 Tables)
 
 All tables use InnoDB engine, `utf8mb4_unicode_ci` collation, and enforce multi-tenant isolation via indexed `organization_id`:
 
@@ -93,6 +112,20 @@ All tables use InnoDB engine, `utf8mb4_unicode_ci` collation, and enforce multi-
 | 15 | `companies` | §7 Companies | Company accounts, subsidiaries, annual revenues, employee counts. |
 | 16 | `contacts` | §6 Contacts | Contact directory, lifecycle stages, lead status, company association. |
 | 17 | `activities` | §10 Unified Timeline | Chronological feed storing notes, calls, emails, status changes, and creation events. |
+| 18 | `pipelines` | §9 Sales Pipelines | Sales pipelines per tenant organization (`Direct Sales`, `Partner`, etc.). |
+| 19 | `pipeline_stages` | §9 Pipeline Stages | Ordered progression stages with win probabilities (10% to 100%) and color tags. |
+| 20 | `deals` | §9 Deals & Opportunities | Opportunity tracking with monetary values, expected close dates, and company/contact links. |
+| 21 | `deal_line_items` | §9 Deal Products | Line-item catalog for product quantities, unit prices, and discounts. |
+| 22 | `custom_objects` | §2 Custom Objects | Tenant-defined custom entity definitions (Properties, Vehicles, Subscriptions, Policies). |
+| 23 | `custom_fields` | §2 Custom Fields | Dynamic schema attributes across standard and custom entities. |
+| 24 | `custom_records` | §2 Hybrid Datastore | Entity records stored with flexible JSON payloads and primary name indexing. |
+| 25 | `object_relationships` | §2 Graph Relations | Definitions for one-to-one, one-to-many, and many-to-many cross-object links. |
+| 26 | `relationship_links` | §2 Graph Links | Relational junctions connecting individual records across standard and custom objects. |
+| 27 | `workflows` | §15 Automation Core | Workflow automation rules with triggers, status (draft/published/paused), and tenant isolation. |
+| 28 | `workflow_conditions` | §15 Rule Engine | Condition groups with AND/OR evaluation across comparison operators (>, <, ==, !=, contains). |
+| 29 | `workflow_actions` | §15 Action Dispatcher | Sequenced automated action chain (timeline notes, field updates, notifications, webhooks). |
+| 30 | `workflow_executions` | §15 Execution History | Audit log tracking each workflow run, duration, status (completed, skipped, failed), and error messages. |
+| 31 | `workflow_execution_steps` | §15 Step Analytics | Granular step-by-step execution metrics recording input/output payloads and execution durations in ms. |
 
 ---
 
@@ -440,12 +473,12 @@ Write-Host "`n🎉 ALL API TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Gre
 
 ---
 
-## 7. Next Roadmap Step (Step 5)
+## 7. Next Roadmap Step (Step 8)
 
-When you're ready, we will jump into **Step 5: Deals & Sales Pipelines Engine (§9)**:
-1. **Database Schema:** `pipelines`, `pipeline_stages`, `deals`, `deal_line_items`.
-2. **Deals Service:** Pipeline stage progression, weighted deal value calculation (`value * probability`), deal team assignments.
-3. **Interactive React Kanban Board:** Drag-and-drop cards across pipeline stages with real-time value summaries per column.
+With **Step 7 (Workflow Automation Engine)** completed, the next milestone is **Step 8: Communication Center, Email & Notifications (Spec §10, §23)**:
+1. **Communication Normalization:** Inbound & outbound channels (email, SMS, call records) normalizing into the unified `activities` timeline.
+2. **Email Tracking & Templates:** Dynamic handlebars-style templates, send queue, and tracking pixel receiver.
+3. **Telephony & Notifications:** Webhook receivers for Twilio/telephony status, recording links, and real-time in-app notification center.
 
 ---
 

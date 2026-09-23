@@ -117,4 +117,141 @@ export const createActivity = async (data) => {
   return response.data;
 };
 
+// Pipelines & Deals API (Spec §9)
+export const getPipelines = async () => {
+  const response = await api.get('/v1/pipelines');
+  return response.data;
+};
+
+export const getPipelineById = async (id) => {
+  const response = await api.get(`/v1/pipelines/${id}`);
+  return response.data;
+};
+
+export const getDeals = async (params = {}) => {
+  const response = await api.get('/v1/deals', { params });
+  return response.data;
+};
+
+export const getDealById = async (id) => {
+  const response = await api.get(`/v1/deals/${id}`);
+  return response.data;
+};
+
+export const createDeal = async (data) => {
+  const response = await api.post('/v1/deals', data);
+  return response.data;
+};
+
+export const updateDeal = async (id, data) => {
+  const response = await api.put(`/v1/deals/${id}`, data);
+  return response.data;
+};
+
+export const updateDealStage = async (id, stageId) => {
+  const response = await api.patch(`/v1/deals/${id}/stage`, { stageId });
+  return response.data;
+};
+
+export const deleteDeal = async (id) => {
+  const response = await api.delete(`/v1/deals/${id}`);
+  return response.data;
+};
+
+// Custom Objects & Dynamic Tables API (Spec §2)
+export const getCustomObjects = async () => {
+  const response = await api.get('/v1/custom-objects');
+  return response.data;
+};
+
+export const getCustomObjectById = async (id) => {
+  const response = await api.get(`/v1/custom-objects/${id}`);
+  return response.data;
+};
+
+export const createCustomObject = async (data) => {
+  const response = await api.post('/v1/custom-objects', data);
+  return response.data;
+};
+
+export const deleteCustomObject = async (id) => {
+  const response = await api.delete(`/v1/custom-objects/${id}`);
+  return response.data;
+};
+
+export const addCustomField = async (objectId, data) => {
+  const response = await api.post(`/v1/custom-objects/${objectId}/fields`, data);
+  return response.data;
+};
+
+export const deleteCustomField = async (objectId, fieldId) => {
+  const response = await api.delete(`/v1/custom-objects/${objectId}/fields/${fieldId}`);
+  return response.data;
+};
+
+export const getCustomRecords = async (objectId, params = {}) => {
+  const response = await api.get(`/v1/custom-objects/${objectId}/records`, { params });
+  return response.data;
+};
+
+export const getCustomRecordById = async (objectId, recordId) => {
+  const response = await api.get(`/v1/custom-objects/${objectId}/records/${recordId}`);
+  return response.data;
+};
+
+export const createCustomRecord = async (objectId, data) => {
+  const response = await api.post(`/v1/custom-objects/${objectId}/records`, data);
+  return response.data;
+};
+
+export const updateCustomRecord = async (objectId, recordId, data) => {
+  const response = await api.put(`/v1/custom-objects/${objectId}/records/${recordId}`, data);
+  return response.data;
+};
+
+export const deleteCustomRecord = async (objectId, recordId) => {
+  const response = await api.delete(`/v1/custom-objects/${objectId}/records/${recordId}`);
+  return response.data;
+};
+
+// Workflow Automation Engine API (Spec §15)
+export const getWorkflows = async (params = {}) => {
+  const response = await api.get('/v1/workflows', { params });
+  return response.data;
+};
+
+export const getWorkflowById = async (id) => {
+  const response = await api.get(`/v1/workflows/${id}`);
+  return response.data;
+};
+
+export const createWorkflow = async (data) => {
+  const response = await api.post('/v1/workflows', data);
+  return response.data;
+};
+
+export const updateWorkflow = async (id, data) => {
+  const response = await api.put(`/v1/workflows/${id}`, data);
+  return response.data;
+};
+
+export const deleteWorkflow = async (id) => {
+  const response = await api.delete(`/v1/workflows/${id}`);
+  return response.data;
+};
+
+export const getWorkflowExecutions = async (workflowId = null, limit = 50) => {
+  const params = { limit };
+  if (workflowId) params.workflowId = workflowId;
+  const response = await api.get('/v1/workflows/executions', { params });
+  return response.data;
+};
+
+export const testRunWorkflow = async (workflowId, recordId) => {
+  const response = await api.post(`/v1/workflows/${workflowId}/test`, { recordId });
+  return response.data;
+};
+
 export default api;
+
+

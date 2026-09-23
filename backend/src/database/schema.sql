@@ -293,7 +293,7 @@ CREATE TABLE IF NOT EXISTS `contacts` (
 CREATE TABLE IF NOT EXISTS `activities` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `organization_id` BIGINT UNSIGNED NOT NULL,
-  `record_type` ENUM('contact', 'company', 'deal', 'ticket', 'lead') NOT NULL,
+  `record_type` ENUM('contact', 'company', 'deal', 'ticket', 'lead', 'custom_record') NOT NULL,
   `record_id` BIGINT UNSIGNED NOT NULL,
   `activity_type` ENUM('note', 'email', 'call', 'meeting', 'task', 'status_change', 'creation', 'ai_action') NOT NULL,
   `payload_json` JSON NOT NULL,
@@ -304,6 +304,261 @@ CREATE TABLE IF NOT EXISTS `activities` (
   INDEX `idx_activities_actor` (`actor_id`),
   CONSTRAINT `fk_activities_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_activities_actor` FOREIGN KEY (`actor_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 11. SALES PIPELINES & STAGES (Spec §9)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pipelines` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(150) NOT NULL,
+  `is_default` BOOLEAN NOT NULL DEFAULT FALSE,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_pipelines_org` (`organization_id`),
+  CONSTRAINT `fk_pipelines_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `pipeline_stages` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `pipeline_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `stage_order` INT UNSIGNED NOT NULL DEFAULT 1,
+  `probability` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `color` VARCHAR(30) NULL DEFAULT '#6366f1',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_stages_pipeline` (`pipeline_id`, `stage_order`),
+  CONSTRAINT `fk_stages_pipeline` FOREIGN KEY (`pipeline_id`) REFERENCES `pipelines` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 12. DEALS & OPPORTUNITIES (Spec §9)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `deals` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `pipeline_id` BIGINT UNSIGNED NOT NULL,
+  `stage_id` BIGINT UNSIGNED NOT NULL,
+  `company_id` BIGINT UNSIGNED NULL,
+  `contact_id` BIGINT UNSIGNED NULL,
+  `owner_id` BIGINT UNSIGNED NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `value` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+  `currency` VARCHAR(10) NOT NULL DEFAULT 'USD',
+  `expected_close_date` DATE NULL,
+  `status` ENUM('open', 'won', 'lost') NOT NULL DEFAULT 'open',
+  `win_loss_reason` TEXT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_deals_org` (`organization_id`),
+  INDEX `idx_deals_pipeline_stage` (`organization_id`, `pipeline_id`, `stage_id`),
+  INDEX `idx_deals_company` (`company_id`),
+  INDEX `idx_deals_contact` (`contact_id`),
+  INDEX `idx_deals_owner` (`owner_id`),
+  INDEX `idx_deals_status` (`organization_id`, `status`),
+  CONSTRAINT `fk_deals_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_deals_pipeline` FOREIGN KEY (`pipeline_id`) REFERENCES `pipelines` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `fk_deals_stage` FOREIGN KEY (`stage_id`) REFERENCES `pipeline_stages` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `fk_deals_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_deals_contact` FOREIGN KEY (`contact_id`) REFERENCES `contacts` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_deals_owner` FOREIGN KEY (`owner_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 13. DEAL LINE ITEMS (Spec §9)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `deal_line_items` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `deal_id` BIGINT UNSIGNED NOT NULL,
+  `product_name` VARCHAR(255) NOT NULL,
+  `quantity` DECIMAL(10, 2) NOT NULL DEFAULT 1.00,
+  `unit_price` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+  `discount_percent` DECIMAL(5, 2) NOT NULL DEFAULT 0.00,
+  `total_price` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_deal_items_deal` (`deal_id`),
+  CONSTRAINT `fk_deal_items_deal` FOREIGN KEY (`deal_id`) REFERENCES `deals` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 14. CUSTOM OBJECTS (Spec §2.2 Core Differentiator)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `custom_objects` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `singular_name` VARCHAR(100) NOT NULL,
+  `slug` VARCHAR(100) NOT NULL,
+  `description` TEXT NULL,
+  `icon` VARCHAR(50) NOT NULL DEFAULT 'Database',
+  `color` VARCHAR(30) NOT NULL DEFAULT '#6366f1',
+  `is_active` BOOLEAN NOT NULL DEFAULT TRUE,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_custom_objects_org_slug` (`organization_id`, `slug`),
+  INDEX `idx_custom_objects_org` (`organization_id`),
+  CONSTRAINT `fk_custom_objects_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 15. CUSTOM FIELDS (Spec §2.3 Dynamic Fields)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `custom_fields` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `custom_object_id` BIGINT UNSIGNED NULL,
+  `standard_object` ENUM('contacts', 'companies', 'deals', 'activities') NULL,
+  `field_key` VARCHAR(100) NOT NULL,
+  `label` VARCHAR(100) NOT NULL,
+  `field_type` ENUM('text', 'number', 'currency', 'date', 'select', 'boolean', 'json') NOT NULL DEFAULT 'text',
+  `options_json` JSON NULL,
+  `is_required` BOOLEAN NOT NULL DEFAULT FALSE,
+  `is_filterable` BOOLEAN NOT NULL DEFAULT TRUE,
+  `sort_order` INT UNSIGNED NOT NULL DEFAULT 1,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_custom_fields_org` (`organization_id`),
+  INDEX `idx_custom_fields_object` (`organization_id`, `custom_object_id`),
+  INDEX `idx_custom_fields_standard` (`organization_id`, `standard_object`),
+  CONSTRAINT `fk_custom_fields_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_custom_fields_object` FOREIGN KEY (`custom_object_id`) REFERENCES `custom_objects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 16. CUSTOM RECORDS (Spec §2.3 Hybrid JSON Datastore)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `custom_records` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `custom_object_id` BIGINT UNSIGNED NOT NULL,
+  `record_name` VARCHAR(255) NOT NULL,
+  `data_json` JSON NOT NULL,
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_custom_records_org_obj` (`organization_id`, `custom_object_id`, `created_at`),
+  INDEX `idx_custom_records_name` (`organization_id`, `record_name`),
+  CONSTRAINT `fk_custom_records_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_custom_records_object` FOREIGN KEY (`custom_object_id`) REFERENCES `custom_objects` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_custom_records_user` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 17. OBJECT RELATIONSHIPS & LINKS (Spec §2.4 Cross-Object Graph)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `object_relationships` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(150) NOT NULL,
+  `from_object` VARCHAR(50) NOT NULL,
+  `to_object` VARCHAR(50) NOT NULL,
+  `relationship_type` ENUM('one_to_one', 'one_to_many', 'many_to_many') NOT NULL DEFAULT 'one_to_many',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_obj_rel_org` (`organization_id`),
+  CONSTRAINT `fk_obj_rel_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `relationship_links` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `relationship_id` BIGINT UNSIGNED NOT NULL,
+  `from_record_id` BIGINT UNSIGNED NOT NULL,
+  `to_record_id` BIGINT UNSIGNED NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_rel_links` (`relationship_id`, `from_record_id`, `to_record_id`),
+  CONSTRAINT `fk_rel_links_rel` FOREIGN KEY (`relationship_id`) REFERENCES `object_relationships` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 18. WORKFLOW AUTOMATION ENGINE (Spec §15)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `workflows` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(150) NOT NULL,
+  `description` TEXT NULL,
+  `object_type` ENUM('deal', 'contact', 'company', 'custom_record') NOT NULL,
+  `trigger_type` ENUM('record_created', 'record_updated', 'stage_changed', 'field_updated', 'manual') NOT NULL,
+  `trigger_config_json` JSON NULL,
+  `status` ENUM('draft', 'published', 'paused') NOT NULL DEFAULT 'published',
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_workflows_org_obj` (`organization_id`, `object_type`, `status`),
+  CONSTRAINT `fk_workflows_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_workflows_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `workflow_conditions` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `workflow_id` BIGINT UNSIGNED NOT NULL,
+  `condition_group` INT UNSIGNED NOT NULL DEFAULT 1,
+  `field` VARCHAR(100) NOT NULL,
+  `operator` ENUM('equals', 'not_equals', 'contains', 'greater_than', 'less_than', 'is_empty', 'is_not_empty') NOT NULL DEFAULT 'equals',
+  `value` VARCHAR(255) NULL,
+  `logic` ENUM('AND', 'OR') NOT NULL DEFAULT 'AND',
+  `sort_order` INT UNSIGNED NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  INDEX `idx_wf_conditions_wf` (`workflow_id`, `condition_group`),
+  CONSTRAINT `fk_wf_conditions_wf` FOREIGN KEY (`workflow_id`) REFERENCES `workflows` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `workflow_actions` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `workflow_id` BIGINT UNSIGNED NOT NULL,
+  `sort_order` INT UNSIGNED NOT NULL DEFAULT 1,
+  `action_type` ENUM('create_note', 'update_field', 'send_notification', 'webhook') NOT NULL,
+  `config_json` JSON NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_wf_actions_wf` (`workflow_id`, `sort_order`),
+  CONSTRAINT `fk_wf_actions_wf` FOREIGN KEY (`workflow_id`) REFERENCES `workflows` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `workflow_executions` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `workflow_id` BIGINT UNSIGNED NOT NULL,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `record_type` ENUM('deal', 'contact', 'company', 'custom_record') NOT NULL,
+  `record_id` BIGINT UNSIGNED NOT NULL,
+  `trigger_event` VARCHAR(100) NOT NULL,
+  `status` ENUM('running', 'completed', 'failed', 'skipped') NOT NULL DEFAULT 'running',
+  `started_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `finished_at` TIMESTAMP NULL,
+  `error_message` TEXT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_wf_executions_wf` (`workflow_id`, `started_at`),
+  INDEX `idx_wf_executions_rec` (`record_type`, `record_id`),
+  CONSTRAINT `fk_wf_executions_wf` FOREIGN KEY (`workflow_id`) REFERENCES `workflows` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_wf_executions_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `workflow_execution_steps` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `execution_id` BIGINT UNSIGNED NOT NULL,
+  `action_id` BIGINT UNSIGNED NULL,
+  `action_type` VARCHAR(50) NOT NULL,
+  `status` ENUM('pending', 'running', 'completed', 'failed', 'skipped') NOT NULL DEFAULT 'completed',
+  `input_json` JSON NULL,
+  `output_json` JSON NULL,
+  `duration_ms` INT UNSIGNED NOT NULL DEFAULT 0,
+  `error_message` TEXT NULL,
+  `executed_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_wf_exec_steps_exec` (`execution_id`),
+  CONSTRAINT `fk_wf_exec_steps_exec` FOREIGN KEY (`execution_id`) REFERENCES `workflow_executions` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_wf_exec_steps_action` FOREIGN KEY (`action_id`) REFERENCES `workflow_actions` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

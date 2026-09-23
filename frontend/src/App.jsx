@@ -4,6 +4,9 @@ import Sidebar from './components/Sidebar';
 import LoginModal from './components/LoginModal';
 import ContactsView from './components/ContactsView';
 import CompaniesView from './components/CompaniesView';
+import DealsView from './components/DealsView';
+import CustomObjectsView from './components/CustomObjectsView';
+import WorkflowsView from './components/WorkflowsView';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { checkHealth, getDbStatus } from './services/api';
 import { 
@@ -26,7 +29,10 @@ import {
   Check,
   Sparkles,
   LayoutDashboard,
-  Building2
+  Building2,
+  Briefcase,
+  Workflow,
+  Zap
 } from 'lucide-react';
 
 function DashboardContent() {
@@ -80,10 +86,28 @@ function DashboardContent() {
       description: 'Granular permissions, system & custom roles, field-level access control.'
     },
     {
-      title: 'Standard CRM Objects (§6 & §7)',
+      title: 'Standard CRM Objects & Timeline (§6, §7, §10)',
       icon: Users,
       tables: ['companies', 'contacts', 'activities'],
       description: 'Companies, contact records, parent-child hierarchies, and unified activity timeline.'
+    },
+    {
+      title: 'Sales Pipelines & Deals (§9)',
+      icon: Briefcase,
+      tables: ['pipelines', 'pipeline_stages', 'deals', 'deal_line_items'],
+      description: 'Multiple sales pipelines, stage win probabilities, opportunities, and product line items.'
+    },
+    {
+      title: 'Custom Objects & Dynamic Schema (§2)',
+      icon: Database,
+      tables: ['custom_objects', 'custom_fields', 'custom_records', 'object_relationships', 'relationship_links'],
+      description: 'Dynamic schema builder, hybrid JSON datastore, and cross-object relational graph links.'
+    },
+    {
+      title: 'Workflow Automation Engine (§15)',
+      icon: Workflow,
+      tables: ['workflows', 'workflow_conditions', 'workflow_actions', 'workflow_executions', 'workflow_execution_steps'],
+      description: 'Event-driven triggers, conditional logic evaluators, and step-by-step automated execution logs.'
     },
     {
       title: 'Governance & Auditing (§40)',
@@ -128,6 +152,42 @@ function DashboardContent() {
             </button>
 
             <button
+              onClick={() => setActiveTab('deals')}
+              className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeTab === 'deals'
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              <Briefcase className="w-3.5 h-3.5" />
+              <span>Deals ({dbData?.counts?.deals || 4})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('custom_objects')}
+              className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeTab === 'custom_objects'
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              <Database className="w-3.5 h-3.5" />
+              <span>Custom Objects ({dbData?.counts?.customObjects || 2})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('automation')}
+              className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeTab === 'automation'
+                  ? 'bg-amber-600 text-white shadow-sm shadow-amber-200'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+              <span>Automations ({dbData?.counts?.workflows || 2})</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('dashboard')}
               className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === 'dashboard'
@@ -153,6 +213,24 @@ function DashboardContent() {
             </div>
           )}
 
+          {activeTab === 'deals' && (
+            <div className="animate-in fade-in duration-150">
+              <DealsView />
+            </div>
+          )}
+
+          {activeTab === 'custom_objects' && (
+            <div className="animate-in fade-in duration-150">
+              <CustomObjectsView />
+            </div>
+          )}
+
+          {activeTab === 'automation' && (
+            <div className="animate-in fade-in duration-150">
+              <WorkflowsView />
+            </div>
+          )}
+
           {activeTab === 'dashboard' && (
             <div className="space-y-8 animate-in fade-in duration-150">
               {/* Header Banner */}
@@ -160,13 +238,13 @@ function DashboardContent() {
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>Step 4 Complete: Standard Objects & Timeline Live</span>
+                    <span>Step 7 Complete: Workflow Automation Engine Live</span>
                   </div>
                   <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-                    CRM Platform Schema & Core Objects
+                    CRM Platform Schema & Core Modules
                   </h2>
                   <p className="text-sm text-slate-600 mt-1">
-                    InnoDB Engine · Multi-Tenancy · 17 Tables · Contacts, Companies & Unified Activity Feed.
+                    InnoDB Engine · Multi-Tenancy · 31 Tables · Deals, Custom Objects & Event-Driven Automation.
                   </p>
                 </div>
 
@@ -350,10 +428,10 @@ function DashboardContent() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-base font-bold text-slate-900">
-                      MySQL Schema Architecture: 17 Core Tables Active
+                      MySQL Schema Architecture: 31 Core Tables Active
                     </h3>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Organized according to Section 0, 1, 6, 7, 10, 40, and 51 of the CRM specification.
+                      Organized according to Section 0, 1, 2, 6, 7, 9, 10, 15, 40, and 51 of the CRM specification.
                     </p>
                   </div>
                   <span className="text-xs font-mono bg-slate-100 px-2 py-1 rounded text-slate-600">
@@ -390,20 +468,20 @@ function DashboardContent() {
               </div>
 
               {/* Next Roadmap Step Banner */}
-              <div className="p-6 bg-gradient-to-r from-indigo-900 to-slate-900 rounded-xl text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="p-6 bg-gradient-to-r from-amber-900 via-slate-900 to-indigo-950 rounded-xl text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-amber-500/20">
                 <div>
-                  <span className="text-xs font-semibold uppercase tracking-wider text-indigo-300">
-                    Next Step in Phase 1
+                  <span className="text-xs font-semibold uppercase tracking-wider text-amber-300">
+                    Next Step in Architecture Roadmap
                   </span>
                   <h3 className="text-lg font-bold mt-1">
-                    Step 5: Deals & Sales Pipelines Engine (§9)
+                    Step 8: Communication Center, Email & Notifications (Spec §10, §23)
                   </h3>
-                  <p className="text-xs text-indigo-200 mt-1 max-w-xl">
-                    Create the `pipelines`, `pipeline_stages`, `deals`, and `deal_line_items` MySQL tables, with custom probability, stage drag-and-drop Kanban view, and deal value calculations.
+                  <p className="text-xs text-slate-300 mt-1 max-w-xl">
+                    Unified communication channels (email tracking, templates, webhooks, Twilio/SMS telephony, in-app notifications) normalized into the unified activity timeline.
                   </p>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-semibold bg-indigo-600/80 hover:bg-indigo-600 px-4 py-2.5 rounded-lg border border-indigo-400/30 transition-colors">
-                  <span>Ready for Step 5</span>
+                <div className="flex items-center gap-2 text-xs font-semibold bg-amber-600/80 hover:bg-amber-600 px-4 py-2.5 rounded-lg border border-amber-400/30 transition-colors">
+                  <span>Ready for Step 8</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
               </div>

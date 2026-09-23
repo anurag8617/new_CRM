@@ -9,6 +9,10 @@ import authRoutes from './modules/auth/auth.routes.js';
 import companiesRoutes from './modules/companies/companies.routes.js';
 import contactsRoutes from './modules/contacts/contacts.routes.js';
 import activitiesRoutes from './modules/activities/activities.routes.js';
+import dealsRoutes from './modules/deals/deals.routes.js';
+import pipelinesRoutes from './modules/pipelines/pipelines.routes.js';
+import customObjectsRoutes from './modules/custom-objects/custom-objects.routes.js';
+import workflowsRoutes from './modules/workflows/workflows.routes.js';
 
 const app = express();
 
@@ -51,10 +55,14 @@ app.get('/api/v1', (req, res) => {
 // Authentication & Identity Routes
 app.use('/api/v1/auth', authRoutes);
 
-// Core Standard CRM Objects (§6, §7, §10)
+// Core Standard & Custom CRM Objects (§2, §6, §7, §9, §10, §15)
 app.use('/api/v1/companies', companiesRoutes);
 app.use('/api/v1/contacts', contactsRoutes);
+app.use('/api/v1/deals', dealsRoutes);
+app.use('/api/v1/pipelines', pipelinesRoutes);
+app.use('/api/v1/custom-objects', customObjectsRoutes);
 app.use('/api/v1/activities', activitiesRoutes);
+app.use('/api/v1/workflows', workflowsRoutes);
 
 // System database status & schema metrics
 app.get('/api/v1/system/db-status', async (req, res, next) => {
@@ -74,7 +82,13 @@ app.get('/api/v1/system/db-status', async (req, res, next) => {
     const [[{ permissionCount }]] = await pool.query('SELECT COUNT(*) AS permissionCount FROM permissions');
     const [[{ companyCount }]] = await pool.query('SELECT COUNT(*) AS companyCount FROM companies');
     const [[{ contactCount }]] = await pool.query('SELECT COUNT(*) AS contactCount FROM contacts');
+    const [[{ dealCount }]] = await pool.query('SELECT COUNT(*) AS dealCount FROM deals');
+    const [[{ pipelineCount }]] = await pool.query('SELECT COUNT(*) AS pipelineCount FROM pipelines');
+    const [[{ customObjectsCount }]] = await pool.query('SELECT COUNT(*) AS customObjectsCount FROM custom_objects');
+    const [[{ customRecordsCount }]] = await pool.query('SELECT COUNT(*) AS customRecordsCount FROM custom_records');
     const [[{ activityCount }]] = await pool.query('SELECT COUNT(*) AS activityCount FROM activities');
+    const [[{ workflowCount }]] = await pool.query('SELECT COUNT(*) AS workflowCount FROM workflows');
+    const [[{ workflowExecutionsCount }]] = await pool.query('SELECT COUNT(*) AS workflowExecutionsCount FROM workflow_executions');
 
     // Fetch tenant sample
     const [orgs] = await pool.query('SELECT id, name, slug, currency, timezone, status FROM organizations LIMIT 1');
@@ -94,7 +108,13 @@ app.get('/api/v1/system/db-status', async (req, res, next) => {
         permissions: permissionCount,
         companies: companyCount,
         contacts: contactCount,
+        deals: dealCount,
+        pipelines: pipelineCount,
+        customObjects: customObjectsCount,
+        customRecords: customRecordsCount,
         activities: activityCount,
+        workflows: workflowCount,
+        workflowExecutions: workflowExecutionsCount,
       },
       tenant: orgs[0] || null,
       adminUser: adminUsers[0] || null,
