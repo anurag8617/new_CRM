@@ -68,6 +68,14 @@ export const seedDatabase = async () => {
       { module: 'ai', action: 'copilot', description: 'Interact with AI Copilot' },
       { module: 'ai', action: 'agents_run', description: 'Trigger autonomous AI agents' },
 
+      // Products, Pricebooks & CPQ (Spec §24, §25)
+      { module: 'products', action: 'view', description: 'View product catalog and pricebooks' },
+      { module: 'products', action: 'manage', description: 'Create and configure products and pricebooks' },
+      { module: 'quotes', action: 'view', description: 'View quotes and line items' },
+      { module: 'quotes', action: 'create', description: 'Draft and configure quotes' },
+      { module: 'quotes', action: 'approve', description: 'Approve or reject sales quotes' },
+      { module: 'quotes', action: 'sign', description: 'Process e-signatures on quotes' },
+
       // Reports & Audit Logs
       { module: 'reports', action: 'view', description: 'View analytical reports and dashboards' },
       { module: 'reports', action: 'create', description: 'Create custom query reports' },
@@ -813,6 +821,119 @@ export const seedDatabase = async () => {
         [
           orgId, ag1.insertId,
           orgId, ag2.insertId,
+        ]
+      );
+    }
+
+    // -------------------------------------------------------------------
+    // 18. Seed CPQ: Products, Pricebooks, Entries & Quotes (Spec §24, §25)
+    // -------------------------------------------------------------------
+    console.log('[Seed] Seeding Products, Pricebooks & CPQ Quotes...');
+    const [existingProducts] = await connection.query('SELECT id FROM products WHERE organization_id = ?;', [orgId]);
+    if (existingProducts.length === 0) {
+      // 1. Products Catalog
+      const [prod1] = await connection.query(
+        `INSERT INTO products (organization_id, name, sku, description, category, pricing_type, billing_frequency, unit_price, cost_price, currency, tax_rate, is_active, created_by)
+         VALUES (?, 'Enterprise CRM Platform License (Tier 1)', 'SKU-CRM-ENT', 'Full-suite multi-tenant CRM with custom objects, dynamic views, and RBAC.', 'Software', 'recurring', 'annual', 18000.00, 3000.00, 'USD', 8.00, true, ?);`,
+        [orgId, adminUserId]
+      );
+      const [prod2] = await connection.query(
+        `INSERT INTO products (organization_id, name, sku, description, category, pricing_type, billing_frequency, unit_price, cost_price, currency, tax_rate, is_active, created_by)
+         VALUES (?, 'AI Copilot & Autonomous Agents Add-on', 'SKU-AI-AGENTS', 'Natural language copilot, proactive pipeline sentinel, and deal health scoring.', 'Software', 'recurring', 'annual', 6000.00, 1000.00, 'USD', 8.00, true, ?);`,
+        [orgId, adminUserId]
+      );
+      const [prod3] = await connection.query(
+        `INSERT INTO products (organization_id, name, sku, description, category, pricing_type, billing_frequency, unit_price, cost_price, currency, tax_rate, is_active, created_by)
+         VALUES (?, 'Custom Workflows & High-Throughput Webhook Engine', 'SKU-API-INTEG', 'Advanced event-driven automation rules, webhook dispatchers, and execution audit logging.', 'Software', 'recurring', 'annual', 4500.00, 500.00, 'USD', 8.00, true, ?);`,
+        [orgId, adminUserId]
+      );
+      const [prod4] = await connection.query(
+        `INSERT INTO products (organization_id, name, sku, description, category, pricing_type, billing_frequency, unit_price, cost_price, currency, tax_rate, is_active, created_by)
+         VALUES (?, 'White-Glove Implementation & Architecture Consulting', 'SKU-SRV-ONBOARD', 'Dedicated solutions architect onboarding, migration, and custom field setup.', 'Professional Services', 'one_time', 'one_time', 12500.00, 6000.00, 'USD', 0.00, true, ?);`,
+        [orgId, adminUserId]
+      );
+
+      // 2. Price Books
+      const [pb1] = await connection.query(
+        `INSERT INTO price_books (organization_id, name, description, currency, is_standard, is_active)
+         VALUES (?, 'Standard Global Corporate Price Book', 'Standard list prices for all enterprise accounts.', 'USD', true, true);`,
+        [orgId]
+      );
+      const [pb2] = await connection.query(
+        `INSERT INTO price_books (organization_id, name, description, currency, is_standard, is_active)
+         VALUES (?, 'Strategic Enterprise Partner Price Book', 'Tier-1 discounted price book for volume commitments (>100 seats).', 'USD', false, true);`,
+        [orgId]
+      );
+
+      // 3. Price Book Entries
+      await connection.query(
+        `INSERT INTO price_book_entries (organization_id, price_book_id, product_id, unit_price, currency, min_quantity, discount_percent, is_active)
+         VALUES
+         (?, ?, ?, 18000.00, 'USD', 1, 0.00, true),
+         (?, ?, ?, 6000.00, 'USD', 1, 0.00, true),
+         (?, ?, ?, 4500.00, 'USD', 1, 0.00, true),
+         (?, ?, ?, 12500.00, 'USD', 1, 0.00, true),
+         (?, ?, ?, 15000.00, 'USD', 1, 16.67, true),
+         (?, ?, ?, 5000.00, 'USD', 1, 16.67, true),
+         (?, ?, ?, 3800.00, 'USD', 1, 15.56, true),
+         (?, ?, ?, 10000.00, 'USD', 1, 20.00, true);`,
+        [
+          orgId, pb1.insertId, prod1.insertId,
+          orgId, pb1.insertId, prod2.insertId,
+          orgId, pb1.insertId, prod3.insertId,
+          orgId, pb1.insertId, prod4.insertId,
+          orgId, pb2.insertId, prod1.insertId,
+          orgId, pb2.insertId, prod2.insertId,
+          orgId, pb2.insertId, prod3.insertId,
+          orgId, pb2.insertId, prod4.insertId,
+        ]
+      );
+
+      // 4. Quotes & Quote Line Items (§25)
+      const [dealsList] = await connection.query('SELECT id, company_id, contact_id FROM deals WHERE organization_id = ? ORDER BY id ASC LIMIT 2;', [orgId]);
+      const d1 = dealsList[0];
+      const d2 = dealsList[1];
+
+      // Quote 1: Approved & Signed Quote for Deal 1 ($125,000)
+      const [q1] = await connection.query(
+        `INSERT INTO quotes (organization_id, quote_number, deal_id, company_id, contact_id, price_book_id, title, status, version, subtotal, discount_type, discount_value, discount_amount, tax_rate, tax_amount, total_amount, currency, valid_until, terms_conditions, notes, approved_by, approved_at, signature_status, signature_url, signed_at, created_by)
+         VALUES (?, 'QT-2026-001', ?, ?, ?, ?, 'Apex Global 250-Seat Platform Expansion Proposal', 'approved', 1, 131500.00, 'fixed', 6500.00, 6500.00, 0.00, 0.00, 125000.00, 'USD', DATE_ADD(CURDATE(), INTERVAL 30 DAY), 'Net-30 payment terms. 99.95% multi-region uptime SLA with enterprise support included.', 'Pre-approved 5% bundle discount by VP Sales.', ?, NOW(), 'signed', 'https://docusign.com/verify/qt-2026-001-signed', NOW(), ?);`,
+        [orgId, d1?.id || 1, d1?.company_id || 1, d1?.contact_id || 1, pb2.insertId, adminUserId, adminUserId]
+      );
+
+      // Quote Line items for Quote 1
+      await connection.query(
+        `INSERT INTO quote_line_items (organization_id, quote_id, product_id, item_order, description, quantity, unit_price, discount_percent, discount_amount, line_total, billing_frequency)
+         VALUES
+         (?, ?, ?, 1, 'Enterprise CRM Platform License (Tier 1)', 5.00, 18000.00, 0.00, 0.00, 90000.00, 'annual'),
+         (?, ?, ?, 2, 'AI Copilot & Autonomous Agents Add-on', 4.00, 6000.00, 0.00, 0.00, 24000.00, 'annual'),
+         (?, ?, ?, 3, 'Custom Workflows & High-Throughput Webhook Engine', 1.00, 4500.00, 0.00, 0.00, 4500.00, 'annual'),
+         (?, ?, ?, 4, 'White-Glove Implementation & Architecture Consulting', 1.00, 13000.00, 0.00, 0.00, 13000.00, 'one_time');`,
+        [
+          orgId, q1.insertId, prod1.insertId,
+          orgId, q1.insertId, prod2.insertId,
+          orgId, q1.insertId, prod3.insertId,
+          orgId, q1.insertId, prod4.insertId,
+        ]
+      );
+
+      // Quote 2: Presented Quote for Deal 2 ($84,000)
+      const [q2] = await connection.query(
+        `INSERT INTO quotes (organization_id, quote_number, deal_id, company_id, contact_id, price_book_id, title, status, version, subtotal, discount_type, discount_value, discount_amount, tax_rate, tax_amount, total_amount, currency, valid_until, terms_conditions, notes, signature_status, created_by)
+         VALUES (?, 'QT-2026-002', ?, ?, ?, ?, 'Nexus Logistics AI Dispatch Integration Proposal', 'presented', 1, 88500.00, 'fixed', 4500.00, 4500.00, 0.00, 0.00, 84000.00, 'USD', DATE_ADD(CURDATE(), INTERVAL 45 DAY), 'Net-45 payment terms. Standard SLA included.', 'Awaiting legal sign-off from Nexus procurement.', 'pending_signature', ?);`,
+        [orgId, d2?.id || 2, d2?.company_id || 3, d2?.contact_id || 3, pb1.insertId, adminUserId]
+      );
+
+      await connection.query(
+        `INSERT INTO quote_line_items (organization_id, quote_id, product_id, item_order, description, quantity, unit_price, discount_percent, discount_amount, line_total, billing_frequency)
+         VALUES
+         (?, ?, ?, 1, 'Enterprise CRM Platform License (Tier 1)', 3.00, 18000.00, 0.00, 0.00, 54000.00, 'annual'),
+         (?, ?, ?, 2, 'AI Copilot & Autonomous Agents Add-on', 3.00, 6000.00, 0.00, 0.00, 18000.00, 'annual'),
+         (?, ?, ?, 3, 'White-Glove Implementation & Architecture Consulting', 1.00, 12000.00, 0.00, 0.00, 12000.00, 'one_time');`,
+        [
+          orgId, q2.insertId, prod1.insertId,
+          orgId, q2.insertId, prod2.insertId,
+          orgId, q2.insertId, prod4.insertId,
         ]
       );
     }

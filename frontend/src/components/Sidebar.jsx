@@ -9,7 +9,8 @@ import {
   Settings, 
   Database,
   BarChart3,
-  Calendar
+  Calendar,
+  Receipt
 } from 'lucide-react';
 
 const navItems = [
@@ -17,6 +18,7 @@ const navItems = [
   { id: 'contacts', label: 'Contacts', icon: Users, badge: 'Spec §6' },
   { id: 'companies', label: 'Companies', icon: Building2, badge: 'Spec §7' },
   { id: 'deals', label: 'Deals & Pipelines', icon: Briefcase, badge: 'Spec §9' },
+  { id: 'cpq', label: 'Quotes & CPQ', icon: Receipt, badge: 'Spec §24, §25' },
   { id: 'activities', label: 'Activities & Tasks', icon: Calendar, badge: 'Spec §10, §12' },
   { id: 'custom_objects', label: 'Custom Objects', icon: Database, badge: 'Spec §2' },
   { id: 'automation', label: 'Automation Engine', icon: Workflow, badge: 'Spec §15' },
@@ -73,10 +75,10 @@ export default function Sidebar({ activeTab = 'dashboard', onSelectTab }) {
       <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-          <span className="text-xs font-semibold text-slate-700">Phase 1: Step 10 Active</span>
+          <span className="text-xs font-semibold text-slate-700">Phase 1: Step 11 Active</span>
         </div>
         <p className="text-[11px] text-slate-500 mt-1">
-          AI Copilot, Smart Summaries & Autonomous Agents live.
+          Products, Pricebooks, Quotes & CPQ live.
         </p>
       </div>
     </aside>

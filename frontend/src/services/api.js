@@ -452,7 +452,94 @@ export const getAiAgentRuns = async (params = {}) => {
   return response.data;
 };
 
+// CPQ: Products, Pricebooks, Quotes & Approvals (Spec §24, §25)
+export const getProducts = async (params = {}) => {
+  const response = await api.get('/v1/cpq/products', { params });
+  return response.data;
+};
+
+export const getProductById = async (id) => {
+  const response = await api.get(`/v1/cpq/products/${id}`);
+  return response.data;
+};
+
+export const createProduct = async (data) => {
+  const response = await api.post('/v1/cpq/products', data);
+  return response.data;
+};
+
+export const updateProduct = async (id, data) => {
+  const response = await api.put(`/v1/cpq/products/${id}`, data);
+  return response.data;
+};
+
+export const deleteProduct = async (id) => {
+  const response = await api.delete(`/v1/cpq/products/${id}`);
+  return response.data;
+};
+
+export const getPriceBooks = async (params = {}) => {
+  const response = await api.get('/v1/cpq/price-books', { params });
+  return response.data;
+};
+
+export const getPriceBookById = async (id) => {
+  const response = await api.get(`/v1/cpq/price-books/${id}`);
+  return response.data;
+};
+
+export const createPriceBook = async (data) => {
+  const response = await api.post('/v1/cpq/price-books', data);
+  return response.data;
+};
+
+export const addPriceBookEntry = async (priceBookId, data) => {
+  const response = await api.post(`/v1/cpq/price-books/${priceBookId}/entries`, data);
+  return response.data;
+};
+
+export const deletePriceBookEntry = async (entryId) => {
+  const response = await api.delete(`/v1/cpq/price-books/entries/${entryId}`);
+  return response.data;
+};
+
+export const getQuotes = async (params = {}) => {
+  const response = await api.get('/v1/cpq/quotes', { params });
+  return response.data;
+};
+
+export const getQuoteById = async (id) => {
+  const response = await api.get(`/v1/cpq/quotes/${id}`);
+  return response.data;
+};
+
+export const createQuote = async (data) => {
+  const response = await api.post('/v1/cpq/quotes', data);
+  return response.data;
+};
+
+export const updateQuote = async (id, data) => {
+  const response = await api.put(`/v1/cpq/quotes/${id}`, data);
+  return response.data;
+};
+
+export const updateQuoteStatus = async (id, data) => {
+  const response = await api.patch(`/v1/cpq/quotes/${id}/status`, data);
+  return response.data;
+};
+
+export const processQuoteSignature = async (id, data) => {
+  const response = await api.post(`/v1/cpq/quotes/${id}/sign`, data);
+  return response.data;
+};
+
+export const getQuotePdf = async (id) => {
+  const response = await api.get(`/v1/cpq/quotes/${id}/pdf`);
+  return response.data;
+};
+
 export default api;
+
 
 
 

@@ -826,4 +826,151 @@ CREATE TABLE IF NOT EXISTS `ai_messages` (
   CONSTRAINT `fk_ai_messages_conv` FOREIGN KEY (`conversation_id`) REFERENCES `ai_conversations` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------
+-- 31. PRODUCTS CATALOG (Spec §2.1, §24)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `products` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `sku` VARCHAR(100) NOT NULL,
+  `description` TEXT NULL,
+  `category` VARCHAR(100) NOT NULL DEFAULT 'Software',
+  `pricing_type` ENUM('one_time', 'recurring', 'usage') NOT NULL DEFAULT 'recurring',
+  `billing_frequency` ENUM('one_time', 'monthly', 'quarterly', 'annual') NOT NULL DEFAULT 'annual',
+  `unit_price` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `cost_price` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `currency` VARCHAR(10) NOT NULL DEFAULT 'USD',
+  `tax_rate` DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+  `is_active` BOOLEAN NOT NULL DEFAULT TRUE,
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_product_org_sku` (`organization_id`, `sku`),
+  INDEX `idx_products_org_active` (`organization_id`, `is_active`),
+  INDEX `idx_products_category` (`organization_id`, `category`),
+  CONSTRAINT `fk_products_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_products_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 32. PRICE BOOKS (Spec §24 Multi-Currency Pricebooks)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `price_books` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `description` TEXT NULL,
+  `currency` VARCHAR(10) NOT NULL DEFAULT 'USD',
+  `is_standard` BOOLEAN NOT NULL DEFAULT FALSE,
+  `is_active` BOOLEAN NOT NULL DEFAULT TRUE,
+  `valid_from` DATE NULL,
+  `valid_to` DATE NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_pricebooks_org` (`organization_id`, `is_active`),
+  CONSTRAINT `fk_pricebooks_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 33. PRICE BOOK ENTRIES (Spec §24 Custom Pricing & Discount Tiers)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `price_book_entries` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `price_book_id` BIGINT UNSIGNED NOT NULL,
+  `product_id` BIGINT UNSIGNED NOT NULL,
+  `unit_price` DECIMAL(15,2) NOT NULL,
+  `currency` VARCHAR(10) NOT NULL DEFAULT 'USD',
+  `min_quantity` INT UNSIGNED NOT NULL DEFAULT 1,
+  `discount_percent` DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+  `is_active` BOOLEAN NOT NULL DEFAULT TRUE,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_pbe_pb_product` (`price_book_id`, `product_id`, `min_quantity`),
+  INDEX `idx_pbe_org` (`organization_id`),
+  INDEX `idx_pbe_product` (`product_id`),
+  CONSTRAINT `fk_pbe_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_pbe_pb` FOREIGN KEY (`price_book_id`) REFERENCES `price_books` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_pbe_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 34. QUOTES (Spec §25 CPQ Lifecycle & Approval Matrix)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `quotes` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `quote_number` VARCHAR(50) NOT NULL,
+  `deal_id` BIGINT UNSIGNED NULL,
+  `company_id` BIGINT UNSIGNED NULL,
+  `contact_id` BIGINT UNSIGNED NULL,
+  `price_book_id` BIGINT UNSIGNED NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `status` ENUM('draft', 'in_review', 'approved', 'presented', 'accepted', 'rejected', 'expired') NOT NULL DEFAULT 'draft',
+  `version` INT UNSIGNED NOT NULL DEFAULT 1,
+  `subtotal` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `discount_type` ENUM('percent', 'fixed') NOT NULL DEFAULT 'percent',
+  `discount_value` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `discount_amount` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `tax_rate` DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+  `tax_amount` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `total_amount` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `currency` VARCHAR(10) NOT NULL DEFAULT 'USD',
+  `valid_until` DATE NULL,
+  `terms_conditions` TEXT NULL,
+  `notes` TEXT NULL,
+  `approved_by` BIGINT UNSIGNED NULL,
+  `approved_at` TIMESTAMP NULL,
+  `signature_status` ENUM('unsigned', 'pending_signature', 'signed', 'declined') NOT NULL DEFAULT 'unsigned',
+  `signature_url` VARCHAR(500) NULL,
+  `signed_at` TIMESTAMP NULL,
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_quote_number` (`organization_id`, `quote_number`, `version`),
+  INDEX `idx_quotes_org_status` (`organization_id`, `status`),
+  INDEX `idx_quotes_deal` (`deal_id`),
+  INDEX `idx_quotes_company` (`company_id`),
+  CONSTRAINT `fk_quotes_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_quotes_deal` FOREIGN KEY (`deal_id`) REFERENCES `deals` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_quotes_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_quotes_contact` FOREIGN KEY (`contact_id`) REFERENCES `contacts` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_quotes_pb` FOREIGN KEY (`price_book_id`) REFERENCES `price_books` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_quotes_approver` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_quotes_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 35. QUOTE LINE ITEMS (Spec §25 Line Items & Calculated Totals)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `quote_line_items` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `quote_id` BIGINT UNSIGNED NOT NULL,
+  `product_id` BIGINT UNSIGNED NOT NULL,
+  `item_order` INT UNSIGNED NOT NULL DEFAULT 1,
+  `description` VARCHAR(255) NULL,
+  `quantity` DECIMAL(10,2) NOT NULL DEFAULT 1.00,
+  `unit_price` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `discount_percent` DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+  `discount_amount` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `line_total` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `billing_frequency` VARCHAR(50) NOT NULL DEFAULT 'annual',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_qli_quote` (`quote_id`, `item_order`),
+  INDEX `idx_qli_org` (`organization_id`),
+  INDEX `idx_qli_product` (`product_id`),
+  CONSTRAINT `fk_qli_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_qli_quote` FOREIGN KEY (`quote_id`) REFERENCES `quotes` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_qli_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
+

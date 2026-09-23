@@ -9,8 +9,8 @@
 
 ## 📋 Table of Contents
 1. [Executive Summary](#1-executive-summary)
-2. [Milestones Completed (Steps 1–4)](#2-milestones-completed-steps-14)
-3. [MySQL Database Schema (17 Tables)](#3-mysql-database-schema-17-tables)
+2. [Milestones Completed (Steps 1–11)](#2-milestones-completed-steps-111)
+3. [MySQL Database Schema (48 Tables)](#3-mysql-database-schema-48-tables)
 4. [Default Seeded Credentials & Data](#4-default-seeded-credentials--data)
 5. [Complete API Catalog & Testing Guide](#5-complete-api-catalog--testing-guide)
    - [System & Health APIs](#51-system--health-apis)
@@ -18,8 +18,14 @@
    - [Companies APIs (§7)](#53-companies-apis-7)
    - [Contacts APIs (§6)](#54-contacts-apis-6)
    - [Unified Activity Timeline APIs (§10)](#55-unified-activity-timeline-apis-10)
+   - [Deals & Sales Pipeline APIs (§9)](#56-deals--sales-pipeline-apis-9)
+   - [Custom Objects & Hybrid Datastore APIs (§2)](#57-custom-objects--hybrid-datastore-apis-2)
+   - [Workflow Automation Engine APIs (§15)](#58-workflow-automation-engine-apis-15)
+   - [Communication, Tasks & Telephony APIs (§10, §12, §13, §23)](#59-communication-tasks--telephony-apis-10-12-13-23)
+   - [AI Copilot & Autonomous Agents APIs (§16, §20, §47, §56)](#510-ai-copilot-smart-summaries--autonomous-agents-16-20-47-56)
+   - [Products, Pricebooks & CPQ APIs (§24, §25)](#511-products-pricebooks-quotes--cpq-engine-24-25)
 6. [One-Click Automated Test Scripts](#6-one-click-automated-test-scripts)
-7. [Next Roadmap Step (Step 5)](#7-next-roadmap-step-step-5)
+7. [Next Roadmap Step (Step 12)](#7-next-roadmap-step-step-12)
 
 ---
 
@@ -31,14 +37,14 @@ The core permission and identity engine enforces a 3-layer authorization model (
 
 ---
 
-## 2. Milestones Completed (Steps 1–4)
+## 2. Milestones Completed (Steps 1–11)
 
 ```
-┌─────────────────┐     ┌───────────────────────┐     ┌──────────────────────┐     ┌────────────────────────┐
-│     STEP 1      │     │        STEP 2         │     │        STEP 3        │     │         STEP 4         │
-│  Project Setup  │────▶│  MySQL Multi-Tenancy  │────▶│ Authentication & JWT │────▶│ Standard CRM Objects & │
-│ (React + Node)  │     │   Schema (17 Tables)  │     │   Security Service   │     │    Unified Timeline    │
-└─────────────────┘     └───────────────────────┘     └──────────────────────┘     └────────────────────────┘
+┌──────────────────┐     ┌──────────────────────┐     ┌──────────────────────┐     ┌────────────────────────┐
+│     STEPS 1-4    │     │      STEPS 5-7       │     │      STEPS 8-10      │     │        STEP 11         │
+│ Core Multi-Tenant│────▶│ Deals, Pipelines,    │────▶│ Tasks, Comms, AI     │────▶│ Products, Pricebooks,  │
+│  Auth & Entities │     │ Workflows & Custom Obj│    │ Copilot & Agents     │     │ Quotes & CPQ Engine    │
+└──────────────────┘     └──────────────────────┘     └──────────────────────┘     └────────────────────────┘
 ```
 
 ### ✅ Step 1: Full-Stack Project Setup
@@ -101,12 +107,27 @@ The core permission and identity engine enforces a 3-layer authorization model (
 - **Pipeline Stage Conversion Funnel (§27):** Stage-by-stage deal volume, conversion rates, and drop-off counts from initial discovery through closed won.
 - **Dynamic Report Query Builder & Compiler (§29):** Parameterized SQL engine compiling multi-dimensional aggregations (`COUNT`, `SUM`, `AVG`, `MIN`, `MAX`) across Deals, Contacts, Companies, Tasks, and Activities with tenant security isolation.
 - **Saved Reports & Operational Dashboards (§30):** Persistent report templates and multi-widget dashboards (`reports`, `dashboards`, `dashboard_widgets`).
-- **One-Click CSV & JSON Export (§30):** Client-side data compilation and spreadsheet export.
 - **Frontend Analytics Studio (`AnalyticsReportsView.jsx`):** Interactive dashboard with funnel charts, stage value distributions, 30-day outreach breakdown, live query runner modal, and reports directory.
+
+### ✅ Step 10: AI Copilot, Smart Summaries & Autonomous Agents (Spec §16, §20, §47, §56)
+- **Conversational Copilot Engine (`ai.service.js`):** Multi-turn conversational AI engine with persistent conversational memory in `ai_conversations` and `ai_messages`.
+- **Natural Language Tool Orchestrator:** Automatically identifies user intent (e.g. deals filtering, contacts lookup, company search, system health metrics) and invokes CRM internal tools.
+- **Smart Record Summarizer (§3, §16):** Generates structured 3-bullet executive digests, extracts buying signals, flags deal stall/objection risks, and formulates actionable next steps.
+- **Context-Aware AI Email Drafter (§13, §16):** Generates personalized outreach emails synthesizing recipient context, sales intent, and custom tone (Professional, Consultative, Urgent, Casual).
+- **Autonomous Sales Sentinel Agent (§20, §56):** Automated deal audit engine computing pipeline health scores (0-100) and velocity tracking, persisting audit runs in `agent_runs`.
+- **Frontend AI Copilot & Agent Command Center (`AiCopilotView.jsx`):** Integrated chat interface, quick suggestion pills, deal audit runner, and email generator.
+
+### ✅ Step 11: Products, Pricebooks, Quotes & CPQ Engine (Spec §24, §25)
+- **Product Catalog Management (§24):** Multi-product catalog supporting SKUs, product categories, pricing models (one-time vs recurring subscription), unit costs, list prices, and margin calculations.
+- **Price Books & Pricing Matrices (§24):** Standard and custom partner/distributor price books with tiered unit pricing and minimum quantity requirements.
+- **Quotes & CPQ Engine (§25):** Full quote lifecycle (`draft` ➔ `in_review` ➔ `approved` ➔ `presented` ➔ `accepted` / `rejected`), auto-calculating line item subtotals, tiered line discounts, global quote discounts, and jurisdiction tax amounts.
+- **DocuSign E-Signature Simulation (§25):** Embedded digital signing workflow with simulated DocuSign envelope generation, status tracking, automatic deal value synchronization upon acceptance, and unified timeline audit events.
+- **Printable PDF Quote Generator (§25):** Clean, professional HTML printable quote invoice with line item breakdown, payment terms, and signature blocks.
+- **Frontend CPQ Studio (`CpqView.jsx`):** Full CPQ management view with quotes list, interactive quote builder modal, product catalog grid, price book manager, printable PDF preview modal, and one-click e-signature execution.
 
 ---
 
-## 3. MySQL Database Schema (39 Tables)
+## 3. MySQL Database Schema (48 Tables)
 
 All tables use InnoDB engine, `utf8mb4_unicode_ci` collation, and enforce multi-tenant isolation via indexed `organization_id`:
 
@@ -155,6 +176,11 @@ All tables use InnoDB engine, `utf8mb4_unicode_ci` collation, and enforce multi-
 | 41 | `agent_runs` | §20 Agent Execution Log | Agent execution evaluation history with health scores, recommended next actions, and step audits. |
 | 42 | `ai_conversations` | §16 Conversational Memory | Multi-turn conversational sessions linked to users, tenant context, and entity records. |
 | 43 | `ai_messages` | §16 Message History | User and AI assistant conversational messages with tool invocation execution logs. |
+| 44 | `products` | §24 Products Catalog | Product items, SKUs, recurring billing frequencies, cost, list price, and active status. |
+| 45 | `price_books` | §24 Price Books | Standard and custom/partner pricing catalogs with active windows and tenant isolation. |
+| 46 | `price_book_entries` | §24 Pricing Matrix | Custom unit pricing and minimum quantity requirements mapped to price books. |
+| 47 | `quotes` | §25 Quotes & CPQ | Formal sales proposals, subtotals, tiered discounts, tax, status lifecycles, and DocuSign e-sign. |
+| 48 | `quote_line_items` | §25 Line Items | Dynamic quote items linking products, quantities, custom pricing, and item subtotals. |
 
 ---
 
@@ -589,13 +615,72 @@ npm run db:setup
 
 ---
 
+### 5.11 Products, Pricebooks, Quotes & CPQ Engine (§24, §25)
+
+#### 33. Product Catalog Management (§24)
+- **List Products:** `GET /api/v1/cpq/products`
+  - Query params: `?search=crm&category=Software&isActive=true`
+- **Get Product Details:** `GET /api/v1/cpq/products/:id`
+- **Create Product:** `POST /api/v1/cpq/products`
+  - Body: `{"name":"CRM Analytics Pro","sku":"SW-ANL-001","category":"Software","pricingModel":"flat_fee","billingFrequency":"monthly","unitCost":25,"listPrice":79,"currency":"USD"}`
+- **Update Product:** `PUT /api/v1/cpq/products/:id`
+- **Deactivate/Delete Product:** `DELETE /api/v1/cpq/products/:id`
+
+#### 34. Price Books & Pricing Matrices (§24)
+- **List Price Books:** `GET /api/v1/cpq/price-books`
+- **Get Price Book with Entries:** `GET /api/v1/cpq/price-books/:id`
+- **Create Price Book:** `POST /api/v1/cpq/price-books`
+  - Body: `{"name":"Tier-1 Enterprise Partners","description":"Volume partner discount schedule","isStandard":false,"currency":"USD"}`
+- **Add Product to Price Book:** `POST /api/v1/cpq/price-books/:id/entries`
+  - Body: `{"productId":1,"unitPrice":65.00,"minQuantity":5}`
+- **Remove Price Book Entry:** `DELETE /api/v1/cpq/price-books/:id/entries/:entryId`
+
+#### 35. Quotes & CPQ Engine (§25)
+- **List Quotes:** `GET /api/v1/cpq/quotes`
+  - Query params: `?search=Q-2026&status=draft&dealId=1`
+- **Get Quote by ID:** `GET /api/v1/cpq/quotes/:id` (returns header, line items, and product details)
+- **Create Quote with Automatic Line-Item Pricing:** `POST /api/v1/cpq/quotes`
+  - Body:
+    ```json
+    {
+      "dealId": 1,
+      "companyId": 1,
+      "contactId": 1,
+      "priceBookId": 1,
+      "title": "Enterprise Cloud Migration Proposal",
+      "currency": "USD",
+      "discountPercent": 5,
+      "taxPercent": 8.25,
+      "validUntil": "2026-12-31",
+      "items": [
+        { "productId": 1, "quantity": 10, "unitPrice": 120, "discountPercent": 10 },
+        { "productId": 2, "quantity": 1, "unitPrice": 5000, "discountPercent": 0 }
+      ]
+    }
+    ```
+  - *Engine calculates line subtotals, applies tiered line discounts, computes net total, applies global discount, and calculates final sales tax.*
+- **Update Quote:** `PUT /api/v1/cpq/quotes/:id`
+- **Update Quote Lifecycle Status:** `PATCH /api/v1/cpq/quotes/:id/status`
+  - Body: `{"status": "approved"}`
+  - Supports: `draft`, `in_review`, `approved`, `presented`, `accepted`, `rejected`.
+  - When status transitions to `accepted`, automatically synchronizes linked Deal monetary `value` and logs timeline event.
+
+#### 36. DocuSign E-Signature Simulation & PDF Invoices (§25)
+- **Process Digital Signature (DocuSign API simulation):** `POST /api/v1/cpq/quotes/:id/sign`
+  - Body: `{"signerName": "Sarah Connor", "signerEmail": "sconnor@apextech.io"}`
+  - Simulates DocuSign envelope generation, transitions quote to `accepted`, updates Deal value, and records unified timeline audit event.
+- **Generate Printable PDF Invoice HTML:** `GET /api/v1/cpq/quotes/:id/pdf`
+  - Returns clean, enterprise-formatted HTML document with line item breakdowns, discounts, subtotal, taxes, and signature verification block.
+
+---
+
 ## 6. One-Click Automated Test Scripts
 
 ### Windows PowerShell Test Script
-Copy and paste this into PowerShell to test all endpoints end-to-end:
+Copy and paste this into PowerShell to test CPQ and core endpoints end-to-end:
 
 ```powershell
-Write-Host "`n🚀 Testing CRM AI & Analytics APIs..." -ForegroundColor Yellow
+Write-Host "`n🚀 Testing CRM CPQ, Quotes & Products Engine APIs..." -ForegroundColor Yellow
 
 # 1. Health check
 $health = Invoke-RestMethod -Uri "http://localhost:5000/api/health"
@@ -608,46 +693,63 @@ $token = $login.data.accessToken
 $headers = @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" }
 Write-Host "✅ Login OK: User $($login.data.user.fullName) (Role: $($login.data.user.role))" -ForegroundColor Green
 
-# 3. AI Copilot Natural Language Query
-$copilotBody = '{"prompt":"Show me deals over $50,000 in our pipeline"}'
-$copilot = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/ai/copilot" -Method Post -Headers $headers -Body $copilotBody
-Write-Host "✅ AI Copilot Query OK: Message #$($copilot.data.messageId), Tool: $($copilot.data.toolInvocations.tool)" -ForegroundColor Cyan
+# 3. Product Catalog
+$products = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/cpq/products" -Headers $headers
+Write-Host "✅ Products OK: Found $($products.data.Count) catalog products" -ForegroundColor Cyan
 
-# 4. Smart Record Summarizer
-$summaryBody = '{"recordType":"deal","recordId":1}'
-$summary = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/ai/summarize" -Method Post -Headers $headers -Body $summaryBody
-Write-Host "✅ Record Summarizer OK: $($summary.data.recordName) - $($summary.data.bullets.Count) executive bullets" -ForegroundColor Cyan
+# 4. Price Books
+$priceBooks = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/cpq/price-books" -Headers $headers
+Write-Host "✅ Price Books OK: Found $($priceBooks.data.Count) pricing schedules" -ForegroundColor Cyan
 
-# 5. AI Email Drafter
-$draftBody = '{"recipientName":"Sarah Connor","recipientEmail":"sconnor@apextech.io","intent":"Follow-up","tone":"Professional"}'
-$draft = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/ai/draft-email" -Method Post -Headers $headers -Body $draftBody
-Write-Host "✅ Email Drafter OK: Subject: $($draft.data.subject)" -ForegroundColor Cyan
+# 5. Create Quote with Dynamic CPQ Calculation
+$quoteBody = @{
+    dealId = 1
+    companyId = 1
+    contactId = 1
+    priceBookId = 1
+    title = "Automated PS Test Proposal"
+    currency = "USD"
+    discountPercent = 5.0
+    taxPercent = 8.25
+    validUntil = "2026-12-31"
+    items = @(
+        @{ productId = $products.data[0].id; quantity = 5; unitPrice = 120.00; discountPercent = 10.0 }
+    )
+} | ConvertTo-Json -Depth 5
 
-# 6. Autonomous Sales Agents
-$agents = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/ai/agents" -Headers $headers
-Write-Host "✅ AI Agents OK: Found $($agents.data.Count) registered autonomous agents" -ForegroundColor Green
+$newQuote = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/cpq/quotes" -Method Post -Headers $headers -Body $quoteBody
+Write-Host "✅ Create Quote OK: Quote #$($newQuote.data.quoteNumber) Subtotal: `$$($newQuote.data.subtotal) Total: `$$($newQuote.data.totalAmount)" -ForegroundColor Green
 
-# 7. Trigger Sentinel Agent Audit
-$agentId = $agents.data[0].id
-$runAudit = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/ai/agents/$agentId/run" -Method Post -Headers $headers -Body '{"recordType":"deal","recordId":1}'
-Write-Host "✅ Autonomous Sentinel Run OK: Health Score: $($runAudit.data.healthScore)/100" -ForegroundColor Green
+# 6. Approve Quote
+$quoteId = $newQuote.data.id
+$approved = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/cpq/quotes/$quoteId/status" -Method Patch -Headers $headers -Body '{"status":"approved"}'
+Write-Host "✅ Status Transition OK: Quote status changed to $($approved.data.status)" -ForegroundColor Cyan
 
-# 8. Database Schema Status
+# 7. DocuSign E-Signature Simulation
+$signBody = '{"signerName":"Sarah Connor","signerEmail":"sconnor@apextech.io"}'
+$signed = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/cpq/quotes/$quoteId/sign" -Method Post -Headers $headers -Body $signBody
+Write-Host "✅ DocuSign E-Signature OK: Status: $($signed.data.quote.signatureStatus), Signed At: $($signed.data.quote.signedAt)" -ForegroundColor Green
+
+# 8. Printable PDF Invoice Generation
+$pdfHtml = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/cpq/quotes/$quoteId/pdf" -Headers $headers
+Write-Host "✅ Printable PDF Invoice OK: Rendered $(($pdfHtml).Length) bytes of styled invoice HTML" -ForegroundColor Cyan
+
+# 9. Database Schema Status
 $dbStatus = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/system/db-status" -Headers $headers
 Write-Host "✅ Database Status: $($dbStatus.totalTables) InnoDB tables verified in crm_db." -ForegroundColor Green
 
-Write-Host "`n🎉 ALL STEP 10 AI COPILOT & AUTONOMOUS AGENTS TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Green
+Write-Host "`n🎉 ALL STEP 11 PRODUCTS, PRICEBOOKS & CPQ ENGINE TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Green
 ```
 
 ---
 
-## 7. Next Roadmap Step (Step 11)
+## 7. Next Roadmap Step (Step 12)
 
-With **Step 10 (AI Copilot, Smart Summaries & Autonomous Agents)** completed, the next milestone is **Step 11: Products, Pricebooks, Quotes & CPQ Engine (Spec §24, §25)**:
-1. **Product Catalog & Hierarchy (§24):** SKUs, product categories, pricing models (one-time, recurring subscription, tiered, per-seat usage).
-2. **Multi-Currency Pricebooks (§24):** Standard pricebook, custom tenant pricebooks, exchange rate conversions, and volume-based discount tiers.
-3. **Quotes & Line Items Engine (§25):** Draft, in-review, approved, and presented quote lifecycles with automated tax, discount matrices, and approval workflows.
-4. **PDF Quote Generation & E-Signature (§25):** Visual quote preview, professional printable PDF exports, and signature tracking.
+With **Step 11 (Products, Pricebooks, Quotes & CPQ Engine)** completed, the next milestone is **Step 12: Omnichannel Support, Ticketing & SLA Engine (Spec §23, §26)**:
+1. **Support Tickets Schema & Lifecycle (§23):** Ticket priorities (`urgent`, `high`, `medium`, `low`), statuses (`new`, `open`, `pending_customer`, `resolved`, `closed`), multi-channel ingest (`email`, `web_portal`, `chat`, `phone`), and customer/company associations.
+2. **SLA Policies & Auto-Escalation Engine (§23):** Service Level Agreement targets (first response time, resolution time), business hours schedules, and automatic warning/breach escalation.
+3. **Omnichannel Conversation Threads & Canned Responses (§23):** Ticket messages thread (public customer replies vs private internal agent notes) and canned reply snippet library.
+4. **Agent Workspaces & Routing Queue (§23, §26):** Round-robin ticket assignment, customer satisfaction (CSAT) scoring, and support performance analytics.
 
 ---
 
