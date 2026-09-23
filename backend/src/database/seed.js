@@ -627,6 +627,60 @@ export const seedDatabase = async () => {
       );
     }
 
+    // -------------------------------------------------------------------
+    // 13. Seed Tasks & Activities (Spec §12)
+    // -------------------------------------------------------------------
+    console.log('[Seed] Seeding sample tasks and reminders...');
+    const [existingTasks] = await connection.query('SELECT id FROM tasks WHERE organization_id = ?;', [orgId]);
+    if (existingTasks.length === 0) {
+      await connection.query(
+        `INSERT INTO tasks (organization_id, title, description, record_type, record_id, assigned_to, due_date, priority, status, created_by)
+         VALUES 
+         (?, 'Finalize Master Services Agreement (MSA)', 'Review legal and compliance redlines for 250-seat expansion.', 'deal', 1, ?, DATE_ADD(CURRENT_DATE, INTERVAL 3 DAY), 'urgent', 'in_progress', ?),
+         (?, 'Deliver Architecture Blueprint to Sarah Connor', 'Send technical documentation on multi-tenant MySQL partitioning.', 'contact', 1, ?, DATE_ADD(CURRENT_DATE, INTERVAL 1 DAY), 'high', 'pending', ?),
+         (?, 'Follow up on Dispatch AI Evaluation Pilot', 'Check in with David Miller regarding Chicago terminal metrics.', 'deal', 2, ?, DATE_ADD(CURRENT_DATE, INTERVAL 5 DAY), 'medium', 'pending', ?),
+         (?, 'Conduct Discovery Kickoff Meeting', 'Review initial operational requirements with Marcus Brody.', 'contact', 4, ?, DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY), 'low', 'completed', ?);`,
+        [
+          orgId, adminUserId, adminUserId,
+          orgId, adminUserId, adminUserId,
+          orgId, adminUserId, adminUserId,
+          orgId, adminUserId, adminUserId,
+        ]
+      );
+    }
+
+    // -------------------------------------------------------------------
+    // 14. Seed In-App Notifications (Spec §23)
+    // -------------------------------------------------------------------
+    console.log('[Seed] Seeding sample in-app notifications...');
+    const [existingNotifs] = await connection.query('SELECT id FROM notifications WHERE organization_id = ?;', [orgId]);
+    if (existingNotifs.length === 0) {
+      await connection.query(
+        `INSERT INTO notifications (organization_id, user_id, title, message, type, link_url, is_read)
+         VALUES
+         (?, ?, 'Enterprise Opportunity Alert', 'Apex Global Platform Expansion ($125,000) reached 70% win probability.', 'deal', '/deals/1', FALSE),
+         (?, ?, 'Urgent Task Assigned', 'Finalize Master Services Agreement (MSA) due in 3 days.', 'task', '/tasks/1', FALSE),
+         (?, ?, 'Welcome to Nexus CRM Platform', 'Multi-tenant architecture and event-driven automation engine initialized.', 'system', '/dashboard', TRUE);`,
+        [orgId, adminUserId, orgId, adminUserId, orgId, adminUserId]
+      );
+    }
+
+    // -------------------------------------------------------------------
+    // 15. Seed Email Templates (Spec §13)
+    // -------------------------------------------------------------------
+    console.log('[Seed] Seeding sample email templates...');
+    const [existingTpls] = await connection.query('SELECT id FROM email_templates WHERE organization_id = ?;', [orgId]);
+    if (existingTpls.length === 0) {
+      await connection.query(
+        `INSERT INTO email_templates (organization_id, name, subject, body_template, category, created_by)
+         VALUES
+         (?, 'Enterprise Platform Overview', 'Introduction: AI-Native CRM Architecture for {{company_name}}', '<p>Hi {{first_name}},</p><p>Thank you for connecting. Attached is our enterprise architecture overview detailing multi-tenancy, custom entities, and automated sales workflows.</p><p>Best regards,<br>Nexus Team</p>', 'sales', ?),
+         (?, 'Customer Welcome & Onboarding', 'Welcome to Nexus CRM, {{first_name}}!', '<p>Hi {{first_name}},</p><p>We are thrilled to welcome {{company_name}} to our platform! Your dedicated customer success manager has scheduled your setup kickoff.</p><p>Cheers,<br>Customer Success Team</p>', 'onboarding', ?),
+         (?, 'Opportunity Follow-up', 'Next steps on {{deal_title}}', '<p>Hi {{first_name}},</p><p>Following up on our recent conversation regarding the {{deal_title}}. Let us know if you need any additional compliance certifications.</p>', 'follow_up', ?);`,
+        [orgId, adminUserId, orgId, adminUserId, orgId, adminUserId]
+      );
+    }
+
     console.log('\n======================================================');
     console.log('✅ DATABASE SEEDING COMPLETED SUCCESSFULLY!');
     console.log('------------------------------------------------------');

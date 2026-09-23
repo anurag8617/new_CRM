@@ -87,9 +87,18 @@ The core permission and identity engine enforces a 3-layer authorization model (
 - **Execution & Audit History (§15 requirement):** Complete audit trail in `workflow_executions` and `workflow_execution_steps` recording duration in milliseconds, inputs, outputs, error messages, and skipped reasons ("why didn't my workflow run?").
 - **Frontend Studio UI (`WorkflowsView.jsx`):** Interactive automation studio with workflow status toggles (published/paused), visual rule builder modal, live test run / simulator against real records, and execution history drilldown drawer.
 
+### ✅ Step 8: Communication Center, Email & Notifications (Spec §10, §12, §13, §23)
+- **Tasks Engine (§12):** Full task management with status transitions (`pending`, `in_progress`, `completed`, `cancelled`), priority bands (`urgent`, `high`, `medium`, `low`), due dates, assignee user references, and associations with CRM records.
+- **In-App Notification Center (§23):** Real-time user alert drawer integrated directly into the top navbar with live unread badge, category icons, timestamping, and one-click mark-as-read.
+- **Bi-directional Email & Template Hub (§13):** Direct email dispatch, HTML & plain-text previews, and reusable email templates library with category organization (`sales`, `onboarding`, `support`).
+- **Telephony & Call Logger (§23):** Call tracking supporting inbound/outbound directions, duration recording in seconds, status, and rich rep notes.
+- **Unified Timeline Normalization Rule (§10, §23):** Every outbound email, logged call, and completed task automatically writes an activity row into the `activities` timeline table, establishing a single chronological audit trail across contacts, companies, deals, and custom records.
+- **Workflow Automation Integration (§15):** Workflows can now dispatch automated `create_task` and `send_notification` actions when triggers fire.
+- **Frontend Activities & Tasks View (`ActivitiesTasksView.jsx`):** Comprehensive interface featuring Kanban board & tabular task list, unified communication feed, template management, and interactive create modals.
+
 ---
 
-## 3. MySQL Database Schema (31 Tables)
+## 3. MySQL Database Schema (36 Tables)
 
 All tables use InnoDB engine, `utf8mb4_unicode_ci` collation, and enforce multi-tenant isolation via indexed `organization_id`:
 
@@ -126,6 +135,11 @@ All tables use InnoDB engine, `utf8mb4_unicode_ci` collation, and enforce multi-
 | 29 | `workflow_actions` | §15 Action Dispatcher | Sequenced automated action chain (timeline notes, field updates, notifications, webhooks). |
 | 30 | `workflow_executions` | §15 Execution History | Audit log tracking each workflow run, duration, status (completed, skipped, failed), and error messages. |
 | 31 | `workflow_execution_steps` | §15 Step Analytics | Granular step-by-step execution metrics recording input/output payloads and execution durations in ms. |
+| 32 | `tasks` | §12 Task Management | Actionable tasks with priorities, due dates, assignees, record links, and completion tracking. |
+| 33 | `notifications` | §23 Notifications | In-app user notification stream with unread counters, types, and deep-link URLs. |
+| 34 | `email_messages` | §13 / §23 Email Center | Bi-directional email communication log, statuses (sent, queued, failed), and rich HTML content. |
+| 35 | `email_templates` | §13 Email Templates | Reusable marketing and sales email templates organized by category with placeholders. |
+| 36 | `calls_log` | §23 Telephony Log | Phone call records tracking duration, direction (inbound/outbound), outcome status, and rep notes. |
 
 ---
 
@@ -432,6 +446,63 @@ npm run db:setup
 
 ---
 
+### 5.6 Communication Center, Tasks & Notifications APIs (Spec §10, §12, §13, §23)
+
+#### 19. Tasks API (§12)
+- **List Tasks:** `GET /api/v1/tasks` (Supports query filters: `status`, `priority`, `recordType`, `recordId`, `assignedTo`, `search`)
+- **Create Task:** `POST /api/v1/tasks`
+  ```json
+  {
+    "title": "Prepare Annual Renewal Quote",
+    "description": "Review current SaaS usage with Sarah Connor before dispatching quotation",
+    "priority": "high",
+    "dueDate": "2026-09-30",
+    "recordType": "contact",
+    "recordId": 1
+  }
+  ```
+- **Update Task Status:** `PATCH /api/v1/tasks/:id/status` (`status: "completed"`) — Automatically normalizes an activity record into `activities`!
+
+#### 20. In-App Notifications API (§23)
+- **Get User Notifications:** `GET /api/v1/notifications` (Returns unread count + notification list)
+- **Mark Notification Read:** `PATCH /api/v1/notifications/:id/read`
+- **Mark All Read:** `PATCH /api/v1/notifications/read-all`
+
+#### 21. Communications: Email Hub (§13)
+- **Send Outreach Email:** `POST /api/v1/communications/emails`
+  ```json
+  {
+    "toEmail": "sarah.jenkins@acmecorp.com",
+    "subject": "Platform Architecture Demo Follow-Up",
+    "bodyHtml": "<p>Hi Sarah, thanks for your time earlier today!</p>",
+    "recordType": "contact",
+    "recordId": 1
+  }
+  ```
+  *Rule:* Dispatched email writes directly into `email_messages` and generates a normalized `'email'` event in the unified `activities` timeline.
+- **List Email History:** `GET /api/v1/communications/emails?recordType=contact&recordId=1`
+
+#### 22. Communications: Email Templates Library (§13)
+- **List Templates:** `GET /api/v1/communications/templates` (Filter by `category=sales|onboarding|support`)
+- **Create Template:** `POST /api/v1/communications/templates`
+
+#### 23. Communications: Telephony & Call Logging (§23)
+- **Log Phone Call:** `POST /api/v1/communications/calls`
+  ```json
+  {
+    "toNumber": "+1 (555) 019-9234",
+    "direction": "outbound",
+    "durationSeconds": 320,
+    "status": "completed",
+    "notes": "Discussed expansion to 50 enterprise seats.",
+    "recordType": "contact",
+    "recordId": 1
+  }
+  ```
+  *Rule:* Dispatched call writes directly into `calls_log` and generates a normalized `'call'` event in the unified `activities` timeline.
+
+---
+
 ## 6. One-Click Automated Test Scripts
 
 ### Windows PowerShell Test Script
@@ -451,34 +522,38 @@ $token = $login.data.accessToken
 $headers = @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" }
 Write-Host "✅ Login OK: User $($login.data.user.fullName) (Role: $($login.data.user.role))" -ForegroundColor Green
 
-# 3. Companies List
-$companies = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/companies" -Headers $headers
-Write-Host "✅ Companies OK: Found $($companies.data.companies.Count) accounts." -ForegroundColor Cyan
+# 3. Tasks List
+$tasks = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/tasks" -Headers $headers
+Write-Host "✅ Tasks OK: Found $($tasks.data.tasks.Count) tasks (Total: $($tasks.data.pagination.total))." -ForegroundColor Cyan
 
-# 4. Contacts List
-$contacts = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/contacts" -Headers $headers
-Write-Host "✅ Contacts OK: Found $($contacts.data.contacts.Count) contacts." -ForegroundColor Cyan
+# 4. Notifications List & Unread Count
+$notifs = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/notifications" -Headers $headers
+Write-Host "✅ Notifications OK: Found $($notifs.data.notifications.Count) notifications, Unread: $($notifs.data.unreadCount)." -ForegroundColor Cyan
 
-# 5. Timeline Activities for Contact #1
+# 5. Email Templates
+$templates = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/communications/templates" -Headers $headers
+Write-Host "✅ Email Templates OK: Found $($templates.data.Count) templates in library." -ForegroundColor Cyan
+
+# 6. Post New Task & Verify Normalized Activity
+$taskBody = '{"title":"Automated Script Task","priority":"high","recordType":"contact","recordId":1}'
+$newTask = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/tasks" -Method Post -Headers $headers -Body $taskBody
+Write-Host "✅ Task Created OK: Task ID $($newTask.data.id)" -ForegroundColor Green
+
+# 7. Timeline Activities for Contact #1 (Normalized)
 $activities = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/activities?recordType=contact&recordId=1" -Headers $headers
-Write-Host "✅ Timeline OK: $($activities.data.Count) activities logged on Contact #1." -ForegroundColor Cyan
+Write-Host "✅ Unified Timeline OK: $($activities.data.Count) timeline entries normalized on Contact #1." -ForegroundColor Green
 
-# 6. Post New Note
-$noteBody = '{"recordType":"contact","recordId":1,"activityType":"note","payload":{"content":"PowerShell automated test note."}}'
-$newNote = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/activities" -Method Post -Headers $headers -Body $noteBody
-Write-Host "✅ Note Created OK: Activity ID $($newNote.data.id)" -ForegroundColor Green
-
-Write-Host "`n🎉 ALL API TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Green
+Write-Host "`n🎉 ALL STEP 8 API TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Green
 ```
 
 ---
 
-## 7. Next Roadmap Step (Step 8)
+## 7. Next Roadmap Step (Step 9)
 
-With **Step 7 (Workflow Automation Engine)** completed, the next milestone is **Step 8: Communication Center, Email & Notifications (Spec §10, §23)**:
-1. **Communication Normalization:** Inbound & outbound channels (email, SMS, call records) normalizing into the unified `activities` timeline.
-2. **Email Tracking & Templates:** Dynamic handlebars-style templates, send queue, and tracking pixel receiver.
-3. **Telephony & Notifications:** Webhook receivers for Twilio/telephony status, recording links, and real-time in-app notification center.
+With **Step 8 (Communication Center, Email & Notifications)** completed, the next milestone is **Step 9: Analytics, Reports & Dashboards (Spec §26-§28)**:
+1. **Custom Metric & Report Builder (§26):** Aggregations across deals, pipeline velocity, task completion rates, and rep performance.
+2. **Pipeline Stage Conversion Funnels (§27):** Funnel visualization measuring conversion rates and stage dwell times.
+3. **Operational Dashboards (§28):** Drag-and-drop dashboard widgets with configurable filters and export capabilities.
 
 ---
 

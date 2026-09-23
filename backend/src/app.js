@@ -13,6 +13,9 @@ import dealsRoutes from './modules/deals/deals.routes.js';
 import pipelinesRoutes from './modules/pipelines/pipelines.routes.js';
 import customObjectsRoutes from './modules/custom-objects/custom-objects.routes.js';
 import workflowsRoutes from './modules/workflows/workflows.routes.js';
+import tasksRoutes from './modules/tasks/tasks.routes.js';
+import notificationsRoutes from './modules/notifications/notifications.routes.js';
+import communicationsRoutes from './modules/communications/communications.routes.js';
 
 const app = express();
 
@@ -55,7 +58,7 @@ app.get('/api/v1', (req, res) => {
 // Authentication & Identity Routes
 app.use('/api/v1/auth', authRoutes);
 
-// Core Standard & Custom CRM Objects (§2, §6, §7, §9, §10, §15)
+// Core Standard & Custom CRM Objects (§2, §6, §7, §9, §10, §12, §13, §15, §23)
 app.use('/api/v1/companies', companiesRoutes);
 app.use('/api/v1/contacts', contactsRoutes);
 app.use('/api/v1/deals', dealsRoutes);
@@ -63,6 +66,9 @@ app.use('/api/v1/pipelines', pipelinesRoutes);
 app.use('/api/v1/custom-objects', customObjectsRoutes);
 app.use('/api/v1/activities', activitiesRoutes);
 app.use('/api/v1/workflows', workflowsRoutes);
+app.use('/api/v1/tasks', tasksRoutes);
+app.use('/api/v1/notifications', notificationsRoutes);
+app.use('/api/v1/communications', communicationsRoutes);
 
 // System database status & schema metrics
 app.get('/api/v1/system/db-status', async (req, res, next) => {
@@ -89,6 +95,10 @@ app.get('/api/v1/system/db-status', async (req, res, next) => {
     const [[{ activityCount }]] = await pool.query('SELECT COUNT(*) AS activityCount FROM activities');
     const [[{ workflowCount }]] = await pool.query('SELECT COUNT(*) AS workflowCount FROM workflows');
     const [[{ workflowExecutionsCount }]] = await pool.query('SELECT COUNT(*) AS workflowExecutionsCount FROM workflow_executions');
+    const [[{ taskCount }]] = await pool.query('SELECT COUNT(*) AS taskCount FROM tasks');
+    const [[{ notificationCount }]] = await pool.query('SELECT COUNT(*) AS notificationCount FROM notifications');
+    const [[{ emailCount }]] = await pool.query('SELECT COUNT(*) AS emailCount FROM email_messages');
+    const [[{ callCount }]] = await pool.query('SELECT COUNT(*) AS callCount FROM calls_log');
 
     // Fetch tenant sample
     const [orgs] = await pool.query('SELECT id, name, slug, currency, timezone, status FROM organizations LIMIT 1');
@@ -115,6 +125,10 @@ app.get('/api/v1/system/db-status', async (req, res, next) => {
         activities: activityCount,
         workflows: workflowCount,
         workflowExecutions: workflowExecutionsCount,
+        tasks: taskCount,
+        notifications: notificationCount,
+        emails: emailCount,
+        calls: callCount,
       },
       tenant: orgs[0] || null,
       adminUser: adminUsers[0] || null,

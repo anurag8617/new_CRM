@@ -7,6 +7,7 @@ import CompaniesView from './components/CompaniesView';
 import DealsView from './components/DealsView';
 import CustomObjectsView from './components/CustomObjectsView';
 import WorkflowsView from './components/WorkflowsView';
+import ActivitiesTasksView from './components/ActivitiesTasksView';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { checkHealth, getDbStatus } from './services/api';
 import { 
@@ -32,7 +33,8 @@ import {
   Building2,
   Briefcase,
   Workflow,
-  Zap
+  Zap,
+  Calendar
 } from 'lucide-react';
 
 function DashboardContent() {
@@ -108,6 +110,12 @@ function DashboardContent() {
       icon: Workflow,
       tables: ['workflows', 'workflow_conditions', 'workflow_actions', 'workflow_executions', 'workflow_execution_steps'],
       description: 'Event-driven triggers, conditional logic evaluators, and step-by-step automated execution logs.'
+    },
+    {
+      title: 'Communication Center & Tasks (§10, §12, §13, §23)',
+      icon: Calendar,
+      tables: ['tasks', 'notifications', 'email_messages', 'email_templates', 'calls_log'],
+      description: 'Unified tasks, in-app notifications, bi-directional email tracking, templates, and call logging.'
     },
     {
       title: 'Governance & Auditing (§40)',
@@ -188,6 +196,18 @@ function DashboardContent() {
             </button>
 
             <button
+              onClick={() => setActiveTab('activities')}
+              className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeTab === 'activities'
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Tasks & Comms ({dbData?.counts?.tasks || 4})</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('dashboard')}
               className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === 'dashboard'
@@ -231,6 +251,12 @@ function DashboardContent() {
             </div>
           )}
 
+          {activeTab === 'activities' && (
+            <div className="animate-in fade-in duration-150">
+              <ActivitiesTasksView />
+            </div>
+          )}
+
           {activeTab === 'dashboard' && (
             <div className="space-y-8 animate-in fade-in duration-150">
               {/* Header Banner */}
@@ -238,13 +264,13 @@ function DashboardContent() {
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>Step 7 Complete: Workflow Automation Engine Live</span>
+                    <span>Step 8 Complete: Communication Center & Tasks Live</span>
                   </div>
                   <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
                     CRM Platform Schema & Core Modules
                   </h2>
                   <p className="text-sm text-slate-600 mt-1">
-                    InnoDB Engine · Multi-Tenancy · 31 Tables · Deals, Custom Objects & Event-Driven Automation.
+                    InnoDB Engine · Multi-Tenancy · 36 Tables · Tasks, In-App Notifications, Email & Telephony Tracking.
                   </p>
                 </div>
 
@@ -377,9 +403,9 @@ function DashboardContent() {
                 <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
                   <span className="text-xs font-medium text-slate-500">Total MySQL Tables</span>
                   <p className="text-2xl font-bold text-slate-900 mt-1">
-                    {dbData ? dbData.totalTables : '17'}
+                    {dbData ? dbData.totalTables : '36'}
                   </p>
-                  <span className="text-[11px] text-emerald-600 font-semibold mt-1 inline-block">17 InnoDB</span>
+                  <span className="text-[11px] text-emerald-600 font-semibold mt-1 inline-block">36 InnoDB</span>
                 </div>
 
                 <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
@@ -428,10 +454,10 @@ function DashboardContent() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-base font-bold text-slate-900">
-                      MySQL Schema Architecture: 31 Core Tables Active
+                      MySQL Schema Architecture: 36 Core Tables Active
                     </h3>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Organized according to Section 0, 1, 2, 6, 7, 9, 10, 15, 40, and 51 of the CRM specification.
+                      Organized according to Section 0, 1, 2, 6, 7, 9, 10, 12, 13, 15, 23, 40, and 51 of the CRM specification.
                     </p>
                   </div>
                   <span className="text-xs font-mono bg-slate-100 px-2 py-1 rounded text-slate-600">
@@ -474,14 +500,14 @@ function DashboardContent() {
                     Next Step in Architecture Roadmap
                   </span>
                   <h3 className="text-lg font-bold mt-1">
-                    Step 8: Communication Center, Email & Notifications (Spec §10, §23)
+                    Step 9: Analytics, Reports & Operational Dashboards (Spec §26-§28)
                   </h3>
                   <p className="text-xs text-slate-300 mt-1 max-w-xl">
-                    Unified communication channels (email tracking, templates, webhooks, Twilio/SMS telephony, in-app notifications) normalized into the unified activity timeline.
+                    Custom report builders, scheduled summary generation, pipeline stage velocity & conversion funnels, and role-based operational dashboards.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs font-semibold bg-amber-600/80 hover:bg-amber-600 px-4 py-2.5 rounded-lg border border-amber-400/30 transition-colors">
-                  <span>Ready for Step 8</span>
+                  <span>Ready for Step 9</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
               </div>

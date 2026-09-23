@@ -252,6 +252,94 @@ export const testRunWorkflow = async (workflowId, recordId) => {
   return response.data;
 };
 
+// Tasks & Reminders API (Spec §12)
+export const getTasks = async (params = {}) => {
+  const response = await api.get('/v1/tasks', { params });
+  return response.data;
+};
+
+export const getTaskById = async (id) => {
+  const response = await api.get(`/v1/tasks/${id}`);
+  return response.data;
+};
+
+export const createTask = async (data) => {
+  const response = await api.post('/v1/tasks', data);
+  return response.data;
+};
+
+export const updateTask = async (id, data) => {
+  const response = await api.put(`/v1/tasks/${id}`, data);
+  return response.data;
+};
+
+export const deleteTask = async (id) => {
+  const response = await api.delete(`/v1/tasks/${id}`);
+  return response.data;
+};
+
+// Notifications API (Spec §23)
+export const getNotifications = async (params = {}) => {
+  const response = await api.get('/v1/notifications', { params });
+  return response.data;
+};
+
+export const markNotificationRead = async (id) => {
+  const response = await api.patch(`/v1/notifications/${id}/read`);
+  return response.data;
+};
+
+export const markAllNotificationsRead = async () => {
+  const response = await api.post('/v1/notifications/mark-all-read');
+  return response.data;
+};
+
+export const deleteNotification = async (id) => {
+  const response = await api.delete(`/v1/notifications/${id}`);
+  return response.data;
+};
+
+// Communications & Telephony API (Spec §13, §23)
+export const sendEmailMessage = async (data) => {
+  const response = await api.post('/v1/communications/email', data);
+  return response.data;
+};
+
+export const getEmailMessages = async (params = {}) => {
+  const response = await api.get('/v1/communications/emails', { params });
+  return response.data;
+};
+
+export const getEmailTemplates = async (params = {}) => {
+  const response = await api.get('/v1/communications/templates', { params });
+  return response.data;
+};
+
+export const createEmailTemplate = async (data) => {
+  const response = await api.post('/v1/communications/templates', data);
+  return response.data;
+};
+
+export const updateEmailTemplate = async (id, data) => {
+  const response = await api.put(`/v1/communications/templates/${id}`, data);
+  return response.data;
+};
+
+export const deleteEmailTemplate = async (id) => {
+  const response = await api.delete(`/v1/communications/templates/${id}`);
+  return response.data;
+};
+
+export const logPhoneCall = async (data) => {
+  const response = await api.post('/v1/communications/calls', data);
+  return response.data;
+};
+
+export const getPhoneCalls = async (params = {}) => {
+  const response = await api.get('/v1/communications/calls', { params });
+  return response.data;
+};
+
 export default api;
 
 

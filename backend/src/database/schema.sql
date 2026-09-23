@@ -561,4 +561,118 @@ CREATE TABLE IF NOT EXISTS `workflow_execution_steps` (
   CONSTRAINT `fk_wf_exec_steps_action` FOREIGN KEY (`action_id`) REFERENCES `workflow_actions` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------
+-- 19. TASKS (Spec §12)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tasks` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `description` TEXT NULL,
+  `record_type` ENUM('deal', 'contact', 'company', 'custom_record') NULL,
+  `record_id` BIGINT UNSIGNED NULL,
+  `assigned_to` BIGINT UNSIGNED NULL,
+  `due_date` DATE NULL,
+  `priority` ENUM('low', 'medium', 'high', 'urgent') NOT NULL DEFAULT 'medium',
+  `status` ENUM('pending', 'in_progress', 'completed', 'cancelled') NOT NULL DEFAULT 'pending',
+  `completed_at` TIMESTAMP NULL,
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_tasks_org_status` (`organization_id`, `status`, `due_date`),
+  INDEX `idx_tasks_assigned` (`assigned_to`),
+  INDEX `idx_tasks_record` (`record_type`, `record_id`),
+  CONSTRAINT `fk_tasks_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_tasks_assigned` FOREIGN KEY (`assigned_to`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_tasks_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 20. IN-APP NOTIFICATIONS (Spec §23)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `notifications` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `message` TEXT NOT NULL,
+  `type` ENUM('info', 'success', 'warning', 'mention', 'task', 'deal', 'system') NOT NULL DEFAULT 'info',
+  `link_url` VARCHAR(255) NULL,
+  `is_read` BOOLEAN NOT NULL DEFAULT FALSE,
+  `read_at` TIMESTAMP NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_notifications_user` (`organization_id`, `user_id`, `is_read`, `created_at`),
+  CONSTRAINT `fk_notifications_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_notifications_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 21. EMAIL MESSAGES & TRACKING (Spec §13, §23)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `email_messages` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `record_type` ENUM('deal', 'contact', 'company', 'custom_record') NULL,
+  `record_id` BIGINT UNSIGNED NULL,
+  `from_email` VARCHAR(255) NOT NULL,
+  `to_email` VARCHAR(255) NOT NULL,
+  `subject` VARCHAR(255) NOT NULL,
+  `body_html` MEDIUMTEXT NOT NULL,
+  `body_text` TEXT NULL,
+  `status` ENUM('draft', 'queued', 'sent', 'delivered', 'opened', 'clicked', 'bounced') NOT NULL DEFAULT 'sent',
+  `opened_count` INT UNSIGNED NOT NULL DEFAULT 0,
+  `clicked_count` INT UNSIGNED NOT NULL DEFAULT 0,
+  `sent_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_email_messages_record` (`record_type`, `record_id`),
+  INDEX `idx_email_messages_org` (`organization_id`, `sent_at`),
+  CONSTRAINT `fk_email_messages_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 22. EMAIL TEMPLATES (Spec §13)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `email_templates` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(150) NOT NULL,
+  `subject` VARCHAR(255) NOT NULL,
+  `body_template` MEDIUMTEXT NOT NULL,
+  `category` ENUM('sales', 'onboarding', 'follow_up', 'support', 'marketing') NOT NULL DEFAULT 'sales',
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_email_templates_org` (`organization_id`, `category`),
+  CONSTRAINT `fk_email_templates_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_email_templates_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 23. CALLS & TELEPHONY LOG (Spec §23 Telephony)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `calls_log` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `record_type` ENUM('deal', 'contact', 'company', 'custom_record') NULL,
+  `record_id` BIGINT UNSIGNED NULL,
+  `from_number` VARCHAR(50) NOT NULL,
+  `to_number` VARCHAR(50) NOT NULL,
+  `direction` ENUM('inbound', 'outbound') NOT NULL DEFAULT 'outbound',
+  `duration_seconds` INT UNSIGNED NOT NULL DEFAULT 0,
+  `status` ENUM('completed', 'missed', 'busy', 'failed') NOT NULL DEFAULT 'completed',
+  `recording_url` VARCHAR(500) NULL,
+  `notes` TEXT NULL,
+  `user_id` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_calls_record` (`record_type`, `record_id`),
+  INDEX `idx_calls_org` (`organization_id`, `created_at`),
+  CONSTRAINT `fk_calls_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_calls_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
