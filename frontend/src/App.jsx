@@ -9,6 +9,7 @@ import CustomObjectsView from './components/CustomObjectsView';
 import WorkflowsView from './components/WorkflowsView';
 import ActivitiesTasksView from './components/ActivitiesTasksView';
 import AnalyticsReportsView from './components/AnalyticsReportsView';
+import AiCopilotView from './components/AiCopilotView';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { checkHealth, getDbStatus } from './services/api';
 import { 
@@ -36,7 +37,8 @@ import {
   Workflow,
   Zap,
   Calendar,
-  BarChart3
+  BarChart3,
+  Bot
 } from 'lucide-react';
 
 function DashboardContent() {
@@ -124,6 +126,12 @@ function DashboardContent() {
       icon: BarChart3,
       tables: ['reports', 'dashboards', 'dashboard_widgets'],
       description: 'Visual query builder, conversion funnels, executive dashboards, and parameterized reporting.'
+    },
+    {
+      title: 'AI Copilot & Autonomous Agents (§16, §20, §47, §56)',
+      icon: Bot,
+      tables: ['agents', 'agent_runs', 'ai_conversations', 'ai_messages'],
+      description: 'Autonomous sales agents, evaluation runs, conversational memory, and LLM-powered sales auditing.'
     },
     {
       title: 'Governance & Auditing (§40)',
@@ -228,6 +236,18 @@ function DashboardContent() {
             </button>
 
             <button
+              onClick={() => setActiveTab('ai')}
+              className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeTab === 'ai'
+                  ? 'bg-purple-600 text-white shadow-sm shadow-purple-200'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              <Bot className="w-3.5 h-3.5" />
+              <span>AI Copilot & Agents ({dbData?.counts?.agents || 3})</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('dashboard')}
               className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === 'dashboard'
@@ -283,6 +303,12 @@ function DashboardContent() {
             </div>
           )}
 
+          {activeTab === 'ai' && (
+            <div className="animate-in fade-in duration-150">
+              <AiCopilotView />
+            </div>
+          )}
+
           {activeTab === 'dashboard' && (
             <div className="space-y-8 animate-in fade-in duration-150">
               {/* Header Banner */}
@@ -290,13 +316,13 @@ function DashboardContent() {
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>Step 9 Complete: Analytics, Reports & Dashboards Live</span>
+                    <span>Step 10 Complete: AI Copilot, Smart Summaries & Autonomous Agents Live</span>
                   </div>
                   <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
                     CRM Platform Schema & Core Modules
                   </h2>
                   <p className="text-sm text-slate-600 mt-1">
-                    InnoDB Engine · Multi-Tenancy · 39 Tables · Executive KPIs, Conversion Funnels & Query Builder.
+                    InnoDB Engine · Multi-Tenancy · 43 Tables · Copilot NLP, Smart Summaries & Autonomous Sales Sentinel.
                   </p>
                 </div>
 
@@ -526,14 +552,14 @@ function DashboardContent() {
                     Next Step in Architecture Roadmap
                   </span>
                   <h3 className="text-lg font-bold mt-1">
-                    Step 10: AI Copilot, Smart Summaries & Autonomous Agents (Spec §47, §56)
+                    Step 11: Products, Pricebooks, Quotes & CPQ Engine (Spec §24, §25)
                   </h3>
                   <p className="text-xs text-slate-300 mt-1 max-w-xl">
-                    Natural language CRM querying, automated record summarization, AI email drafting, and proactive sales copilot.
+                    Multi-currency pricebooks, product bundles, discount approval matrices, quote PDF generation & e-signatures.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs font-semibold bg-purple-600/80 hover:bg-purple-600 px-4 py-2.5 rounded-lg border border-purple-400/30 transition-colors">
-                  <span>Ready for Step 10</span>
+                  <span>Ready for Step 11</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
               </div>

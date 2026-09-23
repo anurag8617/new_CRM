@@ -411,6 +411,48 @@ export const deleteDashboardWidget = async (widgetId) => {
   return response.data;
 };
 
+// AI Copilot, Summaries & Autonomous Agents API (Spec §3, §16, §20, §47, §56)
+export const askAiCopilot = async (data) => {
+  const response = await api.post('/v1/ai/copilot', data);
+  return response.data;
+};
+
+export const getAiConversations = async (params = {}) => {
+  const response = await api.get('/v1/ai/conversations', { params });
+  return response.data;
+};
+
+export const getAiMessages = async (conversationId) => {
+  const response = await api.get(`/v1/ai/conversations/${conversationId}/messages`);
+  return response.data;
+};
+
+export const summarizeRecordWithAi = async (data) => {
+  const response = await api.post('/v1/ai/summarize', data);
+  return response.data;
+};
+
+export const draftEmailWithAi = async (data) => {
+  const response = await api.post('/v1/ai/draft-email', data);
+  return response.data;
+};
+
+export const getAiAgents = async () => {
+  const response = await api.get('/v1/ai/agents');
+  return response.data;
+};
+
+export const runAiAgent = async (id, options = {}) => {
+  const response = await api.post(`/v1/ai/agents/${id}/run`, options);
+  return response.data;
+};
+
+export const getAiAgentRuns = async (params = {}) => {
+  const response = await api.get('/v1/ai/agents/runs', { params });
+  return response.data;
+};
+
 export default api;
+
 
 

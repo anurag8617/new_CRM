@@ -745,4 +745,85 @@ CREATE TABLE IF NOT EXISTS `dashboard_widgets` (
   CONSTRAINT `fk_widgets_report` FOREIGN KEY (`report_id`) REFERENCES `reports` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------
+-- 27. AI AGENTS FRAMEWORK (Spec §20)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `agents` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(150) NOT NULL,
+  `type` ENUM('deal_sentinel', 'lead_qualifier', 'support_triage', 'renewal_guardian', 'custom') NOT NULL DEFAULT 'deal_sentinel',
+  `role` VARCHAR(150) NOT NULL,
+  `model` VARCHAR(100) NOT NULL DEFAULT 'gemini-1.5-pro',
+  `system_prompt` TEXT NULL,
+  `config_json` JSON NULL,
+  `status` ENUM('active', 'paused', 'draft') NOT NULL DEFAULT 'active',
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_agents_org` (`organization_id`, `status`),
+  CONSTRAINT `fk_agents_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_agents_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 28. AGENT RUNS & PROACTIVE EVALUATIONS (Spec §20)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `agent_runs` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `agent_id` BIGINT UNSIGNED NOT NULL,
+  `trigger_event` VARCHAR(100) NOT NULL DEFAULT 'manual_eval',
+  `status` ENUM('running', 'completed', 'failed') NOT NULL DEFAULT 'completed',
+  `record_type` VARCHAR(50) NULL,
+  `record_id` BIGINT UNSIGNED NULL,
+  `health_score` TINYINT UNSIGNED NULL,
+  `evaluation_summary` TEXT NULL,
+  `recommended_action` TEXT NULL,
+  `steps_json` JSON NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_agent_runs_org` (`organization_id`, `created_at`),
+  INDEX `idx_agent_runs_record` (`record_type`, `record_id`),
+  CONSTRAINT `fk_agent_runs_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_agent_runs_agent` FOREIGN KEY (`agent_id`) REFERENCES `agents` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 29. AI COPILOT CONVERSATIONS (Spec §16)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ai_conversations` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `title` VARCHAR(255) NOT NULL DEFAULT 'New AI Copilot Conversation',
+  `context_record_type` VARCHAR(50) NULL,
+  `context_record_id` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_ai_conv_user` (`organization_id`, `user_id`, `created_at`),
+  CONSTRAINT `fk_ai_conv_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_ai_conv_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 30. AI COPILOT MESSAGES & FUNCTION CALLS (Spec §16)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ai_messages` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `conversation_id` BIGINT UNSIGNED NOT NULL,
+  `role` ENUM('user', 'assistant', 'system') NOT NULL DEFAULT 'user',
+  `content` MEDIUMTEXT NOT NULL,
+  `tool_calls_json` JSON NULL,
+  `tool_results_json` JSON NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_ai_messages_conv` (`conversation_id`, `created_at`),
+  CONSTRAINT `fk_ai_messages_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_ai_messages_conv` FOREIGN KEY (`conversation_id`) REFERENCES `ai_conversations` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;

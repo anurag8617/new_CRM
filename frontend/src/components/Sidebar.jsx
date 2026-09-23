@@ -21,7 +21,7 @@ const navItems = [
   { id: 'custom_objects', label: 'Custom Objects', icon: Database, badge: 'Spec §2' },
   { id: 'automation', label: 'Automation Engine', icon: Workflow, badge: 'Spec §15' },
   { id: 'reports', label: 'Reports & Analytics', icon: BarChart3, badge: 'Spec §26-§30' },
-  { id: 'ai', label: 'AI Copilot & Agents', icon: Bot, badge: 'AI', disabled: true },
+  { id: 'ai', label: 'AI Copilot & Agents', icon: Bot, badge: 'Spec §16, §20' },
   { id: 'settings', label: 'Admin Settings', icon: Settings, disabled: true },
 ];
 
@@ -43,19 +43,19 @@ export default function Sidebar({ activeTab = 'dashboard', onSelectTab }) {
                 onClick={() => onSelectTab && onSelectTab(item.id)}
                 className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
                   isActive
-                    ? 'bg-indigo-50 text-indigo-700 shadow-2xs'
+                    ? 'bg-purple-50 text-purple-700 shadow-2xs font-semibold'
                     : item.disabled
                     ? 'text-slate-400 opacity-60 cursor-not-allowed'
                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-indigo-600' : 'text-slate-500'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-purple-600' : 'text-slate-500'}`} />
                   <span>{item.label}</span>
                 </div>
                 {item.badge && (
                   <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${
-                    item.badge === 'AI' 
+                    item.badge.includes('16') || item.badge === 'AI'
                       ? 'bg-purple-100 text-purple-700' 
                       : isActive
                       ? 'bg-indigo-100 text-indigo-700'
@@ -73,10 +73,10 @@ export default function Sidebar({ activeTab = 'dashboard', onSelectTab }) {
       <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-          <span className="text-xs font-semibold text-slate-700">Phase 1: Step 9 Active</span>
+          <span className="text-xs font-semibold text-slate-700">Phase 1: Step 10 Active</span>
         </div>
         <p className="text-[11px] text-slate-500 mt-1">
-          Executive Analytics & Conversion Funnels live.
+          AI Copilot, Smart Summaries & Autonomous Agents live.
         </p>
       </div>
     </aside>

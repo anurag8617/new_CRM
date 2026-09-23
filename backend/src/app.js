@@ -17,6 +17,7 @@ import tasksRoutes from './modules/tasks/tasks.routes.js';
 import notificationsRoutes from './modules/notifications/notifications.routes.js';
 import communicationsRoutes from './modules/communications/communications.routes.js';
 import analyticsRoutes from './modules/analytics/analytics.routes.js';
+import aiRoutes from './modules/ai/ai.routes.js';
 
 const app = express();
 
@@ -71,6 +72,7 @@ app.use('/api/v1/tasks', tasksRoutes);
 app.use('/api/v1/notifications', notificationsRoutes);
 app.use('/api/v1/communications', communicationsRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
+app.use('/api/v1/ai', aiRoutes);
 
 // System database status & schema metrics
 app.get('/api/v1/system/db-status', async (req, res, next) => {
@@ -103,6 +105,8 @@ app.get('/api/v1/system/db-status', async (req, res, next) => {
     const [[{ callCount }]] = await pool.query('SELECT COUNT(*) AS callCount FROM calls_log');
     const [[{ reportCount }]] = await pool.query('SELECT COUNT(*) AS reportCount FROM reports');
     const [[{ dashboardCount }]] = await pool.query('SELECT COUNT(*) AS dashboardCount FROM dashboards');
+    const [[{ agentCount }]] = await pool.query('SELECT COUNT(*) AS agentCount FROM agents');
+    const [[{ agentRunsCount }]] = await pool.query('SELECT COUNT(*) AS agentRunsCount FROM agent_runs');
 
     // Fetch tenant sample
     const [orgs] = await pool.query('SELECT id, name, slug, currency, timezone, status FROM organizations LIMIT 1');
@@ -135,6 +139,8 @@ app.get('/api/v1/system/db-status', async (req, res, next) => {
         calls: callCount,
         reports: reportCount,
         dashboards: dashboardCount,
+        agents: agentCount,
+        agentRuns: agentRunsCount,
       },
       tenant: orgs[0] || null,
       adminUser: adminUsers[0] || null,

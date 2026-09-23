@@ -151,6 +151,10 @@ All tables use InnoDB engine, `utf8mb4_unicode_ci` collation, and enforce multi-
 | 37 | `reports` | §29 Custom Reports | Saved parameterized SQL report specifications with entity types, metrics, and grouping dimensions. |
 | 38 | `dashboards` | §30 Dashboards | Configurable operational executive dashboards with default tenant flags. |
 | 39 | `dashboard_widgets` | §30 Dashboard Widgets | Grid layout widgets linking saved reports to executive visual dashboards. |
+| 40 | `agents` | §20 Autonomous Agents | Autonomous sales agents with model provider, system prompts, configuration, and status. |
+| 41 | `agent_runs` | §20 Agent Execution Log | Agent execution evaluation history with health scores, recommended next actions, and step audits. |
+| 42 | `ai_conversations` | §16 Conversational Memory | Multi-turn conversational sessions linked to users, tenant context, and entity records. |
+| 43 | `ai_messages` | §16 Message History | User and AI assistant conversational messages with tool invocation execution logs. |
 
 ---
 
@@ -557,13 +561,41 @@ npm run db:setup
 
 ---
 
+### 5.10 AI Copilot, Smart Summaries & Autonomous Agents (§16, §20, §47, §56)
+
+#### 29. Conversational AI Copilot (§16, §47)
+- **Ask CRM Copilot:** `POST /api/v1/ai/copilot`
+  - Body: `{"prompt": "Show deals over $50k", "conversationId": 1}`
+  - Automatically queries CRM entities, detects intent, executes internal tools, and returns conversational markdown response.
+- **List User Conversations:** `GET /api/v1/ai/conversations`
+- **Get Conversation Messages:** `GET /api/v1/ai/conversations/:conversationId/messages`
+
+#### 30. Smart Record Summarizer (§3, §16)
+- **Generate Executive Summary:** `POST /api/v1/ai/summarize`
+  - Body: `{"recordType": "deal", "recordId": 1}`
+  - Returns 3-bullet executive digest, buying signals identified, risk/blocker evaluation, and recommended next action.
+
+#### 31. Context-Aware AI Email Drafter (§13, §16)
+- **Draft Tailored Outreach Email:** `POST /api/v1/ai/draft-email`
+  - Body: `{"recipientName": "Sarah Jenkins", "recipientEmail": "s.jenkins@techcorp.com", "intent": "Follow-up on product demonstration", "tone": "Professional & Consultative"}`
+  - Synthesizes personalized email subject line, plain text body, and HTML version.
+
+#### 32. Autonomous Sales Agents & Deal Sentinel (§20, §56)
+- **List Active Agents:** `GET /api/v1/ai/agents`
+- **Trigger Agent Evaluation Audit:** `POST /api/v1/ai/agents/:id/run`
+  - Body: `{"recordType": "deal", "recordId": 1}`
+  - Evaluates deal velocity, task risks, and stakeholder engagement. Generates Deal Health score (0–100) and persists run in `agent_runs`.
+- **View Agent Run History:** `GET /api/v1/ai/agents/runs`
+
+---
+
 ## 6. One-Click Automated Test Scripts
 
 ### Windows PowerShell Test Script
 Copy and paste this into PowerShell to test all endpoints end-to-end:
 
 ```powershell
-Write-Host "`n🚀 Testing CRM APIs..." -ForegroundColor Yellow
+Write-Host "`n🚀 Testing CRM AI & Analytics APIs..." -ForegroundColor Yellow
 
 # 1. Health check
 $health = Invoke-RestMethod -Uri "http://localhost:5000/api/health"
@@ -576,39 +608,46 @@ $token = $login.data.accessToken
 $headers = @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" }
 Write-Host "✅ Login OK: User $($login.data.user.fullName) (Role: $($login.data.user.role))" -ForegroundColor Green
 
-# 3. Executive Overview KPIs
-$overview = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/analytics/overview" -Headers $headers
-Write-Host "✅ Analytics Overview OK: Pipeline Value `$$($overview.data.pipeline.totalPipelineValue), Forecast `$$($overview.data.pipeline.weightedForecast)" -ForegroundColor Cyan
+# 3. AI Copilot Natural Language Query
+$copilotBody = '{"prompt":"Show me deals over $50,000 in our pipeline"}'
+$copilot = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/ai/copilot" -Method Post -Headers $headers -Body $copilotBody
+Write-Host "✅ AI Copilot Query OK: Message #$($copilot.data.messageId), Tool: $($copilot.data.toolInvocations.tool)" -ForegroundColor Cyan
 
-# 4. Pipeline Conversion Funnel
-$funnel = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/analytics/funnel" -Headers $headers
-Write-Host "✅ Pipeline Funnel OK: $($funnel.data.stages.Count) stages, Conversion: $($funnel.data.overallConversion)%" -ForegroundColor Cyan
+# 4. Smart Record Summarizer
+$summaryBody = '{"recordType":"deal","recordId":1}'
+$summary = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/ai/summarize" -Method Post -Headers $headers -Body $summaryBody
+Write-Host "✅ Record Summarizer OK: $($summary.data.recordName) - $($summary.data.bullets.Count) executive bullets" -ForegroundColor Cyan
 
-# 5. Dynamic Query Builder Execution
-$queryBody = '{"entityType":"deals","metricType":"sum","metricField":"value","groupBy":"stage_name","dateRange":"all"}'
-$queryRes = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/analytics/query" -Method Post -Headers $headers -Body $queryBody
-Write-Host "✅ Query Compiler OK: $($queryRes.data.dataPoints.Count) groups, Total: `$$($queryRes.data.totalMetricSum)" -ForegroundColor Cyan
+# 5. AI Email Drafter
+$draftBody = '{"recipientName":"Sarah Connor","recipientEmail":"sconnor@apextech.io","intent":"Follow-up","tone":"Professional"}'
+$draft = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/ai/draft-email" -Method Post -Headers $headers -Body $draftBody
+Write-Host "✅ Email Drafter OK: Subject: $($draft.data.subject)" -ForegroundColor Cyan
 
-# 6. Saved Reports Library
-$reports = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/analytics/reports" -Headers $headers
-Write-Host "✅ Reports Library OK: Found $($reports.data.Count) reports." -ForegroundColor Green
+# 6. Autonomous Sales Agents
+$agents = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/ai/agents" -Headers $headers
+Write-Host "✅ AI Agents OK: Found $($agents.data.Count) registered autonomous agents" -ForegroundColor Green
 
-# 7. Operational Dashboards
-$dashboards = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/analytics/dashboards" -Headers $headers
-Write-Host "✅ Dashboards OK: Found $($dashboards.data.Count) operational dashboards." -ForegroundColor Green
+# 7. Trigger Sentinel Agent Audit
+$agentId = $agents.data[0].id
+$runAudit = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/ai/agents/$agentId/run" -Method Post -Headers $headers -Body '{"recordType":"deal","recordId":1}'
+Write-Host "✅ Autonomous Sentinel Run OK: Health Score: $($runAudit.data.healthScore)/100" -ForegroundColor Green
 
-Write-Host "`n🎉 ALL STEP 9 ANALYTICS & REPORTS TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Green
+# 8. Database Schema Status
+$dbStatus = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/system/db-status" -Headers $headers
+Write-Host "✅ Database Status: $($dbStatus.totalTables) InnoDB tables verified in crm_db." -ForegroundColor Green
+
+Write-Host "`n🎉 ALL STEP 10 AI COPILOT & AUTONOMOUS AGENTS TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Green
 ```
 
 ---
 
-## 7. Next Roadmap Step (Step 10)
+## 7. Next Roadmap Step (Step 11)
 
-With **Step 9 (Analytics, Reports & Dashboards)** completed, the next milestone is **Step 10: AI Copilot, Smart Summaries & Autonomous Agents (Spec §47, §56)**:
-1. **AI Copilot & Natural Language Querying (§47, §56):** Natural language questions to SQL translation (e.g. *"Show me enterprise deals closing this month with win probability > 60%"*).
-2. **Automated Record Summarization (§3):** AI-generated 3-bullet executive digests of contact and company timelines, recent interactions, and sentiment.
-3. **AI Email Drafting & Outreach (§3):** Context-aware personalized email drafting utilizing timeline history and company firmographics.
-4. **Autonomous Sales Agents (§56):** Proactive next-best-action recommendations and automated deal health scoring.
+With **Step 10 (AI Copilot, Smart Summaries & Autonomous Agents)** completed, the next milestone is **Step 11: Products, Pricebooks, Quotes & CPQ Engine (Spec §24, §25)**:
+1. **Product Catalog & Hierarchy (§24):** SKUs, product categories, pricing models (one-time, recurring subscription, tiered, per-seat usage).
+2. **Multi-Currency Pricebooks (§24):** Standard pricebook, custom tenant pricebooks, exchange rate conversions, and volume-based discount tiers.
+3. **Quotes & Line Items Engine (§25):** Draft, in-review, approved, and presented quote lifecycles with automated tax, discount matrices, and approval workflows.
+4. **PDF Quote Generation & E-Signature (§25):** Visual quote preview, professional printable PDF exports, and signature tracking.
 
 ---
 

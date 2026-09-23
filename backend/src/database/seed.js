@@ -765,6 +765,58 @@ export const seedDatabase = async () => {
       );
     }
 
+    // -------------------------------------------------------------------
+    // 17. Seed Default Autonomous AI Agents & Evaluations (Spec §20)
+    // -------------------------------------------------------------------
+    console.log('[Seed] Seeding sample AI agents and autonomous evaluations...');
+    const [existingAgents] = await connection.query('SELECT id FROM agents WHERE organization_id = ?;', [orgId]);
+    if (existingAgents.length === 0) {
+      // 1. Deal Health Sentinel Agent
+      const [ag1] = await connection.query(
+        `INSERT INTO agents (organization_id, name, type, role, model, system_prompt, config_json, status, created_by)
+         VALUES (?, 'Pipeline Deal Sentinel', 'deal_sentinel', 'Autonomous Pipeline Velocity & Risk Monitor', 'gemini-1.5-pro',
+         'You are an autonomous AI deal risk sentinel. Analyze pipeline deals for stalling indicators, missing decision makers, and inactive communications.',
+         '{"staleThresholdDays": 14, "alertOnDrop": true, "autoScoreHealth": true}', 'active', ?);`,
+        [orgId, adminUserId]
+      );
+
+      // 2. Lead Qualification & Triage Agent
+      const [ag2] = await connection.query(
+        `INSERT INTO agents (organization_id, name, type, role, model, system_prompt, config_json, status, created_by)
+         VALUES (?, 'Lead Qualification & Triage Agent', 'lead_qualifier', 'Inbound Prospect Scorer & Enrichment Evaluator', 'gemini-1.5-pro',
+         'You evaluate new inbound leads against target ICP criteria, firmographic data, and engagement signals.',
+         '{"minSeniorityLevel": "Director", "autoAssignReps": true}', 'active', ?);`,
+        [orgId, adminUserId]
+      );
+
+      // 3. Customer Renewal Guardian
+      const [ag3] = await connection.query(
+        `INSERT INTO agents (organization_id, name, type, role, model, system_prompt, config_json, status, created_by)
+         VALUES (?, 'Enterprise Renewal Guardian', 'renewal_guardian', 'Customer Health & Churn Risk Predictor', 'gemini-1.5-pro',
+         'Proactively monitors enterprise accounts approaching contract renewal for touchpoint frequency and satisfaction indicators.',
+         '{"renewalWindowDays": 90, "churnRiskThreshold": 40}', 'active', ?);`,
+        [orgId, adminUserId]
+      );
+
+      // Seed sample agent runs
+      await connection.query(
+        `INSERT INTO agent_runs (organization_id, agent_id, trigger_event, status, record_type, record_id, health_score, evaluation_summary, recommended_action, steps_json)
+         VALUES
+         (?, ?, 'deal_health_audit', 'completed', 'deal', 1, 88,
+          'Opportunity demonstrates strong momentum. VP of Operations and CTO engaged. Recent MSA exchange completed.',
+          'Schedule final executive legal sign-off call with Apex Technologies by Friday.',
+          '["1. Extracted 4 timeline activities", "2. Checked stakeholder seniority (CTO, VP)", "3. Evaluated pricing discount (0%)", "4. Calculated Deal Health: 88/100"]'),
+         (?, ?, 'lead_enrichment_eval', 'completed', 'contact', 1, 95,
+          'Verified C-level executive at Tier 1 Enterprise ($45M ARR). High buying authority and active expansion requirement.',
+          'Propose custom tailored multi-tenant architecture pilot session.',
+          '["1. Verified domain apextech.io", "2. Analyzed job title: CTO", "3. Cross-referenced parent company revenue", "4. Qualified as Tier-1 Enterprise Buyer"]');`,
+        [
+          orgId, ag1.insertId,
+          orgId, ag2.insertId,
+        ]
+      );
+    }
+
     console.log('\n======================================================');
     console.log('✅ DATABASE SEEDING COMPLETED SUCCESSFULLY!');
     console.log('------------------------------------------------------');
