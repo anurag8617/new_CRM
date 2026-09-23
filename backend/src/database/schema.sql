@@ -972,5 +972,143 @@ CREATE TABLE IF NOT EXISTS `quote_line_items` (
   CONSTRAINT `fk_qli_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------
+-- 36. SLA POLICIES (Spec §23 Service Level Agreements)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sla_policies` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `description` TEXT NULL,
+  `priority` ENUM('low', 'medium', 'high', 'urgent') NOT NULL DEFAULT 'medium',
+  `first_response_time_minutes` INT UNSIGNED NOT NULL DEFAULT 240,
+  `resolution_time_minutes` INT UNSIGNED NOT NULL DEFAULT 1440,
+  `business_hours_only` BOOLEAN NOT NULL DEFAULT FALSE,
+  `is_default` BOOLEAN NOT NULL DEFAULT FALSE,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_sla_org` (`organization_id`, `priority`),
+  CONSTRAINT `fk_sla_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 37. SUPPORT TICKETS (Spec §23 Standard Support Object)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tickets` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `ticket_number` VARCHAR(50) NOT NULL,
+  `subject` VARCHAR(255) NOT NULL,
+  `description` TEXT NOT NULL,
+  `status` ENUM('new', 'open', 'pending_customer', 'on_hold', 'resolved', 'closed') NOT NULL DEFAULT 'new',
+  `priority` ENUM('low', 'medium', 'high', 'urgent') NOT NULL DEFAULT 'medium',
+  `channel` ENUM('email', 'web_portal', 'chat', 'phone', 'api') NOT NULL DEFAULT 'web_portal',
+  `category` VARCHAR(100) NOT NULL DEFAULT 'General Support',
+  `company_id` BIGINT UNSIGNED NULL,
+  `contact_id` BIGINT UNSIGNED NULL,
+  `deal_id` BIGINT UNSIGNED NULL,
+  `assigned_to` BIGINT UNSIGNED NULL,
+  `sla_policy_id` BIGINT UNSIGNED NULL,
+  `first_response_due_at` TIMESTAMP NULL,
+  `resolution_due_at` TIMESTAMP NULL,
+  `first_responded_at` TIMESTAMP NULL,
+  `resolved_at` TIMESTAMP NULL,
+  `closed_at` TIMESTAMP NULL,
+  `sla_status` ENUM('within_sla', 'approaching_breach', 'breached') NOT NULL DEFAULT 'within_sla',
+  `csat_score` TINYINT UNSIGNED NULL,
+  `csat_comment` TEXT NULL,
+  `tags_json` JSON NULL,
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_ticket_number` (`organization_id`, `ticket_number`),
+  INDEX `idx_tickets_org_status` (`organization_id`, `status`),
+  INDEX `idx_tickets_priority` (`organization_id`, `priority`),
+  INDEX `idx_tickets_assigned` (`assigned_to`),
+  INDEX `idx_tickets_contact` (`contact_id`),
+  INDEX `idx_tickets_company` (`company_id`),
+  CONSTRAINT `fk_tickets_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_tickets_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_tickets_contact` FOREIGN KEY (`contact_id`) REFERENCES `contacts` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_tickets_deal` FOREIGN KEY (`deal_id`) REFERENCES `deals` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_tickets_assigned` FOREIGN KEY (`assigned_to`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_tickets_sla` FOREIGN KEY (`sla_policy_id`) REFERENCES `sla_policies` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_tickets_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 38. TICKET MESSAGES (Spec §23 Omnichannel Conversation Thread)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ticket_messages` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `ticket_id` BIGINT UNSIGNED NOT NULL,
+  `sender_type` ENUM('customer', 'agent', 'system', 'ai_assistant') NOT NULL DEFAULT 'agent',
+  `sender_user_id` BIGINT UNSIGNED NULL,
+  `sender_contact_id` BIGINT UNSIGNED NULL,
+  `sender_name` VARCHAR(150) NOT NULL,
+  `sender_email` VARCHAR(255) NULL,
+  `message_type` ENUM('public_reply', 'internal_note') NOT NULL DEFAULT 'public_reply',
+  `body_text` TEXT NOT NULL,
+  `body_html` TEXT NULL,
+  `channel` ENUM('email', 'web_portal', 'chat', 'phone', 'system') NOT NULL DEFAULT 'web_portal',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_tm_ticket` (`ticket_id`, `created_at`),
+  INDEX `idx_tm_org` (`organization_id`),
+  CONSTRAINT `fk_tm_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_tm_ticket` FOREIGN KEY (`ticket_id`) REFERENCES `tickets` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_tm_user` FOREIGN KEY (`sender_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_tm_contact` FOREIGN KEY (`sender_contact_id`) REFERENCES `contacts` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 39. CANNED RESPONSES (Spec §23 Support Snippets & Shortcuts)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `canned_responses` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `title` VARCHAR(150) NOT NULL,
+  `shortcut` VARCHAR(50) NOT NULL,
+  `category` VARCHAR(100) NOT NULL DEFAULT 'General',
+  `body_text` TEXT NOT NULL,
+  `created_by` BIGINT UNSIGNED NULL,
+  `is_shared` BOOLEAN NOT NULL DEFAULT TRUE,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_canned_shortcut` (`organization_id`, `shortcut`),
+  INDEX `idx_canned_org` (`organization_id`, `category`),
+  CONSTRAINT `fk_canned_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_canned_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 40. KNOWLEDGE BASE ARTICLES (Spec §23 KB Grounding & Self-Service)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `kb_articles` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `slug` VARCHAR(255) NOT NULL,
+  `category` VARCHAR(100) NOT NULL DEFAULT 'Guides',
+  `content` TEXT NOT NULL,
+  `status` ENUM('draft', 'published', 'archived') NOT NULL DEFAULT 'published',
+  `view_count` INT UNSIGNED NOT NULL DEFAULT 0,
+  `helpful_count` INT UNSIGNED NOT NULL DEFAULT 0,
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_kb_org_slug` (`organization_id`, `slug`),
+  INDEX `idx_kb_org_status` (`organization_id`, `status`),
+  INDEX `idx_kb_category` (`organization_id`, `category`),
+  CONSTRAINT `fk_kb_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_kb_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
+
 

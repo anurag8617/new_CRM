@@ -9,8 +9,8 @@
 
 ## 📋 Table of Contents
 1. [Executive Summary](#1-executive-summary)
-2. [Milestones Completed (Steps 1–11)](#2-milestones-completed-steps-111)
-3. [MySQL Database Schema (48 Tables)](#3-mysql-database-schema-48-tables)
+2. [Milestones Completed (Steps 1–12)](#2-milestones-completed-steps-112)
+3. [MySQL Database Schema (53 Tables)](#3-mysql-database-schema-53-tables)
 4. [Default Seeded Credentials & Data](#4-default-seeded-credentials--data)
 5. [Complete API Catalog & Testing Guide](#5-complete-api-catalog--testing-guide)
    - [System & Health APIs](#51-system--health-apis)
@@ -24,8 +24,9 @@
    - [Communication, Tasks & Telephony APIs (§10, §12, §13, §23)](#59-communication-tasks--telephony-apis-10-12-13-23)
    - [AI Copilot & Autonomous Agents APIs (§16, §20, §47, §56)](#510-ai-copilot-smart-summaries--autonomous-agents-16-20-47-56)
    - [Products, Pricebooks & CPQ APIs (§24, §25)](#511-products-pricebooks-quotes--cpq-engine-24-25)
+   - [Support, Ticketing & SLA Engine APIs (§23, §26)](#512-omnichannel-support-ticketing--sla-engine-23-26)
 6. [One-Click Automated Test Scripts](#6-one-click-automated-test-scripts)
-7. [Next Roadmap Step (Step 12)](#7-next-roadmap-step-step-12)
+7. [Next Roadmap Step (Step 13)](#7-next-roadmap-step-step-13)
 
 ---
 
@@ -37,13 +38,13 @@ The core permission and identity engine enforces a 3-layer authorization model (
 
 ---
 
-## 2. Milestones Completed (Steps 1–11)
+## 2. Milestones Completed (Steps 1–12)
 
 ```
 ┌──────────────────┐     ┌──────────────────────┐     ┌──────────────────────┐     ┌────────────────────────┐
-│     STEPS 1-4    │     │      STEPS 5-7       │     │      STEPS 8-10      │     │        STEP 11         │
-│ Core Multi-Tenant│────▶│ Deals, Pipelines,    │────▶│ Tasks, Comms, AI     │────▶│ Products, Pricebooks,  │
-│  Auth & Entities │     │ Workflows & Custom Obj│    │ Copilot & Agents     │     │ Quotes & CPQ Engine    │
+│     STEPS 1-4    │     │      STEPS 5-7       │     │      STEPS 8-10      │     │      STEPS 11-12       │
+│ Core Multi-Tenant│────▶│ Deals, Pipelines,    │────▶│ Tasks, Comms, AI     │────▶│ CPQ & Products +       │
+│  Auth & Entities │     │ Workflows & Custom Obj│    │ Copilot & Agents     │     │ Support, Tickets & SLA │
 └──────────────────┘     └──────────────────────┘     └──────────────────────┘     └────────────────────────┘
 ```
 
@@ -125,9 +126,18 @@ The core permission and identity engine enforces a 3-layer authorization model (
 - **Printable PDF Quote Generator (§25):** Clean, professional HTML printable quote invoice with line item breakdown, payment terms, and signature blocks.
 - **Frontend CPQ Studio (`CpqView.jsx`):** Full CPQ management view with quotes list, interactive quote builder modal, product catalog grid, price book manager, printable PDF preview modal, and one-click e-signature execution.
 
+### ✅ Step 12: Omnichannel Support, Ticketing & SLA Engine (Spec §23, §26)
+- **Support Tickets Object & Lifecycle (§23):** Standard support entity with status progression (`new`, `open`, `pending_customer`, `on_hold`, `resolved`, `closed`), priorities (`urgent`, `high`, `medium`, `low`), channels (`email`, `web_portal`, `chat`, `phone`), and associations with Contacts, Companies, and Deals.
+- **SLA Policies & Countdown Timers (§23):** Priority-based SLA schedules configuring first response and resolution targets (e.g. 15m/2h for Urgent, 4h/24h for Standard) with automated breach warning detection (`within_sla`, `approaching_breach`, `breached`).
+- **Omnichannel Conversation Thread (§23):** Multi-channel message stream supporting **Public Customer Replies** (customer-facing) and **Private Internal Agent Notes** (lock-guarded team-only audit logs).
+- **Canned Responses & Quick Replies (§23):** Shortcut snippet library (`!greeting`, `!investigating`, `!billing`, `!resolved`) enabling one-click response composition.
+- **Knowledge Base & Self-Service Grounding (§23):** Published technical guides and setup manuals with view counts and customer helpfulness voting.
+- **Customer Satisfaction (CSAT) Engine (§23, §26):** 1-to-5 star rating and feedback capture on resolved tickets, driving executive CSAT scoring and support analytics.
+- **Frontend Support Workspace (`TicketsView.jsx`):** Interactive ticketing console with real-time KPI ribbon, multi-parameter filters, drawer conversation stream, SLA countdown clocks, and KB browser.
+
 ---
 
-## 3. MySQL Database Schema (48 Tables)
+## 3. MySQL Database Schema (53 Tables)
 
 All tables use InnoDB engine, `utf8mb4_unicode_ci` collation, and enforce multi-tenant isolation via indexed `organization_id`:
 
@@ -181,6 +191,11 @@ All tables use InnoDB engine, `utf8mb4_unicode_ci` collation, and enforce multi-
 | 46 | `price_book_entries` | §24 Pricing Matrix | Custom unit pricing and minimum quantity requirements mapped to price books. |
 | 47 | `quotes` | §25 Quotes & CPQ | Formal sales proposals, subtotals, tiered discounts, tax, status lifecycles, and DocuSign e-sign. |
 | 48 | `quote_line_items` | §25 Line Items | Dynamic quote items linking products, quantities, custom pricing, and item subtotals. |
+| 49 | `sla_policies` | §23 SLA Policies | Service Level Agreements defining first response and resolution targets per priority. |
+| 50 | `tickets` | §23 Support Tickets | Standard support object with priorities, statuses, channels, requester, and SLA timers. |
+| 51 | `ticket_messages` | §23 Omnichannel Thread | Multi-channel message thread distinguishing public client replies from internal notes. |
+| 52 | `canned_responses` | §23 Canned Replies | Pre-written response templates with quick shortcuts for fast agent resolution. |
+| 53 | `kb_articles` | §23 Knowledge Base | Documentation articles with category tagging, view metrics, and helpful votes. |
 
 ---
 
@@ -674,13 +689,77 @@ npm run db:setup
 
 ---
 
+### 5.12 Omnichannel Support, Ticketing & SLA Engine (§23, §26)
+
+#### 37. Support Operations & SLA Performance Metrics (§26)
+- **Get Executive Support Metrics:** `GET /api/v1/support/metrics`
+  - Returns: `openTickets`, `urgentBacklog`, `slaCompliancePercent`, `avgResolutionHours`, `avgCsatScore`, `csatResponses`, and breakdowns by channel, priority, and category.
+
+#### 38. Support Tickets Lifecycle Management (§23)
+- **List Tickets with Multi-Parameter Filtering:** `GET /api/v1/support/tickets`
+  - Query params: `?status=open_all&priority=urgent&channel=email&search=SSO`
+- **Get Ticket with Conversation Thread:** `GET /api/v1/support/tickets/:id`
+  - Returns full ticket metadata, matched SLA policy, and chronological conversation stream.
+- **Create Support Ticket with Automated SLA Policy Matching:** `POST /api/v1/support/tickets`
+  - Body:
+    ```json
+    {
+      "subject": "SSO SAML Assertion Failure",
+      "description": "Users receiving 401 Unauthorized during SAML assertion handshakes.",
+      "priority": "urgent",
+      "channel": "email",
+      "category": "Security & Identity",
+      "companyId": 1,
+      "contactId": 1,
+      "tags": ["okta", "saml", "urgent-outage"]
+    }
+    ```
+  - *Engine matches priority to SLA policy, auto-computes `first_response_due_at` and `resolution_due_at`, inserts initial message, and logs timeline creation activity.*
+- **Update Ticket Details:** `PUT /api/v1/support/tickets/:id`
+- **Transition Ticket Lifecycle Status:** `PATCH /api/v1/support/tickets/:id/status`
+  - Body: `{"status": "resolved"}`
+  - Automatically records `resolved_at` / `closed_at` and posts `status_change` timeline activity.
+- **Delete Support Ticket:** `DELETE /api/v1/support/tickets/:id`
+
+#### 39. Omnichannel Conversation Thread & CSAT Feedback (§23)
+- **Dispatch Public Customer Reply:** `POST /api/v1/support/tickets/:id/messages`
+  - Body: `{"bodyText": "We updated your IdP cert fingerprint.", "messageType": "public_reply", "newStatus": "pending_customer"}`
+  - Automatically records `first_responded_at` if first reply, updates status, and logs timeline email activity.
+- **Save Private Internal Agent Note:** `POST /api/v1/support/tickets/:id/messages`
+  - Body: `{"bodyText": "INTERNAL NOTE: Re-synced XML metadata manually.", "messageType": "internal_note"}`
+  - Persisted with lock protection visible only to internal support and engineering teams.
+- **Submit Customer Satisfaction (CSAT) Rating:** `POST /api/v1/support/tickets/:id/csat`
+  - Body: `{"csatScore": 5, "csatComment": "Super fast turnaround on our SAML bug! 5 stars."}`
+  - Records star rating, closes ticket, and publishes feedback to timeline.
+
+#### 40. SLA Policies Configuration (§23)
+- **List SLA Policies:** `GET /api/v1/support/sla-policies`
+- **Create SLA Policy:** `POST /api/v1/support/sla-policies`
+  - Body: `{"name": "Urgent Response SLA", "priority": "urgent", "firstResponseTimeMinutes": 15, "resolutionTimeMinutes": 120}`
+- **Update SLA Policy:** `PUT /api/v1/support/sla-policies/:id`
+
+#### 41. Canned Responses & Quick Replies (§23)
+- **List Canned Responses:** `GET /api/v1/support/canned-responses`
+- **Create Canned Response:** `POST /api/v1/support/canned-responses`
+  - Body: `{"title": "Bug Escalation", "shortcut": "!escalate", "category": "Technical", "bodyText": "We have escalated this bug to engineering."}`
+- **Delete Canned Response:** `DELETE /api/v1/support/canned-responses/:id`
+
+#### 42. Knowledge Base & Grounding (§23)
+- **List Published Articles:** `GET /api/v1/support/kb/articles`
+- **Get Article Details & Increment View:** `GET /api/v1/support/kb/articles/:id`
+- **Publish New Article:** `POST /api/v1/support/kb/articles`
+  - Body: `{"title": "Configuring SAML 2.0 SSO", "category": "Security & Identity", "content": "Markdown setup guide..."}`
+- **Vote Article as Helpful:** `POST /api/v1/support/kb/articles/:id/helpful`
+
+---
+
 ## 6. One-Click Automated Test Scripts
 
 ### Windows PowerShell Test Script
-Copy and paste this into PowerShell to test CPQ and core endpoints end-to-end:
+Copy and paste this into PowerShell to test Support, Ticketing, CPQ, and core endpoints end-to-end:
 
 ```powershell
-Write-Host "`n🚀 Testing CRM CPQ, Quotes & Products Engine APIs..." -ForegroundColor Yellow
+Write-Host "`n🚀 Testing CRM Support, Ticketing & SLA Engine APIs..." -ForegroundColor Yellow
 
 # 1. Health check
 $health = Invoke-RestMethod -Uri "http://localhost:5000/api/health"
@@ -693,63 +772,68 @@ $token = $login.data.accessToken
 $headers = @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" }
 Write-Host "✅ Login OK: User $($login.data.user.fullName) (Role: $($login.data.user.role))" -ForegroundColor Green
 
-# 3. Product Catalog
-$products = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/cpq/products" -Headers $headers
-Write-Host "✅ Products OK: Found $($products.data.Count) catalog products" -ForegroundColor Cyan
+# 3. Support Operations & SLA Performance Metrics
+$metrics = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/support/metrics" -Headers $headers
+Write-Host "✅ Support Metrics OK: Total: $($metrics.data.totalTickets) tickets, SLA Compliance: $($metrics.data.slaCompliancePercent)%, CSAT: $($metrics.data.avgCsatScore)/5.0" -ForegroundColor Cyan
 
-# 4. Price Books
-$priceBooks = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/cpq/price-books" -Headers $headers
-Write-Host "✅ Price Books OK: Found $($priceBooks.data.Count) pricing schedules" -ForegroundColor Cyan
+# 4. List Tickets
+$tickets = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/support/tickets?status=all" -Headers $headers
+Write-Host "✅ List Tickets OK: Found $($tickets.count) tickets in database" -ForegroundColor Cyan
 
-# 5. Create Quote with Dynamic CPQ Calculation
-$quoteBody = @{
-    dealId = 1
+# 5. Create Urgent Support Ticket with SLA Calculation
+$ticketBody = @{
+    subject = "PowerShell Test: Enterprise SAML Assertion Failure"
+    description = "European team reports SAML assertion timeout during Okta token handshakes."
+    priority = "urgent"
+    channel = "email"
+    category = "Security & Identity"
     companyId = 1
     contactId = 1
-    priceBookId = 1
-    title = "Automated PS Test Proposal"
-    currency = "USD"
-    discountPercent = 5.0
-    taxPercent = 8.25
-    validUntil = "2026-12-31"
-    items = @(
-        @{ productId = $products.data[0].id; quantity = 5; unitPrice = 120.00; discountPercent = 10.0 }
-    )
-} | ConvertTo-Json -Depth 5
+    tags = @("okta", "saml", "automated-test")
+} | ConvertTo-Json
 
-$newQuote = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/cpq/quotes" -Method Post -Headers $headers -Body $quoteBody
-Write-Host "✅ Create Quote OK: Quote #$($newQuote.data.quoteNumber) Subtotal: `$$($newQuote.data.subtotal) Total: `$$($newQuote.data.totalAmount)" -ForegroundColor Green
+$newTicket = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/support/tickets" -Method Post -Headers $headers -Body $ticketBody
+Write-Host "✅ Ticket Created OK: $($newTicket.data.ticket_number) - $($newTicket.data.subject)" -ForegroundColor Green
+Write-Host "   SLA Timers: Response Due: $($newTicket.data.first_response_due_at), Resolution Due: $($newTicket.data.resolution_due_at)" -ForegroundColor DarkGray
 
-# 6. Approve Quote
-$quoteId = $newQuote.data.id
-$approved = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/cpq/quotes/$quoteId/status" -Method Patch -Headers $headers -Body '{"status":"approved"}'
-Write-Host "✅ Status Transition OK: Quote status changed to $($approved.data.status)" -ForegroundColor Cyan
+$ticketId = $newTicket.data.id
 
-# 7. DocuSign E-Signature Simulation
-$signBody = '{"signerName":"Sarah Connor","signerEmail":"sconnor@apextech.io"}'
-$signed = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/cpq/quotes/$quoteId/sign" -Method Post -Headers $headers -Body $signBody
-Write-Host "✅ DocuSign E-Signature OK: Status: $($signed.data.quote.signatureStatus), Signed At: $($signed.data.quote.signedAt)" -ForegroundColor Green
+# 6. Dispatch Public Customer Reply
+$replyBody = '{"bodyText":"Hello! We investigated the issue and cleared the stale SAML cache.","messageType":"public_reply","newStatus":"pending_customer"}'
+$reply = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/support/tickets/$ticketId/messages" -Method Post -Headers $headers -Body $replyBody
+Write-Host "✅ Public Reply Dispatched OK: Status transitioned to $($reply.data.status)" -ForegroundColor Cyan
 
-# 8. Printable PDF Invoice Generation
-$pdfHtml = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/cpq/quotes/$quoteId/pdf" -Headers $headers
-Write-Host "✅ Printable PDF Invoice OK: Rendered $(($pdfHtml).Length) bytes of styled invoice HTML" -ForegroundColor Cyan
+# 7. Add Internal Team-Only Note
+$noteBody = '{"bodyText":"INTERNAL NOTE: Re-synced IdP XML metadata manually. 0 errors in telemetry.","messageType":"internal_note"}'
+$note = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/support/tickets/$ticketId/messages" -Method Post -Headers $headers -Body $noteBody
+Write-Host "✅ Internal Agent Note Saved OK: Conversation thread length: $($note.data.messages.Count)" -ForegroundColor Cyan
 
-# 9. Database Schema Status
+# 8. Resolve Ticket
+$resolve = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/support/tickets/$ticketId/status" -Method Patch -Headers $headers -Body '{"status":"resolved"}'
+Write-Host "✅ Ticket Resolved OK: Status: $($resolve.data.status), Resolved At: $($resolve.data.resolved_at)" -ForegroundColor Green
+
+# 9. Submit CSAT Rating
+$csatBody = '{"csatScore":5,"csatComment":"Incredible response speed on a mission-critical blocker!"}'
+$csat = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/support/tickets/$ticketId/csat" -Method Post -Headers $headers -Body $csatBody
+Write-Host "✅ CSAT Feedback OK: Rating: $($csat.data.csat_score)/5 Stars - $($csat.data.csat_comment)" -ForegroundColor Green
+
+# 10. Database Schema Status (53 Tables Verification)
 $dbStatus = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/system/db-status" -Headers $headers
 Write-Host "✅ Database Status: $($dbStatus.totalTables) InnoDB tables verified in crm_db." -ForegroundColor Green
+Write-Host "   Counts: Tickets: $($dbStatus.counts.tickets), SLA Policies: $($dbStatus.counts.slaPolicies), KB Articles: $($dbStatus.counts.kbArticles)" -ForegroundColor DarkGray
 
-Write-Host "`n🎉 ALL STEP 11 PRODUCTS, PRICEBOOKS & CPQ ENGINE TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Green
+Write-Host "`n🎉 ALL STEP 12 OMNICHANNEL SUPPORT, TICKETING & SLA ENGINE TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Green
 ```
 
 ---
 
-## 7. Next Roadmap Step (Step 12)
+## 7. Next Roadmap Step (Step 13)
 
-With **Step 11 (Products, Pricebooks, Quotes & CPQ Engine)** completed, the next milestone is **Step 12: Omnichannel Support, Ticketing & SLA Engine (Spec §23, §26)**:
-1. **Support Tickets Schema & Lifecycle (§23):** Ticket priorities (`urgent`, `high`, `medium`, `low`), statuses (`new`, `open`, `pending_customer`, `resolved`, `closed`), multi-channel ingest (`email`, `web_portal`, `chat`, `phone`), and customer/company associations.
-2. **SLA Policies & Auto-Escalation Engine (§23):** Service Level Agreement targets (first response time, resolution time), business hours schedules, and automatic warning/breach escalation.
-3. **Omnichannel Conversation Threads & Canned Responses (§23):** Ticket messages thread (public customer replies vs private internal agent notes) and canned reply snippet library.
-4. **Agent Workspaces & Routing Queue (§23, §26):** Round-robin ticket assignment, customer satisfaction (CSAT) scoring, and support performance analytics.
+With **Step 12 (Omnichannel Support, Ticketing & SLA Engine)** completed, the next milestone is **Step 13: Customer Sequences, Multi-Channel Outreach & Email Campaigns (Spec §14, §23)**:
+1. **Sales Sequences & Cadences Engine (§14):** Multi-step automated outreach sequences (Day 1: Automated Email, Day 3: Follow-up Task / Call reminder, Day 7: Break-up Email) with automated pause on recipient reply.
+2. **Email Campaign Manager & Audience Segments (§23):** Broadcast email campaigns with dynamic contact filtering (by company tier, deal stage, or lifecycle stage), unsubscribe management, and open/click tracking.
+3. **Template Personalization with Dynamic Merge Tags (§13, §14):** Merge tags (`{{first_name}}`, `{{company_name}}`, `{{sender_name}}`, `{{custom_field}}`) with fallback default strings.
+4. **Sequence Analytics & Funnel Tracking (§14, §26):** Step-by-step deliverability, open rates, reply rates, meeting booking rates, and sequence completion velocities.
 
 ---
 

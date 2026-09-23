@@ -11,6 +11,7 @@ import ActivitiesTasksView from './components/ActivitiesTasksView';
 import AnalyticsReportsView from './components/AnalyticsReportsView';
 import AiCopilotView from './components/AiCopilotView';
 import CpqView from './components/CpqView';
+import TicketsView from './components/TicketsView';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { checkHealth, getDbStatus } from './services/api';
 import { 
@@ -40,7 +41,8 @@ import {
   Calendar,
   BarChart3,
   Bot,
-  Receipt
+  Receipt,
+  Headphones
 } from 'lucide-react';
 
 function DashboardContent() {
@@ -140,6 +142,12 @@ function DashboardContent() {
       icon: Receipt,
       tables: ['products', 'price_books', 'price_book_entries', 'quotes', 'quote_line_items'],
       description: 'Product catalog, multi-currency pricebooks, volume discount matrices, quote lifecycles, and DocuSign e-signatures.'
+    },
+    {
+      title: 'Support & Ticketing Engine (Spec §23, §26)',
+      icon: Headphones,
+      tables: ['sla_policies', 'tickets', 'ticket_messages', 'canned_responses', 'kb_articles'],
+      description: 'Multi-channel support tickets, SLA policy timers, omnichannel conversation threads, canned replies, and knowledge base.'
     },
     {
       title: 'Governance & Auditing (§40)',
@@ -268,6 +276,18 @@ function DashboardContent() {
             </button>
 
             <button
+              onClick={() => setActiveTab('tickets')}
+              className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeTab === 'tickets'
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              <Headphones className="w-3.5 h-3.5" />
+              <span>Tickets & Support ({dbData?.counts?.tickets || 4})</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('dashboard')}
               className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === 'dashboard'
@@ -302,6 +322,12 @@ function DashboardContent() {
           {activeTab === 'cpq' && (
             <div className="animate-in fade-in duration-150">
               <CpqView />
+            </div>
+          )}
+
+          {activeTab === 'tickets' && (
+            <div className="animate-in fade-in duration-150">
+              <TicketsView />
             </div>
           )}
 
@@ -342,13 +368,13 @@ function DashboardContent() {
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>Step 11 Complete: Products, Pricebooks, Quotes & CPQ Live</span>
+                    <span>Step 12 Complete: Omnichannel Support, Ticketing & SLA Engine Live</span>
                   </div>
                   <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
                     CRM Platform Schema & Core Modules
                   </h2>
                   <p className="text-sm text-slate-600 mt-1">
-                    InnoDB Engine · Multi-Tenancy · 48 Tables · Product Catalog, Multi-Currency Pricebooks & CPQ Engine.
+                    InnoDB Engine · Multi-Tenancy · 53 Tables · Support Tickets, SLA Policies, Omnichannel Threads & Knowledge Base.
                   </p>
                 </div>
 
@@ -532,10 +558,10 @@ function DashboardContent() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-base font-bold text-slate-900">
-                      MySQL Schema Architecture: 39 Core Tables Active
+                      MySQL Schema Architecture: 53 Core Tables Active
                     </h3>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Organized according to Section 0, 1, 2, 6, 7, 9, 10, 12, 13, 15, 23, 26, 27, 28, 29, 30, 40, and 51 of the CRM specification.
+                      Organized according to Section 0, 1, 2, 6, 7, 9, 10, 12, 13, 15, 23, 24, 25, 26, 27, 28, 29, 30, 40, and 51 of the CRM specification.
                     </p>
                   </div>
                   <span className="text-xs font-mono bg-slate-100 px-2 py-1 rounded text-slate-600">
@@ -578,14 +604,14 @@ function DashboardContent() {
                     Next Step in Architecture Roadmap
                   </span>
                   <h3 className="text-lg font-bold mt-1">
-                    Step 12: Omnichannel Support, Ticketing & SLA Engine (Spec §23, §26)
+                    Step 13: Customer Sequences, Multi-Channel Outreach & Email Campaigns (Spec §14, §23)
                   </h3>
                   <p className="text-xs text-slate-300 mt-1 max-w-xl">
-                    Shared inbox with collision locks, SLA countdown timers, ticket escalation routing, and omnichannel resolution.
+                    Multi-step automated sales outreach sequences, scheduled email cadences, engagement tracking, and bounce management.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs font-semibold bg-purple-600/80 hover:bg-purple-600 px-4 py-2.5 rounded-lg border border-purple-400/30 transition-colors">
-                  <span>Ready for Step 12</span>
+                  <span>Ready for Step 13</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
               </div>

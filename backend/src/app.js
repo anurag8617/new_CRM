@@ -19,6 +19,7 @@ import communicationsRoutes from './modules/communications/communications.routes
 import analyticsRoutes from './modules/analytics/analytics.routes.js';
 import aiRoutes from './modules/ai/ai.routes.js';
 import cpqRoutes from './modules/cpq/cpq.routes.js';
+import supportRoutes from './modules/support/support.routes.js';
 
 const app = express();
 
@@ -75,6 +76,7 @@ app.use('/api/v1/communications', communicationsRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
 app.use('/api/v1/ai', aiRoutes);
 app.use('/api/v1/cpq', cpqRoutes);
+app.use('/api/v1/support', supportRoutes);
 
 // System database status & schema metrics
 app.get('/api/v1/system/db-status', async (req, res, next) => {
@@ -112,6 +114,10 @@ app.get('/api/v1/system/db-status', async (req, res, next) => {
     const [[{ productCount }]] = await pool.query('SELECT COUNT(*) AS productCount FROM products');
     const [[{ priceBookCount }]] = await pool.query('SELECT COUNT(*) AS priceBookCount FROM price_books');
     const [[{ quoteCount }]] = await pool.query('SELECT COUNT(*) AS quoteCount FROM quotes');
+    const [[{ ticketCount }]] = await pool.query('SELECT COUNT(*) AS ticketCount FROM tickets');
+    const [[{ slaCount }]] = await pool.query('SELECT COUNT(*) AS slaCount FROM sla_policies');
+    const [[{ messageCount }]] = await pool.query('SELECT COUNT(*) AS messageCount FROM ticket_messages');
+    const [[{ kbCount }]] = await pool.query('SELECT COUNT(*) AS kbCount FROM kb_articles');
 
     // Fetch tenant sample
     const [orgs] = await pool.query('SELECT id, name, slug, currency, timezone, status FROM organizations LIMIT 1');
@@ -149,6 +155,10 @@ app.get('/api/v1/system/db-status', async (req, res, next) => {
         products: productCount,
         priceBooks: priceBookCount,
         quotes: quoteCount,
+        tickets: ticketCount,
+        slaPolicies: slaCount,
+        ticketMessages: messageCount,
+        kbArticles: kbCount,
       },
       tenant: orgs[0] || null,
       adminUser: adminUsers[0] || null,

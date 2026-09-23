@@ -76,6 +76,13 @@ export const seedDatabase = async () => {
       { module: 'quotes', action: 'approve', description: 'Approve or reject sales quotes' },
       { module: 'quotes', action: 'sign', description: 'Process e-signatures on quotes' },
 
+      // Support & Ticketing (Spec §23, §26)
+      { module: 'tickets', action: 'view', description: 'View support tickets and SLAs' },
+      { module: 'tickets', action: 'create', description: 'Create and open support tickets' },
+      { module: 'tickets', action: 'edit', description: 'Update support tickets and status' },
+      { module: 'tickets', action: 'delete', description: 'Delete support tickets' },
+      { module: 'tickets', action: 'manage_sla', description: 'Configure SLA policies and escalation rules' },
+
       // Reports & Audit Logs
       { module: 'reports', action: 'view', description: 'View analytical reports and dashboards' },
       { module: 'reports', action: 'create', description: 'Create custom query reports' },
@@ -935,6 +942,132 @@ export const seedDatabase = async () => {
           orgId, q2.insertId, prod2.insertId,
           orgId, q2.insertId, prod4.insertId,
         ]
+      );
+    }
+
+    // -------------------------------------------------------------------
+    // 19. Seed Support, Ticketing, SLAs & Knowledge Base (Spec §23, §26)
+    // -------------------------------------------------------------------
+    console.log('[Seed] Seeding support tickets, SLA policies, and knowledge base...');
+    const [existingTickets] = await connection.query('SELECT id FROM tickets WHERE organization_id = ? LIMIT 1;', [orgId]);
+    if (existingTickets.length === 0) {
+      // 1. SLA Policies
+      const [slaUrgent] = await connection.query(
+        `INSERT INTO sla_policies (organization_id, name, description, priority, first_response_time_minutes, resolution_time_minutes, business_hours_only, is_default)
+         VALUES (?, 'Critical 15m / 2h Urgent SLA', '24/7 mission critical production outages', 'urgent', 15, 120, FALSE, FALSE);`,
+        [orgId]
+      );
+      const [slaHigh] = await connection.query(
+        `INSERT INTO sla_policies (organization_id, name, description, priority, first_response_time_minutes, resolution_time_minutes, business_hours_only, is_default)
+         VALUES (?, 'High Priority 1h / 8h SLA', 'Urgent workflow degradation impacting key teams', 'high', 60, 480, TRUE, FALSE);`,
+        [orgId]
+      );
+      const [slaMed] = await connection.query(
+        `INSERT INTO sla_policies (organization_id, name, description, priority, first_response_time_minutes, resolution_time_minutes, business_hours_only, is_default)
+         VALUES (?, 'Standard Enterprise 4h / 24h SLA', 'Standard requests, billing, and operational queries', 'medium', 240, 1440, TRUE, TRUE);`,
+        [orgId]
+      );
+      const [slaLow] = await connection.query(
+        `INSERT INTO sla_policies (organization_id, name, description, priority, first_response_time_minutes, resolution_time_minutes, business_hours_only, is_default)
+         VALUES (?, 'Low Urgency 12h / 72h SLA', 'General advisory, documentation, and non-blocking tasks', 'low', 720, 4320, TRUE, FALSE);`,
+        [orgId]
+      );
+
+      // 2. Canned Responses
+      await connection.query(
+        `INSERT INTO canned_responses (organization_id, title, shortcut, category, body_text, created_by, is_shared)
+         VALUES
+         (?, 'Greeting & Initial Verification', '!greeting', 'General', 'Hello! Thank you for reaching out to Acme Support. My name is Alex and I will be assisting you today. Could you please provide your workspace tenant ID and any relevant error logs or screenshots?', ?, TRUE),
+         (?, 'Escalated to Systems Engineering', '!investigating', 'Technical', 'We have replicated the issue and escalated this ticket directly to our tier-2 systems engineering team. We are actively investigating and will provide a status update within our SLA response window.', ?, TRUE),
+         (?, 'Billing Statement Adjustment Clarification', '!billing', 'Billing', 'Thank you for contacting our billing department. I have verified your account activity and applied the prorated credit adjustment. An amended PDF invoice is now available in your customer portal.', ?, TRUE),
+         (?, 'Resolution & CSAT Survey Prompt', '!resolved', 'Closing', 'We are pleased to inform you that the reported issue has been fully resolved. We are closing this ticket now. Please take a quick moment to rate your support experience below!', ?, TRUE);`,
+        [orgId, adminUserId, orgId, adminUserId, orgId, adminUserId, orgId, adminUserId]
+      );
+
+      // 3. Knowledge Base Articles
+      await connection.query(
+        `INSERT INTO kb_articles (organization_id, title, slug, category, content, status, view_count, helpful_count, created_by)
+         VALUES
+         (?, 'Configuring SAML 2.0 Single Sign-On (Okta, Azure AD, Google Workspace)', 'saml-sso-configuration', 'Security & Identity', 'Enterprise accounts support SAML 2.0 Identity Federation with major IdP providers including Okta, Microsoft Entra ID (Azure AD), and Google Workspace.\\n\\n### Step-by-Step Setup:\\n1. Navigate to Settings -> Security -> SSO & Identity Federation.\\n2. Copy the Assertion Consumer Service (ACS) URL and Entity ID into your IdP application settings.\\n3. Upload your IdP X.509 Signing Certificate (PEM format).\\n4. Enable JIT (Just-In-Time) user provisioning to automatically assign new team members to default roles.', 'published', 245, 18, ?),
+         (?, 'REST API Authentication, Rate Limits & Webhook Verification', 'api-authentication-webhooks', 'Developer Guides', 'The CRM API platform provides comprehensive REST endpoints with JSON payloads.\\n\\n### Authentication:\\nPass Bearer Tokens in the Authorization header: \\'Authorization: Bearer <your_jwt_token>\\'.\\n\\n### Rate Limits:\\nStandard tenant accounts have a burst limit of 100 requests per minute with Redis token-bucket throttling.\\n\\n### Webhooks:\\nOutgoing webhooks include an HMAC SHA-256 signature in the X-CRM-Signature header computed using your tenant webhook signing secret.', 'published', 189, 14, ?),
+         (?, 'Custom Object Hybrid Storage & Dynamic JSON Schema Extension', 'custom-objects-architecture', 'Architecture', 'The CRM platform implements a hybrid relational-JSON datastore (§2) providing zero-migration custom table builder capabilities.\\n\\nAttributes marked as filterable are materialized via virtual generated columns for instant indexing, while custom records are persisted as canonical JSON documents.', 'published', 132, 9, ?);`,
+        [orgId, adminUserId, orgId, adminUserId, orgId, adminUserId]
+      );
+
+      // 4. Sample Support Tickets
+      const [cRows] = await connection.query('SELECT id, email, first_name, last_name, company_id FROM contacts WHERE organization_id = ?;', [orgId]);
+      const sarah = cRows.find(c => c.email.includes('sarah')) || cRows[0];
+      const david = cRows.find(c => c.email.includes('david')) || cRows[1] || cRows[0];
+      const elena = cRows.find(c => c.email.includes('elena')) || cRows[2] || cRows[0];
+
+      // Ticket 1: Urgent Open Ticket (Apex Technologies)
+      const [t1] = await connection.query(
+        `INSERT INTO tickets (organization_id, ticket_number, subject, description, status, priority, channel, category, company_id, contact_id, assigned_to, sla_policy_id, first_response_due_at, resolution_due_at, first_responded_at, sla_status, tags_json, created_by)
+         VALUES (?, 'TCK-1001', 'SSO Okta SAML 2.0 Identity Federation Failing with Error 401', 'After our Okta tenant certificate renewal this morning, users from our European subsidiary are receiving 401 Unauthorized during SAML assertion handshakes.', 'open', 'urgent', 'email', 'Security & Identity', ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 15 MINUTE), DATE_ADD(NOW(), INTERVAL 2 HOUR), NOW(), 'within_sla', '["okta", "saml", "sso-failure", "escalated"]', ?);`,
+        [orgId, sarah.company_id, sarah.id, adminUserId, slaUrgent.insertId, adminUserId]
+      );
+
+      await connection.query(
+        `INSERT INTO ticket_messages (organization_id, ticket_id, sender_type, sender_contact_id, sender_name, sender_email, message_type, body_text, channel)
+         VALUES (?, ?, 'customer', ?, ?, ?, 'public_reply', 'We are getting 401 Unauthorized errors after our Okta X.509 cert renewal. Over 30 engineers in our Berlin and Dublin offices are blocked from accessing CRM deals.', 'email');`,
+        [orgId, t1.insertId, sarah.id, `${sarah.first_name} ${sarah.last_name}`, sarah.email]
+      );
+
+      await connection.query(
+        `INSERT INTO ticket_messages (organization_id, ticket_id, sender_type, sender_user_id, sender_name, sender_email, message_type, body_text, channel)
+         VALUES (?, ?, 'agent', ?, 'Alex Vance', 'admin@crm.local', 'public_reply', 'Hello Sarah, thank you for alerting us. I am inspecting your tenant SSO metadata now. We see the cert hash mismatch and are updating the cached IdP certificate fingerprint.', 'email');`,
+        [orgId, t1.insertId, adminUserId]
+      );
+
+      await connection.query(
+        `INSERT INTO ticket_messages (organization_id, ticket_id, sender_type, sender_user_id, sender_name, sender_email, message_type, body_text, channel)
+         VALUES (?, ?, 'agent', ?, 'Alex Vance', 'admin@crm.local', 'internal_note', 'INTERNAL NOTE: Re-synced IdP XML metadata manually. Staging auth test passed with Okta test harness. Waiting 10 mins for European CDN edge propagate.', 'system');`,
+        [orgId, t1.insertId, adminUserId]
+      );
+
+      // Ticket 2: High Priority Pending Customer Ticket (Nexus Logistics)
+      const [t2] = await connection.query(
+        `INSERT INTO tickets (organization_id, ticket_number, subject, description, status, priority, channel, category, company_id, contact_id, assigned_to, sla_policy_id, first_response_due_at, resolution_due_at, first_responded_at, sla_status, tags_json, created_by)
+         VALUES (?, 'TCK-1002', 'Discrepancy in Q3 Cloud Infrastructure Volume Invoicing', 'Our quarterly invoice reflects 25 extra seats that were de-provisioned in July. Please adjust the billing statement before end of month.', 'pending_customer', 'high', 'web_portal', 'Billing & Invoicing', ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 60 MINUTE), DATE_ADD(NOW(), INTERVAL 8 HOUR), NOW(), 'within_sla', '["billing", "invoice-credit", "seat-count"]', ?);`,
+        [orgId, david.company_id, david.id, adminUserId, slaHigh.insertId, adminUserId]
+      );
+
+      await connection.query(
+        `INSERT INTO ticket_messages (organization_id, ticket_id, sender_type, sender_contact_id, sender_name, sender_email, message_type, body_text, channel)
+         VALUES (?, ?, 'customer', ?, ?, ?, 'public_reply', 'Our Q3 invoice statement indicates 125 active seats, but 25 warehouse dispatch operators were de-provisioned on July 14th. Can we receive an updated statement?', 'web_portal');`,
+        [orgId, t2.insertId, david.id, `${david.first_name} ${david.last_name}`, david.email]
+      );
+
+      await connection.query(
+        `INSERT INTO ticket_messages (organization_id, ticket_id, sender_type, sender_user_id, sender_name, sender_email, message_type, body_text, channel)
+         VALUES (?, ?, 'agent', ?, 'Alex Vance', 'admin@crm.local', 'public_reply', 'Hi David, thank you for reaching out. I cross-referenced the de-provisioning audit log and confirmed the adjustment. We have applied a $1,875.00 credit memo to your balance. Please check your billing dashboard and let us know if the updated total looks good!', 'web_portal');`,
+        [orgId, t2.insertId, adminUserId]
+      );
+
+      // Ticket 3: Resolved Medium Ticket with 5-star CSAT (Apex Technologies)
+      const [t3] = await connection.query(
+        `INSERT INTO tickets (organization_id, ticket_number, subject, description, status, priority, channel, category, company_id, contact_id, assigned_to, sla_policy_id, first_response_due_at, resolution_due_at, first_responded_at, resolved_at, sla_status, csat_score, csat_comment, tags_json, created_by)
+         VALUES (?, 'TCK-1003', 'Request for Custom Webhook Payload on Deal Stage Progression', 'We want to trigger our internal Slack notification bot whenever an Enterprise deal reaches the Proposal Sent stage.', 'resolved', 'medium', 'chat', 'Integrations & APIs', ?, ?, ?, ?, DATE_SUB(NOW(), INTERVAL 4 HOUR), DATE_ADD(NOW(), INTERVAL 20 HOUR), DATE_SUB(NOW(), INTERVAL 3 HOUR), NOW(), 'within_sla', 5, 'Alex Vance gave us the exact JSON webhook payload schema and test script! Brilliant support.', '["webhook", "automation", "slack"]', ?);`,
+        [orgId, elena.company_id, elena.id, adminUserId, slaMed.insertId, adminUserId]
+      );
+
+      await connection.query(
+        `INSERT INTO ticket_messages (organization_id, ticket_id, sender_type, sender_contact_id, sender_name, sender_email, message_type, body_text, channel)
+         VALUES (?, ?, 'customer', ?, ?, ?, 'public_reply', 'Hi team! Can we send an automatic webhook to our internal engineering Slack channel whenever a deal crosses $50,000?', 'chat');`,
+        [orgId, t3.insertId, elena.id, `${elena.first_name} ${elena.last_name}`, elena.email]
+      );
+
+      await connection.query(
+        `INSERT INTO ticket_messages (organization_id, ticket_id, sender_type, sender_user_id, sender_name, sender_email, message_type, body_text, channel)
+         VALUES (?, ?, 'agent', ?, 'Alex Vance', 'admin@crm.local', 'public_reply', 'Hello Elena! Absolutely. In the Workflow Automation studio (§15), configure trigger "deal.stage_changed", add a condition for value >= 50000, and add the Webhook action pointing to your Slack webhook URL.', 'chat');`,
+        [orgId, t3.insertId, adminUserId]
+      );
+
+      // Ticket 4: New Unassigned Low Ticket (Nexus Logistics)
+      await connection.query(
+        `INSERT INTO tickets (organization_id, ticket_number, subject, description, status, priority, channel, category, company_id, contact_id, sla_policy_id, first_response_due_at, resolution_due_at, sla_status, tags_json, created_by)
+         VALUES (?, 'TCK-1004', 'Bulk Contact CSV Importer Field Mapping Assistance', 'We are migrating 2,400 legacy customer records from our previous CRM. Do custom fields need to be created prior to CSV upload?', 'new', 'low', 'web_portal', 'Data Management', ?, ?, ?, DATE_ADD(NOW(), INTERVAL 12 HOUR), DATE_ADD(NOW(), INTERVAL 72 HOUR), 'within_sla', '["csv", "import", "data-migration"]', ?);`,
+        [orgId, david.company_id, david.id, slaLow.insertId, adminUserId]
       );
     }
 

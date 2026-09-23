@@ -538,7 +538,105 @@ export const getQuotePdf = async (id) => {
   return response.data;
 };
 
+// Omnichannel Support, Ticketing & SLA Engine API (Spec §23, §26)
+export const getSupportMetrics = async () => {
+  const response = await api.get('/v1/support/metrics');
+  return response.data;
+};
+
+export const getTickets = async (params = {}) => {
+  const response = await api.get('/v1/support/tickets', { params });
+  return response.data;
+};
+
+export const getTicketById = async (id) => {
+  const response = await api.get(`/v1/support/tickets/${id}`);
+  return response.data;
+};
+
+export const createTicket = async (data) => {
+  const response = await api.post('/v1/support/tickets', data);
+  return response.data;
+};
+
+export const updateTicket = async (id, data) => {
+  const response = await api.put(`/v1/support/tickets/${id}`, data);
+  return response.data;
+};
+
+export const updateTicketStatus = async (id, status) => {
+  const response = await api.patch(`/v1/support/tickets/${id}/status`, { status });
+  return response.data;
+};
+
+export const deleteTicket = async (id) => {
+  const response = await api.delete(`/v1/support/tickets/${id}`);
+  return response.data;
+};
+
+export const addTicketMessage = async (id, data) => {
+  const response = await api.post(`/v1/support/tickets/${id}/messages`, data);
+  return response.data;
+};
+
+export const submitTicketCsat = async (id, data) => {
+  const response = await api.post(`/v1/support/tickets/${id}/csat`, data);
+  return response.data;
+};
+
+export const getSlaPolicies = async () => {
+  const response = await api.get('/v1/support/sla-policies');
+  return response.data;
+};
+
+export const createSlaPolicy = async (data) => {
+  const response = await api.post('/v1/support/sla-policies', data);
+  return response.data;
+};
+
+export const updateSlaPolicy = async (id, data) => {
+  const response = await api.put(`/v1/support/sla-policies/${id}`, data);
+  return response.data;
+};
+
+export const getCannedResponses = async (category = null) => {
+  const params = category ? { category } : {};
+  const response = await api.get('/v1/support/canned-responses', { params });
+  return response.data;
+};
+
+export const createCannedResponse = async (data) => {
+  const response = await api.post('/v1/support/canned-responses', data);
+  return response.data;
+};
+
+export const deleteCannedResponse = async (id) => {
+  const response = await api.delete(`/v1/support/canned-responses/${id}`);
+  return response.data;
+};
+
+export const getKbArticles = async (params = {}) => {
+  const response = await api.get('/v1/support/kb/articles', { params });
+  return response.data;
+};
+
+export const getKbArticleById = async (id) => {
+  const response = await api.get(`/v1/support/kb/articles/${id}`);
+  return response.data;
+};
+
+export const createKbArticle = async (data) => {
+  const response = await api.post('/v1/support/kb/articles', data);
+  return response.data;
+};
+
+export const markKbArticleHelpful = async (id) => {
+  const response = await api.post(`/v1/support/kb/articles/${id}/helpful`);
+  return response.data;
+};
+
 export default api;
+
 
 
 
