@@ -675,4 +675,74 @@ CREATE TABLE IF NOT EXISTS `calls_log` (
   CONSTRAINT `fk_calls_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------
+-- 24. SAVED REPORTS & QUERY BUILDER (Spec §29)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `reports` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(150) NOT NULL,
+  `description` VARCHAR(255) NULL,
+  `entity_type` ENUM('deals', 'contacts', 'companies', 'tasks', 'activities', 'custom_records') NOT NULL DEFAULT 'deals',
+  `chart_type` ENUM('bar', 'line', 'pie', 'funnel', 'metric', 'table') NOT NULL DEFAULT 'bar',
+  `metric_type` ENUM('count', 'sum', 'avg', 'min', 'max') NOT NULL DEFAULT 'count',
+  `metric_field` VARCHAR(100) NULL DEFAULT 'id',
+  `date_range` ENUM('7d', '30d', '90d', 'ytd', 'all') NOT NULL DEFAULT '30d',
+  `group_by` VARCHAR(100) NULL DEFAULT 'stage_id',
+  `filters_json` JSON NULL,
+  `is_system` BOOLEAN NOT NULL DEFAULT FALSE,
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_reports_org` (`organization_id`, `entity_type`),
+  CONSTRAINT `fk_reports_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_reports_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 25. OPERATIONAL DASHBOARDS (Spec §30)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `dashboards` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(150) NOT NULL,
+  `description` VARCHAR(255) NULL,
+  `is_default` BOOLEAN NOT NULL DEFAULT FALSE,
+  `is_system` BOOLEAN NOT NULL DEFAULT FALSE,
+  `layout_json` JSON NULL,
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_dashboards_org` (`organization_id`, `is_default`),
+  CONSTRAINT `fk_dashboards_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_dashboards_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 26. DASHBOARD WIDGETS (Spec §30)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `dashboard_widgets` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `dashboard_id` BIGINT UNSIGNED NOT NULL,
+  `report_id` BIGINT UNSIGNED NULL,
+  `title` VARCHAR(150) NOT NULL,
+  `widget_type` ENUM('metric', 'chart', 'funnel', 'table', 'recent_activity') NOT NULL DEFAULT 'chart',
+  `width` INT UNSIGNED NOT NULL DEFAULT 6,
+  `height` INT UNSIGNED NOT NULL DEFAULT 4,
+  `position_x` INT UNSIGNED NOT NULL DEFAULT 0,
+  `position_y` INT UNSIGNED NOT NULL DEFAULT 0,
+  `config_json` JSON NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_widgets_dashboard` (`dashboard_id`),
+  INDEX `idx_widgets_org` (`organization_id`),
+  CONSTRAINT `fk_widgets_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_widgets_dashboard` FOREIGN KEY (`dashboard_id`) REFERENCES `dashboards` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_widgets_report` FOREIGN KEY (`report_id`) REFERENCES `reports` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;

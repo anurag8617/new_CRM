@@ -20,8 +20,8 @@ const navItems = [
   { id: 'activities', label: 'Activities & Tasks', icon: Calendar, badge: 'Spec §10, §12' },
   { id: 'custom_objects', label: 'Custom Objects', icon: Database, badge: 'Spec §2' },
   { id: 'automation', label: 'Automation Engine', icon: Workflow, badge: 'Spec §15' },
+  { id: 'reports', label: 'Reports & Analytics', icon: BarChart3, badge: 'Spec §26-§30' },
   { id: 'ai', label: 'AI Copilot & Agents', icon: Bot, badge: 'AI', disabled: true },
-  { id: 'reports', label: 'Reports', icon: BarChart3, disabled: true },
   { id: 'settings', label: 'Admin Settings', icon: Settings, disabled: true },
 ];
 
@@ -73,10 +73,10 @@ export default function Sidebar({ activeTab = 'dashboard', onSelectTab }) {
       <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-          <span className="text-xs font-semibold text-slate-700">Phase 1: Step 8 Active</span>
+          <span className="text-xs font-semibold text-slate-700">Phase 1: Step 9 Active</span>
         </div>
         <p className="text-[11px] text-slate-500 mt-1">
-          Tasks, Communications & In-App Notifications live.
+          Executive Analytics & Conversion Funnels live.
         </p>
       </div>
     </aside>

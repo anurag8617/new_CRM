@@ -96,9 +96,17 @@ The core permission and identity engine enforces a 3-layer authorization model (
 - **Workflow Automation Integration (§15):** Workflows can now dispatch automated `create_task` and `send_notification` actions when triggers fire.
 - **Frontend Activities & Tasks View (`ActivitiesTasksView.jsx`):** Comprehensive interface featuring Kanban board & tabular task list, unified communication feed, template management, and interactive create modals.
 
+### ✅ Step 9: Analytics, Reports & Operational Dashboards (Spec §26, §27, §28, §29, §30)
+- **Executive Sales & Revenue Command Center (§26, §28):** High-level operational ribbon displaying total pipeline value, probability-weighted revenue forecast, win rates, average deal sizes, task completion velocities, and customer touchpoints.
+- **Pipeline Stage Conversion Funnel (§27):** Stage-by-stage deal volume, conversion rates, and drop-off counts from initial discovery through closed won.
+- **Dynamic Report Query Builder & Compiler (§29):** Parameterized SQL engine compiling multi-dimensional aggregations (`COUNT`, `SUM`, `AVG`, `MIN`, `MAX`) across Deals, Contacts, Companies, Tasks, and Activities with tenant security isolation.
+- **Saved Reports & Operational Dashboards (§30):** Persistent report templates and multi-widget dashboards (`reports`, `dashboards`, `dashboard_widgets`).
+- **One-Click CSV & JSON Export (§30):** Client-side data compilation and spreadsheet export.
+- **Frontend Analytics Studio (`AnalyticsReportsView.jsx`):** Interactive dashboard with funnel charts, stage value distributions, 30-day outreach breakdown, live query runner modal, and reports directory.
+
 ---
 
-## 3. MySQL Database Schema (36 Tables)
+## 3. MySQL Database Schema (39 Tables)
 
 All tables use InnoDB engine, `utf8mb4_unicode_ci` collation, and enforce multi-tenant isolation via indexed `organization_id`:
 
@@ -140,6 +148,9 @@ All tables use InnoDB engine, `utf8mb4_unicode_ci` collation, and enforce multi-
 | 34 | `email_messages` | §13 / §23 Email Center | Bi-directional email communication log, statuses (sent, queued, failed), and rich HTML content. |
 | 35 | `email_templates` | §13 Email Templates | Reusable marketing and sales email templates organized by category with placeholders. |
 | 36 | `calls_log` | §23 Telephony Log | Phone call records tracking duration, direction (inbound/outbound), outcome status, and rep notes. |
+| 37 | `reports` | §29 Custom Reports | Saved parameterized SQL report specifications with entity types, metrics, and grouping dimensions. |
+| 38 | `dashboards` | §30 Dashboards | Configurable operational executive dashboards with default tenant flags. |
+| 39 | `dashboard_widgets` | §30 Dashboard Widgets | Grid layout widgets linking saved reports to executive visual dashboards. |
 
 ---
 
@@ -503,6 +514,49 @@ npm run db:setup
 
 ---
 
+### 5.7 Analytics, Reports & Dashboards APIs (Spec §26, §27, §28, §29, §30)
+
+#### 24. Executive Overview & KPIs (§26, §28)
+- **Endpoint:** `GET /api/v1/analytics/overview`
+- **Query Params:** `dateRange=7d|30d|90d|ytd|all`
+- **Response:** Total pipeline value, probability-weighted forecast, win rate %, average deal size, task velocity, customer touchpoints, contact lifecycle distribution, and stage-by-stage value.
+
+#### 25. Pipeline Conversion Funnel (§27)
+- **Endpoint:** `GET /api/v1/analytics/funnel`
+- **Query Params:** `pipelineId` (optional, defaults to active tenant pipeline)
+- **Response:** Ordered stages, deal counts, stage dollar totals, percentage conversion from total, step transition rates, drop-off counts, and overall end-to-end conversion rate.
+
+#### 26. Dynamic Query Builder & Compiler (§29)
+- **Endpoint:** `POST /api/v1/analytics/query`
+- **Payload:**
+  ```json
+  {
+    "entityType": "deals",
+    "chartType": "bar",
+    "metricType": "sum",
+    "metricField": "value",
+    "groupBy": "stage_name",
+    "dateRange": "all"
+  }
+  ```
+- **Response:** Compiled data points with labels, values, row counts, percentage shares, formatted values, and total metric sum.
+
+#### 27. Saved Reports Library (§29)
+- **List Reports:** `GET /api/v1/analytics/reports`
+- **Get Report by ID:** `GET /api/v1/analytics/reports/:id`
+- **Run Saved Report:** `GET /api/v1/analytics/reports/:id/run`
+- **Create Saved Report:** `POST /api/v1/analytics/reports`
+- **Update Saved Report:** `PUT /api/v1/analytics/reports/:id`
+- **Delete Saved Report:** `DELETE /api/v1/analytics/reports/:id`
+
+#### 28. Operational Dashboards (§30)
+- **List Dashboards:** `GET /api/v1/analytics/dashboards`
+- **Get Dashboard with Widgets:** `GET /api/v1/analytics/dashboards/:id`
+- **Create Dashboard:** `POST /api/v1/analytics/dashboards`
+- **Add Widget to Dashboard:** `POST /api/v1/analytics/dashboards/:id/widgets`
+
+---
+
 ## 6. One-Click Automated Test Scripts
 
 ### Windows PowerShell Test Script
@@ -522,38 +576,39 @@ $token = $login.data.accessToken
 $headers = @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" }
 Write-Host "✅ Login OK: User $($login.data.user.fullName) (Role: $($login.data.user.role))" -ForegroundColor Green
 
-# 3. Tasks List
-$tasks = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/tasks" -Headers $headers
-Write-Host "✅ Tasks OK: Found $($tasks.data.tasks.Count) tasks (Total: $($tasks.data.pagination.total))." -ForegroundColor Cyan
+# 3. Executive Overview KPIs
+$overview = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/analytics/overview" -Headers $headers
+Write-Host "✅ Analytics Overview OK: Pipeline Value `$$($overview.data.pipeline.totalPipelineValue), Forecast `$$($overview.data.pipeline.weightedForecast)" -ForegroundColor Cyan
 
-# 4. Notifications List & Unread Count
-$notifs = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/notifications" -Headers $headers
-Write-Host "✅ Notifications OK: Found $($notifs.data.notifications.Count) notifications, Unread: $($notifs.data.unreadCount)." -ForegroundColor Cyan
+# 4. Pipeline Conversion Funnel
+$funnel = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/analytics/funnel" -Headers $headers
+Write-Host "✅ Pipeline Funnel OK: $($funnel.data.stages.Count) stages, Conversion: $($funnel.data.overallConversion)%" -ForegroundColor Cyan
 
-# 5. Email Templates
-$templates = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/communications/templates" -Headers $headers
-Write-Host "✅ Email Templates OK: Found $($templates.data.Count) templates in library." -ForegroundColor Cyan
+# 5. Dynamic Query Builder Execution
+$queryBody = '{"entityType":"deals","metricType":"sum","metricField":"value","groupBy":"stage_name","dateRange":"all"}'
+$queryRes = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/analytics/query" -Method Post -Headers $headers -Body $queryBody
+Write-Host "✅ Query Compiler OK: $($queryRes.data.dataPoints.Count) groups, Total: `$$($queryRes.data.totalMetricSum)" -ForegroundColor Cyan
 
-# 6. Post New Task & Verify Normalized Activity
-$taskBody = '{"title":"Automated Script Task","priority":"high","recordType":"contact","recordId":1}'
-$newTask = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/tasks" -Method Post -Headers $headers -Body $taskBody
-Write-Host "✅ Task Created OK: Task ID $($newTask.data.id)" -ForegroundColor Green
+# 6. Saved Reports Library
+$reports = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/analytics/reports" -Headers $headers
+Write-Host "✅ Reports Library OK: Found $($reports.data.Count) reports." -ForegroundColor Green
 
-# 7. Timeline Activities for Contact #1 (Normalized)
-$activities = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/activities?recordType=contact&recordId=1" -Headers $headers
-Write-Host "✅ Unified Timeline OK: $($activities.data.Count) timeline entries normalized on Contact #1." -ForegroundColor Green
+# 7. Operational Dashboards
+$dashboards = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/analytics/dashboards" -Headers $headers
+Write-Host "✅ Dashboards OK: Found $($dashboards.data.Count) operational dashboards." -ForegroundColor Green
 
-Write-Host "`n🎉 ALL STEP 8 API TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Green
+Write-Host "`n🎉 ALL STEP 9 ANALYTICS & REPORTS TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Green
 ```
 
 ---
 
-## 7. Next Roadmap Step (Step 9)
+## 7. Next Roadmap Step (Step 10)
 
-With **Step 8 (Communication Center, Email & Notifications)** completed, the next milestone is **Step 9: Analytics, Reports & Dashboards (Spec §26-§28)**:
-1. **Custom Metric & Report Builder (§26):** Aggregations across deals, pipeline velocity, task completion rates, and rep performance.
-2. **Pipeline Stage Conversion Funnels (§27):** Funnel visualization measuring conversion rates and stage dwell times.
-3. **Operational Dashboards (§28):** Drag-and-drop dashboard widgets with configurable filters and export capabilities.
+With **Step 9 (Analytics, Reports & Dashboards)** completed, the next milestone is **Step 10: AI Copilot, Smart Summaries & Autonomous Agents (Spec §47, §56)**:
+1. **AI Copilot & Natural Language Querying (§47, §56):** Natural language questions to SQL translation (e.g. *"Show me enterprise deals closing this month with win probability > 60%"*).
+2. **Automated Record Summarization (§3):** AI-generated 3-bullet executive digests of contact and company timelines, recent interactions, and sentiment.
+3. **AI Email Drafting & Outreach (§3):** Context-aware personalized email drafting utilizing timeline history and company firmographics.
+4. **Autonomous Sales Agents (§56):** Proactive next-best-action recommendations and automated deal health scoring.
 
 ---
 

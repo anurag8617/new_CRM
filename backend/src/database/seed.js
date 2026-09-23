@@ -681,6 +681,90 @@ export const seedDatabase = async () => {
       );
     }
 
+    // -------------------------------------------------------------------
+    // 16. Seed Default Reports, Dashboards & Widgets (Spec §29, §30)
+    // -------------------------------------------------------------------
+    console.log('[Seed] Seeding sample reports and operational dashboards...');
+    const [existingReports] = await connection.query('SELECT id FROM reports WHERE organization_id = ?;', [orgId]);
+    if (existingReports.length === 0) {
+      // 1. Reports
+      const [r1] = await connection.query(
+        `INSERT INTO reports (organization_id, name, description, entity_type, chart_type, metric_type, metric_field, date_range, group_by, is_system, created_by)
+         VALUES (?, 'Pipeline Stage Value Distribution', 'Total deal pipeline value aggregated across active stages.', 'deals', 'bar', 'sum', 'value', 'all', 'stage_name', TRUE, ?);`,
+        [orgId, adminUserId]
+      );
+      const [r2] = await connection.query(
+        `INSERT INTO reports (organization_id, name, description, entity_type, chart_type, metric_type, metric_field, date_range, group_by, is_system, created_by)
+         VALUES (?, 'Pipeline Stage Conversion Funnel', 'Stage-by-stage deal volume and drop-off conversion rate.', 'deals', 'funnel', 'count', 'id', 'all', 'stage_name', TRUE, ?);`,
+        [orgId, adminUserId]
+      );
+      const [r3] = await connection.query(
+        `INSERT INTO reports (organization_id, name, description, entity_type, chart_type, metric_type, metric_field, date_range, group_by, is_system, created_by)
+         VALUES (?, 'Weighted Revenue Forecast', 'Probability-weighted pipeline forecast for current quarter.', 'deals', 'metric', 'sum', 'weighted_value', '90d', 'none', TRUE, ?);`,
+        [orgId, adminUserId]
+      );
+      const [r4] = await connection.query(
+        `INSERT INTO reports (organization_id, name, description, entity_type, chart_type, metric_type, metric_field, date_range, group_by, is_system, created_by)
+         VALUES (?, 'Deals by Owner & Rep', 'Deal distribution and opportunity ownership across sales reps.', 'deals', 'pie', 'count', 'id', 'all', 'owner_name', TRUE, ?);`,
+        [orgId, adminUserId]
+      );
+      const [r5] = await connection.query(
+        `INSERT INTO reports (organization_id, name, description, entity_type, chart_type, metric_type, metric_field, date_range, group_by, is_system, created_by)
+         VALUES (?, 'Task Completion & Priority', 'Action item distribution broken down by priority level.', 'tasks', 'bar', 'count', 'id', '30d', 'priority', TRUE, ?);`,
+        [orgId, adminUserId]
+      );
+      const [r6] = await connection.query(
+        `INSERT INTO reports (organization_id, name, description, entity_type, chart_type, metric_type, metric_field, date_range, group_by, is_system, created_by)
+         VALUES (?, 'Communication & Outreach Volume', 'Total outreach actions (calls, emails, notes) over the last 30 days.', 'activities', 'line', 'count', 'id', '30d', 'activity_type', TRUE, ?);`,
+        [orgId, adminUserId]
+      );
+      const [r7] = await connection.query(
+        `INSERT INTO reports (organization_id, name, description, entity_type, chart_type, metric_type, metric_field, date_range, group_by, is_system, created_by)
+         VALUES (?, 'Contact Lifecycle Breakdown', 'Customer journey stages from Lead to Opportunity and Customer.', 'contacts', 'pie', 'count', 'id', 'all', 'lifecycle_stage', TRUE, ?);`,
+        [orgId, adminUserId]
+      );
+
+      // 2. Dashboards
+      const [d1] = await connection.query(
+        `INSERT INTO dashboards (organization_id, name, description, is_default, is_system, created_by)
+         VALUES (?, 'Executive Sales & Revenue Command Center', 'Primary executive operational overview of pipeline health, conversion velocity, and forecasted revenue.', TRUE, TRUE, ?);`,
+        [orgId, adminUserId]
+      );
+      const [d2] = await connection.query(
+        `INSERT INTO dashboards (organization_id, name, description, is_default, is_system, created_by)
+         VALUES (?, 'Team Activity & Outreach Performance', 'Rep activity velocity, customer touchpoints, and task execution progress.', FALSE, TRUE, ?);`,
+        [orgId, adminUserId]
+      );
+
+      // 3. Widgets for Dashboard 1 (Executive Sales)
+      await connection.query(
+        `INSERT INTO dashboard_widgets (organization_id, dashboard_id, report_id, title, widget_type, width, height, position_x, position_y, config_json)
+         VALUES
+         (?, ?, ?, 'Pipeline Conversion Funnel', 'funnel', 6, 4, 0, 0, '{"showPercentages": true}'),
+         (?, ?, ?, 'Pipeline Stage Value Distribution', 'chart', 6, 4, 6, 0, '{"chartType": "bar"}'),
+         (?, ?, ?, 'Deals by Sales Rep', 'chart', 6, 4, 0, 4, '{"chartType": "pie"}'),
+         (?, ?, ?, 'Contact Lifecycle Breakdown', 'chart', 6, 4, 6, 4, '{"chartType": "pie"}');`,
+        [
+          orgId, d1.insertId, r2.insertId,
+          orgId, d1.insertId, r1.insertId,
+          orgId, d1.insertId, r4.insertId,
+          orgId, d1.insertId, r7.insertId,
+        ]
+      );
+
+      // 4. Widgets for Dashboard 2 (Team Activity)
+      await connection.query(
+        `INSERT INTO dashboard_widgets (organization_id, dashboard_id, report_id, title, widget_type, width, height, position_x, position_y, config_json)
+         VALUES
+         (?, ?, ?, '30-Day Outreach Volume by Channel', 'chart', 6, 4, 0, 0, '{"chartType": "line"}'),
+         (?, ?, ?, 'Task Execution by Priority', 'chart', 6, 4, 6, 0, '{"chartType": "bar"}');`,
+        [
+          orgId, d2.insertId, r6.insertId,
+          orgId, d2.insertId, r5.insertId,
+        ]
+      );
+    }
+
     console.log('\n======================================================');
     console.log('✅ DATABASE SEEDING COMPLETED SUCCESSFULLY!');
     console.log('------------------------------------------------------');

@@ -340,6 +340,77 @@ export const getPhoneCalls = async (params = {}) => {
   return response.data;
 };
 
+// Analytics, Reports & Dashboards API (Spec §26-§30)
+export const getAnalyticsOverview = async (params = {}) => {
+  const response = await api.get('/v1/analytics/overview', { params });
+  return response.data;
+};
+
+export const getPipelineFunnel = async (params = {}) => {
+  const response = await api.get('/v1/analytics/funnel', { params });
+  return response.data;
+};
+
+export const executeAnalyticsQuery = async (querySpec) => {
+  const response = await api.post('/v1/analytics/query', querySpec);
+  return response.data;
+};
+
+export const getReports = async (params = {}) => {
+  const response = await api.get('/v1/analytics/reports', { params });
+  return response.data;
+};
+
+export const getReportById = async (id) => {
+  const response = await api.get(`/v1/analytics/reports/${id}`);
+  return response.data;
+};
+
+export const runReport = async (id, params = {}) => {
+  const response = await api.get(`/v1/analytics/reports/${id}/run`, { params });
+  return response.data;
+};
+
+export const createReport = async (data) => {
+  const response = await api.post('/v1/analytics/reports', data);
+  return response.data;
+};
+
+export const updateReport = async (id, data) => {
+  const response = await api.put(`/v1/analytics/reports/${id}`, data);
+  return response.data;
+};
+
+export const deleteReport = async (id) => {
+  const response = await api.delete(`/v1/analytics/reports/${id}`);
+  return response.data;
+};
+
+export const getDashboards = async () => {
+  const response = await api.get('/v1/analytics/dashboards');
+  return response.data;
+};
+
+export const getDashboardById = async (id) => {
+  const response = await api.get(`/v1/analytics/dashboards/${id}`);
+  return response.data;
+};
+
+export const createDashboard = async (data) => {
+  const response = await api.post('/v1/analytics/dashboards', data);
+  return response.data;
+};
+
+export const addDashboardWidget = async (dashboardId, data) => {
+  const response = await api.post(`/v1/analytics/dashboards/${dashboardId}/widgets`, data);
+  return response.data;
+};
+
+export const deleteDashboardWidget = async (widgetId) => {
+  const response = await api.delete(`/v1/analytics/widgets/${widgetId}`);
+  return response.data;
+};
+
 export default api;
 
 

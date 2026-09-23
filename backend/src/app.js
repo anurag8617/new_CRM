@@ -16,6 +16,7 @@ import workflowsRoutes from './modules/workflows/workflows.routes.js';
 import tasksRoutes from './modules/tasks/tasks.routes.js';
 import notificationsRoutes from './modules/notifications/notifications.routes.js';
 import communicationsRoutes from './modules/communications/communications.routes.js';
+import analyticsRoutes from './modules/analytics/analytics.routes.js';
 
 const app = express();
 
@@ -69,6 +70,7 @@ app.use('/api/v1/workflows', workflowsRoutes);
 app.use('/api/v1/tasks', tasksRoutes);
 app.use('/api/v1/notifications', notificationsRoutes);
 app.use('/api/v1/communications', communicationsRoutes);
+app.use('/api/v1/analytics', analyticsRoutes);
 
 // System database status & schema metrics
 app.get('/api/v1/system/db-status', async (req, res, next) => {
@@ -99,6 +101,8 @@ app.get('/api/v1/system/db-status', async (req, res, next) => {
     const [[{ notificationCount }]] = await pool.query('SELECT COUNT(*) AS notificationCount FROM notifications');
     const [[{ emailCount }]] = await pool.query('SELECT COUNT(*) AS emailCount FROM email_messages');
     const [[{ callCount }]] = await pool.query('SELECT COUNT(*) AS callCount FROM calls_log');
+    const [[{ reportCount }]] = await pool.query('SELECT COUNT(*) AS reportCount FROM reports');
+    const [[{ dashboardCount }]] = await pool.query('SELECT COUNT(*) AS dashboardCount FROM dashboards');
 
     // Fetch tenant sample
     const [orgs] = await pool.query('SELECT id, name, slug, currency, timezone, status FROM organizations LIMIT 1');
@@ -129,6 +133,8 @@ app.get('/api/v1/system/db-status', async (req, res, next) => {
         notifications: notificationCount,
         emails: emailCount,
         calls: callCount,
+        reports: reportCount,
+        dashboards: dashboardCount,
       },
       tenant: orgs[0] || null,
       adminUser: adminUsers[0] || null,
