@@ -20,6 +20,7 @@ import analyticsRoutes from './modules/analytics/analytics.routes.js';
 import aiRoutes from './modules/ai/ai.routes.js';
 import cpqRoutes from './modules/cpq/cpq.routes.js';
 import supportRoutes from './modules/support/support.routes.js';
+import marketingRoutes from './modules/marketing/marketing.routes.js';
 
 const app = express();
 
@@ -77,6 +78,7 @@ app.use('/api/v1/analytics', analyticsRoutes);
 app.use('/api/v1/ai', aiRoutes);
 app.use('/api/v1/cpq', cpqRoutes);
 app.use('/api/v1/support', supportRoutes);
+app.use('/api/v1/marketing', marketingRoutes);
 
 // System database status & schema metrics
 app.get('/api/v1/system/db-status', async (req, res, next) => {
@@ -118,6 +120,11 @@ app.get('/api/v1/system/db-status', async (req, res, next) => {
     const [[{ slaCount }]] = await pool.query('SELECT COUNT(*) AS slaCount FROM sla_policies');
     const [[{ messageCount }]] = await pool.query('SELECT COUNT(*) AS messageCount FROM ticket_messages');
     const [[{ kbCount }]] = await pool.query('SELECT COUNT(*) AS kbCount FROM kb_articles');
+    const [[{ sequenceCount }]] = await pool.query('SELECT COUNT(*) AS sequenceCount FROM sequences');
+    const [[{ sequenceStepsCount }]] = await pool.query('SELECT COUNT(*) AS sequenceStepsCount FROM sequence_steps');
+    const [[{ sequenceEnrollmentsCount }]] = await pool.query('SELECT COUNT(*) AS sequenceEnrollmentsCount FROM sequence_enrollments');
+    const [[{ campaignCount }]] = await pool.query('SELECT COUNT(*) AS campaignCount FROM email_campaigns');
+    const [[{ campaignRecipientsCount }]] = await pool.query('SELECT COUNT(*) AS campaignRecipientsCount FROM campaign_recipients');
 
     // Fetch tenant sample
     const [orgs] = await pool.query('SELECT id, name, slug, currency, timezone, status FROM organizations LIMIT 1');
@@ -159,6 +166,11 @@ app.get('/api/v1/system/db-status', async (req, res, next) => {
         slaPolicies: slaCount,
         ticketMessages: messageCount,
         kbArticles: kbCount,
+        sequences: sequenceCount,
+        sequenceSteps: sequenceStepsCount,
+        sequenceEnrollments: sequenceEnrollmentsCount,
+        campaigns: campaignCount,
+        campaignRecipients: campaignRecipientsCount,
       },
       tenant: orgs[0] || null,
       adminUser: adminUsers[0] || null,

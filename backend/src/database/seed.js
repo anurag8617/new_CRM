@@ -83,6 +83,12 @@ export const seedDatabase = async () => {
       { module: 'tickets', action: 'delete', description: 'Delete support tickets' },
       { module: 'tickets', action: 'manage_sla', description: 'Configure SLA policies and escalation rules' },
 
+      // Sequences & Campaigns (§14, §23)
+      { module: 'sequences', action: 'view', description: 'View sales sequences and cadence progression' },
+      { module: 'sequences', action: 'manage', description: 'Create and configure multi-step cadences and enrollments' },
+      { module: 'campaigns', action: 'view', description: 'View broadcast email campaigns and delivery analytics' },
+      { module: 'campaigns', action: 'manage', description: 'Create, schedule and dispatch email broadcast campaigns' },
+
       // Reports & Audit Logs
       { module: 'reports', action: 'view', description: 'View analytical reports and dashboards' },
       { module: 'reports', action: 'create', description: 'Create custom query reports' },
@@ -1069,6 +1075,121 @@ export const seedDatabase = async () => {
          VALUES (?, 'TCK-1004', 'Bulk Contact CSV Importer Field Mapping Assistance', 'We are migrating 2,400 legacy customer records from our previous CRM. Do custom fields need to be created prior to CSV upload?', 'new', 'low', 'web_portal', 'Data Management', ?, ?, ?, DATE_ADD(NOW(), INTERVAL 12 HOUR), DATE_ADD(NOW(), INTERVAL 72 HOUR), 'within_sla', '["csv", "import", "data-migration"]', ?);`,
         [orgId, david.company_id, david.id, slaLow.insertId, adminUserId]
       );
+    }
+
+    // -------------------------------------------------------------------
+    // 20. Seed Sales Sequences & Email Campaigns (Spec §14, §23)
+    // -------------------------------------------------------------------
+    console.log('[Seed] Seeding sales sequences, cadence steps, contact enrollments, and campaigns...');
+    const [existingSeqs] = await connection.query('SELECT id FROM sequences WHERE organization_id = ? LIMIT 1;', [orgId]);
+    if (existingSeqs.length === 0) {
+      // 1. Sequence 1: Enterprise Cold Outbound Cadence
+      const [seq1] = await connection.query(
+        `INSERT INTO sequences (organization_id, name, description, status, pause_on_reply, total_enrolled, total_completed, total_replied, created_by)
+         VALUES (?, 'Enterprise Cold Outbound Cadence', '4-touchpoint executive multi-channel cadence combining email, LinkedIn outreach, and phone discovery.', 'active', TRUE, 3, 0, 1, ?);`,
+        [orgId, adminUserId]
+      );
+      const seq1Id = seq1.insertId;
+
+      await connection.query(
+        `INSERT INTO sequence_steps (organization_id, sequence_id, step_order, step_type, delay_days, delay_hours, subject, body_template, config_json)
+         VALUES
+         (?, ?, 1, 'email', 0, 0, 'Revolutionizing enterprise CRM workflows for {{company_name}}', 'Hi {{first_name}},\\n\\nI noticed the impressive work {{company_name}} is doing in your market. We have built an AI-native CRM platform that unifies multi-channel outreach, ticket SLAs, and hybrid JSON schema custom entities with sub-10ms response times.\\n\\nWould you be open to a 10-minute introductory sync this Thursday?\\n\\nBest,\\nAlex Vance', '{"track_opens": true, "track_clicks": true}'),
+         (?, ?, 2, 'delay', 2, 0, 'Follow-up delay (48 hours)', 'Wait 48 hours for prospect response before next touchpoint.', '{}'),
+         (?, ?, 3, 'linkedin_touch', 1, 0, 'Connect on LinkedIn & verify executive team updates', 'Send connection request to {{first_name}} with note referencing platform architecture benchmark.', '{"action": "connect_and_message"}'),
+         (?, ?, 4, 'call_reminder', 2, 0, 'Outbound discovery telephone touchpoint with {{first_name}}', 'Call {{first_name}} at {{company_name}} to discuss current pipeline bottlenecks and CRM consolidation goals.', '{"priority": "high"}');`,
+        [orgId, seq1Id, orgId, seq1Id, orgId, seq1Id, orgId, seq1Id]
+      );
+
+      // 2. Sequence 2: New Customer Onboarding Journey
+      const [seq2] = await connection.query(
+        `INSERT INTO sequences (organization_id, name, description, status, pause_on_reply, total_enrolled, total_completed, total_replied, created_by)
+         VALUES (?, 'New Customer Onboarding Journey', 'Automated 3-phase customer success onboarding sequence ensuring rapid tenant time-to-value.', 'active', FALSE, 1, 1, 0, ?);`,
+        [orgId, adminUserId]
+      );
+      const seq2Id = seq2.insertId;
+
+      await connection.query(
+        `INSERT INTO sequence_steps (organization_id, sequence_id, step_order, step_type, delay_days, delay_hours, subject, body_template, config_json)
+         VALUES
+         (?, ?, 1, 'email', 0, 0, 'Welcome to Nexus CRM Platform, {{first_name}}!', 'Hi {{first_name}},\\n\\nWe are thrilled to welcome {{company_name}} to Nexus CRM. Your tenant workspace is live with pre-configured sales pipelines, enterprise SLA policies, and automated workflows.\\n\\nClick below to access your onboarding checklist and invite your team members.\\n\\nCheers,\\nAcme Customer Success', '{"track_opens": true, "track_clicks": true}'),
+         (?, ?, 2, 'task', 3, 0, 'Schedule 30-day technical architecture review with {{first_name}}', 'Verify tenant webhook integration and single sign-on SAML federation status.', '{"task_type": "review"}'),
+         (?, ?, 3, 'email', 7, 0, 'How is {{company_name}} progressing with Nexus CRM?', 'Hi {{first_name}},\\n\\nChecking in on your first week with Nexus CRM. Have you had a chance to explore our custom objects builder and AI Copilot?\\n\\nLet us know if you need any tailored guidance.', '{"track_opens": true}');`,
+        [orgId, seq2Id, orgId, seq2Id, orgId, seq2Id]
+      );
+
+      // 3. Contact Enrollments
+      const [allContacts] = await connection.query('SELECT id, email, first_name, last_name FROM contacts WHERE organization_id = ?;', [orgId]);
+      const sarah = allContacts.find(c => c.email.includes('sarah')) || allContacts[0];
+      const elena = allContacts.find(c => c.email.includes('elena')) || allContacts[1];
+      const david = allContacts.find(c => c.email.includes('david')) || allContacts[2];
+      const marcus = allContacts.find(c => c.email.includes('marcus')) || allContacts[3];
+
+      if (elena) {
+        await connection.query(
+          `INSERT INTO sequence_enrollments (organization_id, sequence_id, contact_id, enrolled_by, current_step_order, status, next_step_due_at, last_executed_at)
+           VALUES (?, ?, ?, ?, 2, 'active', DATE_ADD(NOW(), INTERVAL 1 DAY), DATE_SUB(NOW(), INTERVAL 1 DAY));`,
+          [orgId, seq1Id, elena.id, adminUserId]
+        );
+      }
+      if (david) {
+        await connection.query(
+          `INSERT INTO sequence_enrollments (organization_id, sequence_id, contact_id, enrolled_by, current_step_order, status, last_executed_at, completed_at)
+           VALUES (?, ?, ?, ?, 1, 'replied_unenrolled', DATE_SUB(NOW(), INTERVAL 2 DAY), DATE_SUB(NOW(), INTERVAL 1 DAY));`,
+          [orgId, seq1Id, david.id, adminUserId]
+        );
+      }
+      if (marcus) {
+        await connection.query(
+          `INSERT INTO sequence_enrollments (organization_id, sequence_id, contact_id, enrolled_by, current_step_order, status, next_step_due_at, last_executed_at)
+           VALUES (?, ?, ?, ?, 1, 'active', DATE_ADD(NOW(), INTERVAL 2 HOUR), NOW());`,
+          [orgId, seq1Id, marcus.id, adminUserId]
+        );
+      }
+      if (sarah) {
+        await connection.query(
+          `INSERT INTO sequence_enrollments (organization_id, sequence_id, contact_id, enrolled_by, current_step_order, status, last_executed_at, completed_at)
+           VALUES (?, ?, ?, ?, 3, 'completed', DATE_SUB(NOW(), INTERVAL 5 DAY), DATE_SUB(NOW(), INTERVAL 2 DAY));`,
+          [orgId, seq2Id, sarah.id, adminUserId]
+        );
+      }
+
+      // 4. Broadcast Email Campaign
+      const [camp1] = await connection.query(
+        `INSERT INTO email_campaigns (organization_id, name, subject, preview_text, from_name, from_email, target_segment, status, html_content, plain_content, sent_at, total_recipients, delivered_count, open_count, click_count, bounce_count, created_by)
+         VALUES (?, 'Q4 Platform V2 Feature Showcase & Executive Webinar', 'Live Webinar: Next-Gen CRM Architecture & Autonomous AI Agents', 'Discover how multi-tenant partitioning and real-time SLAs transform sales velocity.', 'Alex Vance', 'alex@acme.global', 'all_contacts', 'sent',
+         '<h2>Exclusive Product Preview & Executive Deep Dive</h2><p>Join our CTO Alex Vance for an exclusive 45-minute live walkthrough of the Nexus CRM 2.0 release, covering automated sequences, real-time SLA monitors, and custom object schemas.</p><p><a href="https://crm.local/webinar-register">Click here to reserve your VIP seat &rarr;</a></p>',
+         'Join our CTO Alex Vance for an exclusive 45-minute live walkthrough of Nexus CRM 2.0 release: https://crm.local/webinar-register',
+         DATE_SUB(NOW(), INTERVAL 3 DAY), 4, 4, 3, 2, 0, ?);`,
+        [orgId, adminUserId]
+      );
+      const camp1Id = camp1.insertId;
+
+      // 5. Campaign Recipients
+      const recipientStatusMap = [
+        { c: sarah, status: 'clicked' },
+        { c: elena, status: 'opened' },
+        { c: david, status: 'clicked' },
+        { c: marcus, status: 'sent' }
+      ];
+
+      for (const item of recipientStatusMap) {
+        if (item.c) {
+          const openedAtSql = (item.status === 'opened' || item.status === 'clicked') ? 'DATE_SUB(NOW(), INTERVAL 2 DAY)' : 'NULL';
+          const clickedAtSql = item.status === 'clicked' ? 'DATE_SUB(NOW(), INTERVAL 1 DAY)' : 'NULL';
+          await connection.query(
+            `INSERT INTO campaign_recipients (organization_id, campaign_id, contact_id, email, status, opened_at, clicked_at, sent_at)
+             VALUES (?, ?, ?, ?, ?, ${openedAtSql}, ${clickedAtSql}, DATE_SUB(NOW(), INTERVAL 3 DAY));`,
+            [
+              orgId,
+              camp1Id,
+              item.c.id,
+              item.c.email,
+              item.status,
+            ]
+          );
+        }
+      }
     }
 
     console.log('\n======================================================');

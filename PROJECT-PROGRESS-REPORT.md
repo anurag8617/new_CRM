@@ -38,13 +38,13 @@ The core permission and identity engine enforces a 3-layer authorization model (
 
 ---
 
-## 2. Milestones Completed (Steps 1–12)
+## 2. Milestones Completed (Steps 1–13)
 
 ```
 ┌──────────────────┐     ┌──────────────────────┐     ┌──────────────────────┐     ┌────────────────────────┐
-│     STEPS 1-4    │     │      STEPS 5-7       │     │      STEPS 8-10      │     │      STEPS 11-12       │
-│ Core Multi-Tenant│────▶│ Deals, Pipelines,    │────▶│ Tasks, Comms, AI     │────▶│ CPQ & Products +       │
-│  Auth & Entities │     │ Workflows & Custom Obj│    │ Copilot & Agents     │     │ Support, Tickets & SLA │
+│     STEPS 1-4    │     │      STEPS 5-7       │     │      STEPS 8-10      │     │      STEPS 11-13       │
+│ Core Multi-Tenant│────▶│ Deals, Pipelines,    │────▶│ Tasks, Comms, AI     │────▶│ CPQ & Tickets/SLAs +   │
+│  Auth & Entities │     │ Workflows & Custom Obj│    │ Copilot & Agents     │     │ Sequences & Campaigns  │
 └──────────────────┘     └──────────────────────┘     └──────────────────────┘     └────────────────────────┘
 ```
 
@@ -135,9 +135,18 @@ The core permission and identity engine enforces a 3-layer authorization model (
 - **Customer Satisfaction (CSAT) Engine (§23, §26):** 1-to-5 star rating and feedback capture on resolved tickets, driving executive CSAT scoring and support analytics.
 - **Frontend Support Workspace (`TicketsView.jsx`):** Interactive ticketing console with real-time KPI ribbon, multi-parameter filters, drawer conversation stream, SLA countdown clocks, and KB browser.
 
+### ✅ Step 13: Customer Sequences, Multi-Channel Outreach & Email Campaigns (Spec §14, §23)
+- **Sales Sequences & Cadences Engine (§14):** Multi-step cadence builder supporting diverse touchpoint types (`email`, `call_reminder`, `linkedin_touch`, `task`, `delay`) with custom delay intervals (`delay_days`, `delay_hours`).
+- **Anti-Collision Reply Auto-Pause (§14):** Automated response detector that immediately transitions prospect enrollment to `replied_unenrolled` when a customer replies, halting automated touches and logging a timeline audit event.
+- **Dynamic Template Personalization (§13, §14):** Automated tag interpolation replacing `{{first_name}}`, `{{last_name}}`, `{{company_name}}`, and `{{sender_name}}` with entity data.
+- **Contact Enrollment & Progression Simulator (§14):** Contact state machine (`active`, `paused`, `completed`, `replied_unenrolled`, `bounced`) with an interactive step execution simulator that dispatches emails, creates CRM tasks, and advances step orders.
+- **Broadcast Email Campaigns & Segment Engine (§23):** Segment-targeted broadcast campaigns (`all_contacts`, `leads_only`, `customers_only`, `enterprise_mql`, `deal_contacts`) with live dynamic audience calculation.
+- **Recipient Engagement & Event Tracking (§23):** Individual recipient tracking with delivery simulation, open tracking, link click tracking, and live aggregate open rate and CTR analytics.
+- **Frontend Outreach & Campaigns Studio (`SequencesCampaignsView.jsx`):** Multi-tab console with executive KPI ribbon, sequence cadence builder, contact enrollment simulator, reply simulator, broadcast campaign manager, and delivery analytics.
+
 ---
 
-## 3. MySQL Database Schema (53 Tables)
+## 3. MySQL Database Schema (58 Tables)
 
 All tables use InnoDB engine, `utf8mb4_unicode_ci` collation, and enforce multi-tenant isolation via indexed `organization_id`:
 
@@ -196,6 +205,11 @@ All tables use InnoDB engine, `utf8mb4_unicode_ci` collation, and enforce multi-
 | 51 | `ticket_messages` | §23 Omnichannel Thread | Multi-channel message thread distinguishing public client replies from internal notes. |
 | 52 | `canned_responses` | §23 Canned Replies | Pre-written response templates with quick shortcuts for fast agent resolution. |
 | 53 | `kb_articles` | §23 Knowledge Base | Documentation articles with category tagging, view metrics, and helpful votes. |
+| 54 | `sequences` | §14 Sales Sequences | Multi-step automated cadence definitions with anti-collision pause-on-reply flags. |
+| 55 | `sequence_steps` | §14 Cadence Steps | Sequential progression rules (email, call reminder, LinkedIn touch, delay, task). |
+| 56 | `sequence_enrollments` | §14 Enrollments | Contact enrollment state machine (active, paused, completed, replied_unenrolled). |
+| 57 | `email_campaigns` | §23 Campaigns | Broadcast email campaigns with audience segment targeting and delivery tracking. |
+| 58 | `campaign_recipients` | §23 Recipients | Granular campaign recipient engagement tracking (sent, delivered, opened, clicked). |
 
 ---
 
@@ -753,17 +767,64 @@ npm run db:setup
 
 ---
 
+### 5.10 Customer Sequences, Multi-Channel Outreach & Email Campaigns APIs (Spec §14, §23)
+
+#### 43. Marketing & Outreach Operational KPIs (§14, §23)
+- **Endpoint:** `GET /api/v1/marketing/metrics`
+- **Response:**
+  - Sequences: Total sequences, active sequences, total enrolled contacts, completed enrollments, total replies, reply rate %, and active enrollments.
+  - Broadcast Campaigns: Total campaigns, sent count, recipients, delivered, opens, clicks, bounces, open rate %, and click-through rate (CTR %).
+
+#### 44. Sales Cadences & Sequences Engine (§14)
+- **List Sequences:** `GET /api/v1/marketing/sequences` (includes step counts, enrolled counts, replies received)
+- **Get Sequence Details with Steps & Enrollments:** `GET /api/v1/marketing/sequences/:id`
+- **Create Cadence Sequence:** `POST /api/v1/marketing/sequences`
+  - Body: `{"name": "Enterprise Cold Outbound Cadence", "description": "4-touchpoint cadence", "pause_on_reply": true}`
+- **Update Sequence:** `PUT /api/v1/marketing/sequences/:id`
+- **Delete Sequence:** `DELETE /api/v1/marketing/sequences/:id`
+- **Add Cadence Step:** `POST /api/v1/marketing/sequences/:id/steps`
+  - Body: `{"step_type": "email", "delay_days": 2, "delay_hours": 0, "subject": "Next steps for {{company_name}}", "body_template": "Hi {{first_name}}..."}`
+- **Update Cadence Step:** `PUT /api/v1/marketing/sequences/:id/steps/:stepId`
+- **Delete Cadence Step:** `DELETE /api/v1/marketing/sequences/:id/steps/:stepId`
+
+#### 45. Contact Enrollments & Cadence Progression Simulator (§14)
+- **List Enrollments:** `GET /api/v1/marketing/enrollments` (Filters: `sequence_id`, `status`, `contact_id`)
+- **Enroll Contact(s):** `POST /api/v1/marketing/sequences/:id/enroll`
+  - Body: `{"contact_ids": [1, 2, 4]}`
+- **Update Enrollment Status:** `PATCH /api/v1/marketing/enrollments/:id/status` (`status: "active" | "paused" | "completed"`)
+- **Execute Cadence Step Simulator:** `POST /api/v1/marketing/enrollments/:id/execute-step`
+  - Dispatches email, task, or call touchpoint; evaluates merge tags `{{first_name}}`, `{{company_name}}`; writes to timeline; and advances cadence order.
+- **Simulate Prospect Reply:** `POST /api/v1/marketing/enrollments/:id/reply`
+  - Body: `{"reply_text": "Interested in a demo! When can we talk?"}`
+  - Auto-pauses and transitions status to `replied_unenrolled` to prevent automated follow-up collision.
+
+#### 46. Broadcast Email Campaigns & Audience Segments (§23)
+- **List Broadcast Campaigns:** `GET /api/v1/marketing/campaigns`
+- **Get Campaign Details & Recipient Tracking:** `GET /api/v1/marketing/campaigns/:id`
+- **Dynamic Audience Segment Preview:** `GET /api/v1/marketing/campaigns/audience-preview?segment=all_contacts|leads_only|customers_only|enterprise_mql|deal_contacts`
+- **Create Broadcast Campaign:** `POST /api/v1/marketing/campaigns`
+  - Body: `{"name": "Q4 Release", "subject": "V2 Launch", "target_segment": "all_contacts", "html_content": "<h2>Hello {{first_name}}</h2>..."}`
+- **Dispatch Campaign Simulator:** `POST /api/v1/marketing/campaigns/:id/send`
+- **Track Recipient Engagement Event:** `POST /api/v1/marketing/recipients/:recipientId/track`
+  - Body: `{"eventType": "open" | "click" | "bounce"}`
+
+---
+
 ## 6. One-Click Automated Test Scripts
 
 ### Windows PowerShell Test Script
-Copy and paste this into PowerShell to test Support, Ticketing, CPQ, and core endpoints end-to-end:
+Copy and paste this into PowerShell to test Sequences, Outreach, Campaigns, Support, and core 58-table endpoints end-to-end:
 
 ```powershell
-Write-Host "`n🚀 Testing CRM Support, Ticketing & SLA Engine APIs..." -ForegroundColor Yellow
+Write-Host "`n🚀 Testing CRM Step 13 Sequences, Outreach & Email Campaign APIs..." -ForegroundColor Yellow
 
-# 1. Health check
+# 1. Health check & DB Status (58 Tables Verification)
 $health = Invoke-RestMethod -Uri "http://localhost:5000/api/health"
 Write-Host "✅ Health Check OK: Database $($health.database.database) connected." -ForegroundColor Green
+
+$dbStatus = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/system/db-status"
+Write-Host "✅ Database Status: $($dbStatus.totalTables) InnoDB tables verified in crm_db." -ForegroundColor Green
+Write-Host "   Counts: Sequences: $($dbStatus.counts.sequences), Cadence Steps: $($dbStatus.counts.sequenceSteps), Enrollments: $($dbStatus.counts.sequenceEnrollments), Campaigns: $($dbStatus.counts.campaigns)" -ForegroundColor DarkGray
 
 # 2. Login
 $loginBody = '{"email":"admin@crm.local","password":"Admin@123456"}'
@@ -772,68 +833,54 @@ $token = $login.data.accessToken
 $headers = @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" }
 Write-Host "✅ Login OK: User $($login.data.user.fullName) (Role: $($login.data.user.role))" -ForegroundColor Green
 
-# 3. Support Operations & SLA Performance Metrics
-$metrics = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/support/metrics" -Headers $headers
-Write-Host "✅ Support Metrics OK: Total: $($metrics.data.totalTickets) tickets, SLA Compliance: $($metrics.data.slaCompliancePercent)%, CSAT: $($metrics.data.avgCsatScore)/5.0" -ForegroundColor Cyan
+# 3. Outreach & Marketing Operational KPIs
+$metrics = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/metrics" -Headers $headers
+Write-Host "✅ Marketing KPIs OK: Active Cadences: $($metrics.data.sequences.active), Enrolled: $($metrics.data.sequences.totalEnrolled), Reply Rate: $($metrics.data.sequences.replyRatePct)%" -ForegroundColor Cyan
+Write-Host "   Campaigns: Sent: $($metrics.data.campaigns.sent), Open Rate: $($metrics.data.campaigns.openRatePct)%, CTR: $($metrics.data.campaigns.clickRatePct)%" -ForegroundColor DarkGray
 
-# 4. List Tickets
-$tickets = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/support/tickets?status=all" -Headers $headers
-Write-Host "✅ List Tickets OK: Found $($tickets.count) tickets in database" -ForegroundColor Cyan
+# 4. List Sequences
+$seqs = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/sequences" -Headers $headers
+Write-Host "✅ List Sequences OK: Found $($seqs.data.Count) cadences in tenant org." -ForegroundColor Cyan
 
-# 5. Create Urgent Support Ticket with SLA Calculation
-$ticketBody = @{
-    subject = "PowerShell Test: Enterprise SAML Assertion Failure"
-    description = "European team reports SAML assertion timeout during Okta token handshakes."
-    priority = "urgent"
-    channel = "email"
-    category = "Security & Identity"
-    companyId = 1
-    contactId = 1
-    tags = @("okta", "saml", "automated-test")
-} | ConvertTo-Json
+$seqId = $seqs.data[0].id
+$seqDetail = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/sequences/$seqId" -Headers $headers
+Write-Host "   Sequence 1: $($seqDetail.data.name) ($($seqDetail.data.steps.Count) Steps Configured)" -ForegroundColor DarkGray
 
-$newTicket = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/support/tickets" -Method Post -Headers $headers -Body $ticketBody
-Write-Host "✅ Ticket Created OK: $($newTicket.data.ticket_number) - $($newTicket.data.subject)" -ForegroundColor Green
-Write-Host "   SLA Timers: Response Due: $($newTicket.data.first_response_due_at), Resolution Due: $($newTicket.data.resolution_due_at)" -ForegroundColor DarkGray
+# 5. List Contact Enrollments & Advance Cadence Step Simulator
+$enrollments = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/enrollments" -Headers $headers
+Write-Host "✅ Enrollments OK: Found $($enrollments.data.Count) contacts enrolled." -ForegroundColor Cyan
 
-$ticketId = $newTicket.data.id
+$activeEn = $enrollments.data | Where-Object { $_.status -eq 'active' } | Select-Object -First 1
+if ($activeEn) {
+    $stepRes = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/enrollments/$($activeEn.id)/execute-step" -Method Post -Headers $headers
+    Write-Host "✅ Cadence Touchpoint Executed OK: $($stepRes.data.detail) (Next Step: $($stepRes.data.next_step_order))" -ForegroundColor Green
 
-# 6. Dispatch Public Customer Reply
-$replyBody = '{"bodyText":"Hello! We investigated the issue and cleared the stale SAML cache.","messageType":"public_reply","newStatus":"pending_customer"}'
-$reply = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/support/tickets/$ticketId/messages" -Method Post -Headers $headers -Body $replyBody
-Write-Host "✅ Public Reply Dispatched OK: Status transitioned to $($reply.data.status)" -ForegroundColor Cyan
+    # 6. Simulate Prospect Reply with Anti-Collision Auto-Pause (§14)
+    $replyBody = '{"reply_text":"Thanks Alex, let us book a 15-minute introductory call."}'
+    $replyRes = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/enrollments/$($activeEn.id)/reply" -Method Post -Headers $headers -Body $replyBody
+    Write-Host "✅ Prospect Reply Simulation OK: $($replyRes.data.message)" -ForegroundColor Green
+}
 
-# 7. Add Internal Team-Only Note
-$noteBody = '{"bodyText":"INTERNAL NOTE: Re-synced IdP XML metadata manually. 0 errors in telemetry.","messageType":"internal_note"}'
-$note = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/support/tickets/$ticketId/messages" -Method Post -Headers $headers -Body $noteBody
-Write-Host "✅ Internal Agent Note Saved OK: Conversation thread length: $($note.data.messages.Count)" -ForegroundColor Cyan
+# 7. Dynamic Audience Segment Preview (§23)
+$audience = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/campaigns/audience-preview?segment=all_contacts" -Headers $headers
+Write-Host "✅ Audience Calculator OK: $($audience.data.count) eligible contacts found in segment 'all_contacts'." -ForegroundColor Cyan
 
-# 8. Resolve Ticket
-$resolve = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/support/tickets/$ticketId/status" -Method Patch -Headers $headers -Body '{"status":"resolved"}'
-Write-Host "✅ Ticket Resolved OK: Status: $($resolve.data.status), Resolved At: $($resolve.data.resolved_at)" -ForegroundColor Green
+# 8. Broadcast Email Campaigns & Recipient Engagement
+$campaigns = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/campaigns" -Headers $headers
+Write-Host "✅ Broadcast Campaigns OK: $($campaigns.data.Count) campaign(s) retrieved. Open Rate: $($campaigns.data[0].open_rate)%" -ForegroundColor Green
 
-# 9. Submit CSAT Rating
-$csatBody = '{"csatScore":5,"csatComment":"Incredible response speed on a mission-critical blocker!"}'
-$csat = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/support/tickets/$ticketId/csat" -Method Post -Headers $headers -Body $csatBody
-Write-Host "✅ CSAT Feedback OK: Rating: $($csat.data.csat_score)/5 Stars - $($csat.data.csat_comment)" -ForegroundColor Green
-
-# 10. Database Schema Status (53 Tables Verification)
-$dbStatus = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/system/db-status" -Headers $headers
-Write-Host "✅ Database Status: $($dbStatus.totalTables) InnoDB tables verified in crm_db." -ForegroundColor Green
-Write-Host "   Counts: Tickets: $($dbStatus.counts.tickets), SLA Policies: $($dbStatus.counts.slaPolicies), KB Articles: $($dbStatus.counts.kbArticles)" -ForegroundColor DarkGray
-
-Write-Host "`n🎉 ALL STEP 12 OMNICHANNEL SUPPORT, TICKETING & SLA ENGINE TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Green
+Write-Host "`n🎉 ALL STEP 13 SEQUENCES, OUTREACH & EMAIL CAMPAIGN TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Green
 ```
 
 ---
 
-## 7. Next Roadmap Step (Step 13)
+## 7. Next Roadmap Step (Step 14)
 
-With **Step 12 (Omnichannel Support, Ticketing & SLA Engine)** completed, the next milestone is **Step 13: Customer Sequences, Multi-Channel Outreach & Email Campaigns (Spec §14, §23)**:
-1. **Sales Sequences & Cadences Engine (§14):** Multi-step automated outreach sequences (Day 1: Automated Email, Day 3: Follow-up Task / Call reminder, Day 7: Break-up Email) with automated pause on recipient reply.
-2. **Email Campaign Manager & Audience Segments (§23):** Broadcast email campaigns with dynamic contact filtering (by company tier, deal stage, or lifecycle stage), unsubscribe management, and open/click tracking.
-3. **Template Personalization with Dynamic Merge Tags (§13, §14):** Merge tags (`{{first_name}}`, `{{company_name}}`, `{{sender_name}}`, `{{custom_field}}`) with fallback default strings.
-4. **Sequence Analytics & Funnel Tracking (§14, §26):** Step-by-step deliverability, open rates, reply rates, meeting booking rates, and sequence completion velocities.
+With **Step 13 (Customer Sequences, Multi-Channel Outreach & Email Campaigns)** completed, the next milestone is **Step 14: Webhooks, REST API Integrations & External Data Sync Engine (Spec §31, §32, §41)**:
+1. **Event-Driven Webhook Dispatch Engine (§31):** Trigger outgoing HTTP POST payloads upon record creations, updates, and deal stage progressions with HMAC SHA-256 signatures (`X-CRM-Signature`).
+2. **Third-Party Integration Connectors (§32):** Slack, HubSpot, Stripe, Google Calendar, and Zapier inbound/outbound sync bridges.
+3. **Idempotency & Retry Backoff System (§31, §41):** Idempotency headers (`X-Idempotency-Key`), exponential retry schedulers, and delivery attempt logging in `webhook_deliveries`.
+4. **Interactive Webhook Simulation Studio (§31):** Test payload generator, signature verification tester, and live webhook endpoint listener.
 
 ---
 

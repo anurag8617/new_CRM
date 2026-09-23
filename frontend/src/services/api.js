@@ -635,7 +635,121 @@ export const markKbArticleHelpful = async (id) => {
   return response.data;
 };
 
+// ---------------------------------------------------------------------
+// Marketing, Cadence Sequences & Broadcast Campaigns (§14, §23)
+// ---------------------------------------------------------------------
+export const getMarketingMetrics = async () => {
+  const response = await api.get('/v1/marketing/metrics');
+  return response.data;
+};
+
+export const getSequences = async () => {
+  const response = await api.get('/v1/marketing/sequences');
+  return response.data;
+};
+
+export const getSequenceById = async (id) => {
+  const response = await api.get(`/v1/marketing/sequences/${id}`);
+  return response.data;
+};
+
+export const createSequence = async (data) => {
+  const response = await api.post('/v1/marketing/sequences', data);
+  return response.data;
+};
+
+export const updateSequence = async (id, data) => {
+  const response = await api.put(`/v1/marketing/sequences/${id}`, data);
+  return response.data;
+};
+
+export const deleteSequence = async (id) => {
+  const response = await api.delete(`/v1/marketing/sequences/${id}`);
+  return response.data;
+};
+
+export const addSequenceStep = async (sequenceId, data) => {
+  const response = await api.post(`/v1/marketing/sequences/${sequenceId}/steps`, data);
+  return response.data;
+};
+
+export const updateSequenceStep = async (sequenceId, stepId, data) => {
+  const response = await api.put(`/v1/marketing/sequences/${sequenceId}/steps/${stepId}`, data);
+  return response.data;
+};
+
+export const deleteSequenceStep = async (sequenceId, stepId) => {
+  const response = await api.delete(`/v1/marketing/sequences/${sequenceId}/steps/${stepId}`);
+  return response.data;
+};
+
+export const getSequenceEnrollments = async (params = {}) => {
+  const response = await api.get('/v1/marketing/enrollments', { params });
+  return response.data;
+};
+
+export const enrollContactsInSequence = async (sequenceId, contactIds) => {
+  const response = await api.post(`/v1/marketing/sequences/${sequenceId}/enroll`, { contact_ids: contactIds });
+  return response.data;
+};
+
+export const updateEnrollmentStatus = async (enrollmentId, status) => {
+  const response = await api.patch(`/v1/marketing/enrollments/${enrollmentId}/status`, { status });
+  return response.data;
+};
+
+export const executeSequenceStep = async (enrollmentId) => {
+  const response = await api.post(`/v1/marketing/enrollments/${enrollmentId}/execute-step`);
+  return response.data;
+};
+
+export const simulateSequenceReply = async (enrollmentId, replyText) => {
+  const response = await api.post(`/v1/marketing/enrollments/${enrollmentId}/reply`, { reply_text: replyText });
+  return response.data;
+};
+
+export const getCampaigns = async () => {
+  const response = await api.get('/v1/marketing/campaigns');
+  return response.data;
+};
+
+export const getCampaignById = async (id) => {
+  const response = await api.get(`/v1/marketing/campaigns/${id}`);
+  return response.data;
+};
+
+export const getAudiencePreview = async (segment) => {
+  const response = await api.get('/v1/marketing/campaigns/audience-preview', { params: { segment } });
+  return response.data;
+};
+
+export const createCampaign = async (data) => {
+  const response = await api.post('/v1/marketing/campaigns', data);
+  return response.data;
+};
+
+export const updateCampaign = async (id, data) => {
+  const response = await api.put(`/v1/marketing/campaigns/${id}`, data);
+  return response.data;
+};
+
+export const deleteCampaign = async (id) => {
+  const response = await api.delete(`/v1/marketing/campaigns/${id}`);
+  return response.data;
+};
+
+export const sendCampaign = async (id) => {
+  const response = await api.post(`/v1/marketing/campaigns/${id}/send`);
+  return response.data;
+};
+
+export const trackCampaignRecipient = async (recipientId, eventType) => {
+  const response = await api.post(`/v1/marketing/recipients/${recipientId}/track`, { eventType });
+  return response.data;
+};
+
 export default api;
+
 
 
 

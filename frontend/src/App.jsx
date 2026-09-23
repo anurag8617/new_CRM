@@ -12,6 +12,7 @@ import AnalyticsReportsView from './components/AnalyticsReportsView';
 import AiCopilotView from './components/AiCopilotView';
 import CpqView from './components/CpqView';
 import TicketsView from './components/TicketsView';
+import SequencesCampaignsView from './components/SequencesCampaignsView';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { checkHealth, getDbStatus } from './services/api';
 import { 
@@ -42,7 +43,8 @@ import {
   BarChart3,
   Bot,
   Receipt,
-  Headphones
+  Headphones,
+  Send
 } from 'lucide-react';
 
 function DashboardContent() {
@@ -148,6 +150,12 @@ function DashboardContent() {
       icon: Headphones,
       tables: ['sla_policies', 'tickets', 'ticket_messages', 'canned_responses', 'kb_articles'],
       description: 'Multi-channel support tickets, SLA policy timers, omnichannel conversation threads, canned replies, and knowledge base.'
+    },
+    {
+      title: 'Customer Sequences & Outreach Campaigns (Spec §14, §23)',
+      icon: Send,
+      tables: ['sequences', 'sequence_steps', 'sequence_enrollments', 'email_campaigns', 'campaign_recipients'],
+      description: 'Multi-step cadences, automated touchpoints (email, call, LinkedIn), anti-collision reply pauses, and broadcast tracking.'
     },
     {
       title: 'Governance & Auditing (§40)',
@@ -331,6 +339,12 @@ function DashboardContent() {
             </div>
           )}
 
+          {activeTab === 'sequences' && (
+            <div className="animate-in fade-in duration-150">
+              <SequencesCampaignsView />
+            </div>
+          )}
+
           {activeTab === 'custom_objects' && (
             <div className="animate-in fade-in duration-150">
               <CustomObjectsView />
@@ -368,13 +382,13 @@ function DashboardContent() {
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>Step 12 Complete: Omnichannel Support, Ticketing & SLA Engine Live</span>
+                    <span>Step 13 Complete: Sales Sequences, Multi-Channel Outreach & Email Campaigns Live</span>
                   </div>
                   <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
                     CRM Platform Schema & Core Modules
                   </h2>
                   <p className="text-sm text-slate-600 mt-1">
-                    InnoDB Engine · Multi-Tenancy · 53 Tables · Support Tickets, SLA Policies, Omnichannel Threads & Knowledge Base.
+                    InnoDB Engine · Multi-Tenancy · 58 Tables · Multi-Step Cadences, Auto-Pause on Reply, Broadcast Segments & Engagement Analytics.
                   </p>
                 </div>
 
@@ -558,10 +572,10 @@ function DashboardContent() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-base font-bold text-slate-900">
-                      MySQL Schema Architecture: 53 Core Tables Active
+                      MySQL Schema Architecture: 58 Core Tables Active
                     </h3>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Organized according to Section 0, 1, 2, 6, 7, 9, 10, 12, 13, 15, 23, 24, 25, 26, 27, 28, 29, 30, 40, and 51 of the CRM specification.
+                      Organized according to Section 0, 1, 2, 6, 7, 9, 10, 12, 13, 14, 15, 23, 24, 25, 26, 27, 28, 29, 30, 40, and 51 of the CRM specification.
                     </p>
                   </div>
                   <span className="text-xs font-mono bg-slate-100 px-2 py-1 rounded text-slate-600">
@@ -604,14 +618,14 @@ function DashboardContent() {
                     Next Step in Architecture Roadmap
                   </span>
                   <h3 className="text-lg font-bold mt-1">
-                    Step 13: Customer Sequences, Multi-Channel Outreach & Email Campaigns (Spec §14, §23)
+                    Step 14: Webhooks, REST API Integrations & External Data Sync Engine (Spec §31, §32, §41)
                   </h3>
                   <p className="text-xs text-slate-300 mt-1 max-w-xl">
-                    Multi-step automated sales outreach sequences, scheduled email cadences, engagement tracking, and bounce management.
+                    Event-driven outgoing webhooks, HMAC SHA-256 signature verification, idempotency keys, third-party REST integrations, and webhook delivery logging.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs font-semibold bg-purple-600/80 hover:bg-purple-600 px-4 py-2.5 rounded-lg border border-purple-400/30 transition-colors">
-                  <span>Ready for Step 13</span>
+                  <span>Ready for Step 14</span>
                   <ArrowRight className="w-4 h-4" />
                 </div>
               </div>

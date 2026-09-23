@@ -11,7 +11,8 @@ import {
   BarChart3,
   Calendar,
   Receipt,
-  Headphones
+  Headphones,
+  Send
 } from 'lucide-react';
 
 const navItems = [
@@ -20,6 +21,7 @@ const navItems = [
   { id: 'companies', label: 'Companies', icon: Building2, badge: 'Spec §7' },
   { id: 'deals', label: 'Deals & Pipelines', icon: Briefcase, badge: 'Spec §9' },
   { id: 'cpq', label: 'Quotes & CPQ', icon: Receipt, badge: 'Spec §24, §25' },
+  { id: 'sequences', label: 'Sequences & Outreach', icon: Send, badge: 'Spec §14, §23' },
   { id: 'tickets', label: 'Tickets & Support', icon: Headphones, badge: 'Spec §23, §26' },
   { id: 'activities', label: 'Activities & Tasks', icon: Calendar, badge: 'Spec §10, §12' },
   { id: 'custom_objects', label: 'Custom Objects', icon: Database, badge: 'Spec §2' },
@@ -77,10 +79,10 @@ export default function Sidebar({ activeTab = 'dashboard', onSelectTab }) {
       <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-          <span className="text-xs font-semibold text-slate-700">Phase 5: Step 12 Active</span>
+          <span className="text-xs font-semibold text-slate-700">Phase 6: Step 13 Active</span>
         </div>
         <p className="text-[11px] text-slate-500 mt-1">
-          Omnichannel Support, SLAs & Tickets live.
+          Multi-channel sequences & campaigns live.
         </p>
       </div>
     </aside>

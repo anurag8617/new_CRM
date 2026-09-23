@@ -1109,6 +1109,131 @@ CREATE TABLE IF NOT EXISTS `kb_articles` (
   CONSTRAINT `fk_kb_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------
+-- 41. SEQUENCES (Spec §14 Sales Sequences & Cadences)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sequences` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `description` TEXT NULL,
+  `status` ENUM('draft', 'active', 'paused', 'archived') NOT NULL DEFAULT 'active',
+  `pause_on_reply` BOOLEAN NOT NULL DEFAULT TRUE,
+  `total_enrolled` INT UNSIGNED NOT NULL DEFAULT 0,
+  `total_completed` INT UNSIGNED NOT NULL DEFAULT 0,
+  `total_replied` INT UNSIGNED NOT NULL DEFAULT 0,
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_seq_org_status` (`organization_id`, `status`),
+  CONSTRAINT `fk_seq_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_seq_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 42. SEQUENCE STEPS (Spec §14 Cadence Progression Rules)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sequence_steps` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `sequence_id` BIGINT UNSIGNED NOT NULL,
+  `step_order` INT UNSIGNED NOT NULL DEFAULT 1,
+  `step_type` ENUM('email', 'task', 'call_reminder', 'delay', 'linkedin_touch') NOT NULL DEFAULT 'email',
+  `delay_days` INT UNSIGNED NOT NULL DEFAULT 1,
+  `delay_hours` INT UNSIGNED NOT NULL DEFAULT 0,
+  `subject` VARCHAR(255) NULL,
+  `body_template` TEXT NULL,
+  `template_id` BIGINT UNSIGNED NULL,
+  `config_json` JSON NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_seq_steps_seq` (`sequence_id`, `step_order`),
+  CONSTRAINT `fk_seq_steps_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_seq_steps_seq` FOREIGN KEY (`sequence_id`) REFERENCES `sequences` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 43. SEQUENCE ENROLLMENTS (Spec §14 Contact Cadence Progression)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sequence_enrollments` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `sequence_id` BIGINT UNSIGNED NOT NULL,
+  `contact_id` BIGINT UNSIGNED NOT NULL,
+  `enrolled_by` BIGINT UNSIGNED NULL,
+  `current_step_order` INT UNSIGNED NOT NULL DEFAULT 1,
+  `status` ENUM('active', 'paused', 'completed', 'replied_unenrolled', 'bounced', 'failed') NOT NULL DEFAULT 'active',
+  `next_step_due_at` TIMESTAMP NULL,
+  `last_executed_at` TIMESTAMP NULL,
+  `enrolled_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `completed_at` TIMESTAMP NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_seq_enroll_contact` (`sequence_id`, `contact_id`),
+  INDEX `idx_seq_enroll_org` (`organization_id`, `status`),
+  INDEX `idx_seq_enroll_due` (`organization_id`, `status`, `next_step_due_at`),
+  CONSTRAINT `fk_seq_enroll_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_seq_enroll_seq` FOREIGN KEY (`sequence_id`) REFERENCES `sequences` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_seq_enroll_contact` FOREIGN KEY (`contact_id`) REFERENCES `contacts` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_seq_enroll_user` FOREIGN KEY (`enrolled_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 44. EMAIL CAMPAIGNS (Spec §23 Broadcast Campaigns & Segments)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `email_campaigns` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `subject` VARCHAR(255) NOT NULL,
+  `preview_text` VARCHAR(255) NULL,
+  `from_name` VARCHAR(150) NOT NULL,
+  `from_email` VARCHAR(255) NOT NULL,
+  `target_segment` ENUM('all_contacts', 'leads_only', 'customers_only', 'enterprise_mql', 'deal_contacts') NOT NULL DEFAULT 'all_contacts',
+  `status` ENUM('draft', 'scheduled', 'sending', 'sent', 'cancelled') NOT NULL DEFAULT 'draft',
+  `html_content` TEXT NOT NULL,
+  `plain_content` TEXT NULL,
+  `scheduled_at` TIMESTAMP NULL,
+  `sent_at` TIMESTAMP NULL,
+  `total_recipients` INT UNSIGNED NOT NULL DEFAULT 0,
+  `delivered_count` INT UNSIGNED NOT NULL DEFAULT 0,
+  `open_count` INT UNSIGNED NOT NULL DEFAULT 0,
+  `click_count` INT UNSIGNED NOT NULL DEFAULT 0,
+  `bounce_count` INT UNSIGNED NOT NULL DEFAULT 0,
+  `unsubscribe_count` INT UNSIGNED NOT NULL DEFAULT 0,
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_campaigns_org_status` (`organization_id`, `status`),
+  CONSTRAINT `fk_campaigns_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_campaigns_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 45. CAMPAIGN RECIPIENTS (Spec §23 Recipient Engagement Tracking)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `campaign_recipients` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `campaign_id` BIGINT UNSIGNED NOT NULL,
+  `contact_id` BIGINT UNSIGNED NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `status` ENUM('queued', 'sent', 'delivered', 'opened', 'clicked', 'bounced', 'unsubscribed') NOT NULL DEFAULT 'queued',
+  `opened_at` TIMESTAMP NULL,
+  `clicked_at` TIMESTAMP NULL,
+  `sent_at` TIMESTAMP NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_cr_campaign_contact` (`campaign_id`, `contact_id`),
+  INDEX `idx_cr_campaign` (`campaign_id`, `status`),
+  INDEX `idx_cr_org` (`organization_id`),
+  CONSTRAINT `fk_cr_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_cr_campaign` FOREIGN KEY (`campaign_id`) REFERENCES `email_campaigns` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_cr_contact` FOREIGN KEY (`contact_id`) REFERENCES `contacts` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
+
 
 
