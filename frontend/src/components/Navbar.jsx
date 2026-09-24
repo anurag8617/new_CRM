@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { getNotifications, markNotificationRead, markAllNotificationsRead, deleteNotification } from '../services/api';
 import {
   Sparkles,
@@ -8,23 +9,33 @@ import {
   User,
   LogIn,
   LogOut,
-  ShieldCheck,
-  Check,
-  CheckCheck,
-  Trash2,
   Zap,
   CheckSquare,
   AlertTriangle,
   Info,
-  Clock,
-  X
+  Check,
+  CheckCheck,
+  Trash2,
+  Sun,
+  Moon,
+  Menu,
+  Command,
+  Bot
 } from 'lucide-react';
 
-export default function Navbar({ onOpenLogin, onNavigateTab }) {
+/**
+ * UI.md §5.2 Topbar
+ * - Height 56px, background --bg-app, bottom border --border-subtle
+ * - Left: page title / breadcrumb
+ * - Center/Right: global search field (pill, --bg-surface-raised, ⌘K hint), notifications, Copilot shortcut, theme toggle, avatar
+ */
+export default function Navbar({ onOpenLogin, onNavigateTab, onToggleMobileSidebar }) {
   const { user, organization, isAuthenticated, logout } = useAuth();
+  const { theme, toggleTheme, isDark } = useTheme();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const fetchNotifs = async () => {
     if (!isAuthenticated) return;
@@ -35,13 +46,13 @@ export default function Navbar({ onOpenLogin, onNavigateTab }) {
         setUnreadCount(res.data.unreadCount || 0);
       }
     } catch (err) {
-      // quiet fail if not authed
+      // quiet fail
     }
   };
 
   useEffect(() => {
     fetchNotifs();
-    const interval = setInterval(fetchNotifs, 15000); // 15s poll
+    const interval = setInterval(fetchNotifs, 20000);
     return () => clearInterval(interval);
   }, [isAuthenticated]);
 
@@ -79,68 +90,99 @@ export default function Navbar({ onOpenLogin, onNavigateTab }) {
 
   const getNotifIcon = (type) => {
     switch (type) {
-      case 'deal': return <Zap className="w-3.5 h-3.5 text-amber-600" />;
-      case 'task': return <CheckSquare className="w-3.5 h-3.5 text-indigo-600" />;
-      case 'warning': return <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />;
-      default: return <Info className="w-3.5 h-3.5 text-sky-600" />;
+      case 'deal': return <Zap className="w-3.5 h-3.5 text-amber-500" />;
+      case 'task': return <CheckSquare className="w-3.5 h-3.5 text-indigo-400" />;
+      case 'warning': return <AlertTriangle className="w-3.5 h-3.5 text-[var(--danger)]" />;
+      default: return <Info className="w-3.5 h-3.5 text-[var(--accent)]" />;
     }
   };
 
   return (
-    <header className="h-16 border-b border-slate-200 bg-white px-6 flex items-center justify-between sticky top-0 z-30">
+    <header className="h-[56px] shrink-0 border-b border-[var(--border-subtle)] bg-[var(--bg-app)] px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30 transition-colors select-none">
+      {/* Left: Mobile hamburger & Workspace Identifier */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-indigo-600 text-white font-bold shadow-sm shadow-indigo-200">
-          <Sparkles className="w-5 h-5" />
-        </div>
-        <div>
-          <h1 className="text-base font-bold text-slate-900 leading-tight">Nexus CRM</h1>
-          <span className="text-xs text-indigo-600 font-medium">
-            {organization ? organization.name : 'AI-Native Platform'}
-          </span>
+        <button
+          onClick={onToggleMobileSidebar}
+          className="md:hidden p-1.5 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded-[var(--radius-sm)] transition-colors"
+          title="Toggle Navigation Menu"
+          aria-label="Toggle navigation menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-[var(--radius-sm)] bg-[var(--bg-surface-raised)] border border-[var(--border-subtle)] flex items-center justify-center text-[var(--accent)]">
+            <Sparkles className="w-4 h-4" />
+          </div>
+          <div>
+            <h1 className="text-sm font-semibold text-[var(--text-primary)] leading-tight tracking-tight">
+              Nexus CRM
+            </h1>
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 flex-1 max-w-md mx-8">
-        <div className="relative w-full">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+      {/* Center: Global Search Bar with ⌘K Pill (§5.2) */}
+      <div className="hidden sm:flex items-center flex-1 max-w-md mx-6">
+        <div className="relative w-full flex items-center">
+          <Search className="w-4 h-4 text-[var(--text-tertiary)] absolute left-3.5 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search records, contacts, deals (⌘K)..."
-            className="w-full pl-9 pr-4 py-1.5 text-sm bg-slate-100 border border-transparent rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none transition-all"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search records, deals, contacts..."
+            className="w-full h-9 pl-9 pr-14 text-xs bg-[var(--bg-surface-raised)] hover:bg-[var(--bg-input-hover)] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] rounded-full border border-transparent focus:border-[var(--border-focus)] focus:outline-none transition-colors"
           />
+          <div className="absolute right-3 flex items-center gap-0.5 text-[10px] font-mono text-[var(--text-tertiary)] bg-[var(--bg-hover)] px-1.5 py-0.5 rounded border border-[var(--border-subtle)] pointer-events-none">
+            <Command className="w-2.5 h-2.5" />
+            <span>K</span>
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-3 relative">
-        {/* Notifications Bell Dropdown */}
+      {/* Right Actions: AI Copilot Quick Button, Bell, Theme Toggle, User */}
+      <div className="flex items-center gap-2 sm:gap-2.5">
+        {/* Copilot Quick Launch Button (§8) */}
+        {onNavigateTab && (
+          <button
+            onClick={() => onNavigateTab('ai')}
+            className="hidden sm:inline-flex items-center gap-1.5 h-8 px-2.5 rounded-full bg-[var(--accent-soft)] hover:bg-[var(--accent-soft)]/80 text-[var(--accent-text)] border border-[var(--accent)]/20 text-xs font-medium transition-colors"
+            title="Open AI Copilot"
+          >
+            <Bot className="w-3.5 h-3.5" />
+            <span>AI Copilot</span>
+          </button>
+        )}
+
+        {/* Notifications Dropdown */}
         <div className="relative">
           <button
             onClick={() => setShowDropdown(!showDropdown)}
-            className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors relative"
-            title="Notifications (Spec §23)"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors relative"
+            title="Notifications"
           >
-            <Bell className="w-5 h-5" />
+            <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] bg-rose-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 shadow-xs animate-in zoom-in-50">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[var(--danger)]" />
             )}
           </button>
 
-          {/* Notifications Flyout Drawer */}
+          {/* Notifications Flyout (§6.7, §6.9) */}
           {showDropdown && (
-            <div className="absolute right-0 mt-2 w-80 md:w-96 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
-              <div className="p-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] overflow-hidden z-50 animate-in fade-in duration-150">
+              <div className="p-3 border-b border-[var(--border-subtle)] flex items-center justify-between bg-[var(--bg-surface-raised)]">
                 <div className="flex items-center gap-2">
-                  <Bell className="w-4 h-4 text-indigo-600" />
-                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                    Notifications ({unreadCount} new)
-                  </span>
+                  <span className="text-xs font-semibold text-[var(--text-primary)]">Notifications</span>
+                  {unreadCount > 0 && (
+                    <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[var(--accent-soft)] text-[var(--accent-text)] font-medium">
+                      {unreadCount} new
+                    </span>
+                  )}
                 </div>
                 {unreadCount > 0 && (
                   <button
                     onClick={handleMarkAllRead}
-                    className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                    className="text-[11px] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] flex items-center gap-1 transition-colors"
                   >
                     <CheckCheck className="w-3.5 h-3.5" />
                     <span>Mark all read</span>
@@ -148,44 +190,42 @@ export default function Navbar({ onOpenLogin, onNavigateTab }) {
                 )}
               </div>
 
-              <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
+              <div className="max-h-80 overflow-y-auto divide-y divide-[var(--border-subtle)]">
                 {notifications.length === 0 ? (
-                  <div className="p-6 text-center text-slate-400">
-                    <Clock className="w-6 h-6 mx-auto mb-1 text-slate-300" />
-                    <p className="text-xs">No notifications right now.</p>
+                  <div className="p-6 text-center text-xs text-[var(--text-tertiary)]">
+                    No recent notifications
                   </div>
                 ) : (
-                  notifications.map((notif) => (
+                  notifications.map((n) => (
                     <div
-                      key={notif.id}
-                      onClick={() => handleMarkOneRead(notif.id)}
-                      className={`p-3 text-xs flex items-start justify-between gap-3 cursor-pointer hover:bg-slate-50 transition-colors ${
-                        !notif.is_read ? 'bg-indigo-50/40 font-medium' : ''
+                      key={n.id}
+                      onClick={() => !n.is_read && handleMarkOneRead(n.id)}
+                      className={`p-3 text-xs flex items-start gap-2.5 hover:bg-[var(--bg-hover)] cursor-pointer transition-colors ${
+                        !n.is_read ? 'bg-[var(--bg-surface-raised)]/50' : ''
                       }`}
                     >
-                      <div className="flex items-start gap-2.5">
-                        <div className="mt-0.5 p-1 rounded-md bg-white border border-slate-200 shadow-2xs">
-                          {getNotifIcon(notif.type)}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-slate-800 leading-tight">
-                            {notif.title}
+                      <div className="mt-0.5 shrink-0">
+                        {getNotifIcon(n.type)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1">
+                          <p className={`truncate text-xs ${!n.is_read ? 'font-semibold text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>
+                            {n.title}
                           </p>
-                          <p className="text-slate-500 text-[11px] mt-0.5 leading-snug">
-                            {notif.message}
-                          </p>
-                          <span className="text-[10px] text-slate-400 block mt-1">
-                            {new Date(notif.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          <span className="text-[10px] text-[var(--text-tertiary)] shrink-0">
+                            {new Date(n.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
+                        <p className="text-[11px] text-[var(--text-secondary)] line-clamp-2 mt-0.5">
+                          {n.message}
+                        </p>
                       </div>
-
                       <button
-                        onClick={(e) => handleDeleteNotif(e, notif.id)}
-                        className="text-slate-300 hover:text-rose-600 p-1 transition-colors"
-                        title="Dismiss"
+                        onClick={(e) => handleDeleteNotif(e, n.id)}
+                        className="text-[var(--text-tertiary)] hover:text-[var(--danger)] p-1 rounded hover:bg-[var(--bg-hover)] shrink-0 transition-colors"
+                        title="Delete notification"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ))
@@ -195,35 +235,37 @@ export default function Navbar({ onOpenLogin, onNavigateTab }) {
           )}
         </div>
 
-        {isAuthenticated && user ? (
-          <div className="flex items-center gap-3 pl-3 border-l border-slate-200">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">
-                {user.firstName ? user.firstName[0] : 'U'}
-              </div>
-              <div className="hidden sm:block text-left">
-                <p className="text-xs font-semibold text-slate-800 leading-none">{user.fullName}</p>
-                <span className="text-[10px] text-purple-700 font-medium bg-purple-50 px-1 rounded inline-block mt-0.5">
-                  {user.role}
-                </span>
-              </div>
-            </div>
+        {/* Theme Toggle Button (§2) */}
+        <button
+          onClick={toggleTheme}
+          className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
+          title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          aria-label="Toggle dark/light theme"
+        >
+          {isDark ? (
+            <Sun className="w-4 h-4 text-amber-400" />
+          ) : (
+            <Moon className="w-4 h-4" />
+          )}
+        </button>
 
-            <button
+        {/* Auth / Avatar status */}
+        {isAuthenticated ? (
+          <div className="flex items-center gap-2 pl-1">
+            <div
+              className="w-8 h-8 rounded-full bg-[var(--bg-surface-raised)] border border-[var(--border-subtle)] flex items-center justify-center text-xs font-semibold text-[var(--text-primary)] cursor-pointer"
+              title={`${user?.fullName || 'User'} (${user?.role || 'Admin'})`}
               onClick={logout}
-              title="Sign Out"
-              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
             >
-              <LogOut className="w-4 h-4" />
-            </button>
+              {user?.firstName ? user.firstName[0].toUpperCase() : 'U'}
+            </div>
           </div>
         ) : (
           <button
             onClick={onOpenLogin}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors"
+            className="h-8 px-3 rounded-[var(--radius-sm)] border border-[var(--btn-secondary-border)] text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--btn-secondary-bg-hover)] transition-colors"
           >
-            <LogIn className="w-3.5 h-3.5" />
-            <span>Sign In</span>
+            Sign In
           </button>
         )}
       </div>

@@ -158,30 +158,30 @@ export default function AnalyticsReportsView() {
   return (
     <div className="space-y-6">
       {/* Top Header & Timeframe Horizon Switcher */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 mb-2">
             <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
             <span>Analytics & Intelligence · Spec §26-§30</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <BarChart3 className="w-6 h-6 text-indigo-600" />
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+            <BarChart3 className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
             Executive Command Center & Reports
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Real-time pipeline forecast, conversion drop-off funnels, and parameterized report query builder.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           {/* View Tab Switcher */}
-          <div className="bg-slate-100 p-1 rounded-xl flex items-center text-xs font-semibold">
+          <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-xl flex items-center text-xs font-semibold">
             <button
               onClick={() => setActiveTab('dashboard')}
               className={`px-3 py-1.5 rounded-lg transition-all ${
                 activeTab === 'dashboard'
-                  ? 'bg-white text-indigo-700 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Executive Dashboard
@@ -190,8 +190,8 @@ export default function AnalyticsReportsView() {
               onClick={() => setActiveTab('reports')}
               className={`px-3 py-1.5 rounded-lg transition-all ${
                 activeTab === 'reports'
-                  ? 'bg-white text-indigo-700 shadow-2xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Reports Library ({reports.length})
@@ -203,7 +203,7 @@ export default function AnalyticsReportsView() {
             <select
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value)}
-              className="text-xs font-semibold bg-white border border-slate-200 rounded-xl px-3 py-2 pr-8 text-slate-700 shadow-2xs focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
+              className="text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 pr-8 text-slate-700 dark:text-slate-200 shadow-2xs focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer"
             >
               <option value="7d">Last 7 Days</option>
               <option value="30d">Last 30 Days</option>
@@ -220,7 +220,7 @@ export default function AnalyticsReportsView() {
               setIsQueryModalOpen(true);
               handleRunQuery();
             }}
-            className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 shadow-sm shadow-indigo-200 transition-all"
+            className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 shadow-sm shadow-indigo-200 dark:shadow-none transition-all"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Query Builder</span>
@@ -229,7 +229,7 @@ export default function AnalyticsReportsView() {
           <button
             onClick={fetchOverviewData}
             disabled={loading}
-            className="p-2 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all disabled:opacity-50"
+            className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all disabled:opacity-50"
             title="Refresh Metrics"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -242,80 +242,80 @@ export default function AnalyticsReportsView() {
         <div className="space-y-6 animate-in fade-in duration-150">
           {/* High-Level Executive KPI Ribbon */}
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs">
-              <div className="flex items-center justify-between text-slate-500 mb-1">
+            <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+              <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
                 <span className="text-xs font-medium">Pipeline Value</span>
-                <DollarSign className="w-4 h-4 text-emerald-600" />
+                <DollarSign className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <p className="text-xl font-bold text-slate-900 tracking-tight">
+              <p className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                 ${(overview?.pipeline?.totalPipelineValue || 255000).toLocaleString()}
               </p>
-              <span className="text-[11px] text-emerald-600 font-semibold mt-1 inline-block">
+              <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1 inline-block">
                 {overview?.pipeline?.openDeals || 4} Open Deals
               </span>
             </div>
 
-            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs">
-              <div className="flex items-center justify-between text-slate-500 mb-1">
+            <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+              <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
                 <span className="text-xs font-medium">Weighted Forecast</span>
-                <TrendingUp className="w-4 h-4 text-indigo-600" />
+                <TrendingUp className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
               </div>
-              <p className="text-xl font-bold text-indigo-700 tracking-tight">
+              <p className="text-xl font-bold text-indigo-700 dark:text-indigo-400 tracking-tight">
                 ${Math.round(overview?.pipeline?.weightedForecast || 168000).toLocaleString()}
               </p>
-              <span className="text-[11px] text-indigo-600 font-semibold mt-1 inline-block">
+              <span className="text-[11px] text-indigo-600 dark:text-indigo-400 font-semibold mt-1 inline-block">
                 Probability Adjusted
               </span>
             </div>
 
-            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs">
-              <div className="flex items-center justify-between text-slate-500 mb-1">
+            <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+              <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
                 <span className="text-xs font-medium">Win Rate</span>
-                <Target className="w-4 h-4 text-purple-600" />
+                <Target className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               </div>
-              <p className="text-xl font-bold text-slate-900 tracking-tight">
+              <p className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                 {overview?.pipeline?.winRatePercent || 100}%
               </p>
-              <span className="text-[11px] text-purple-600 font-semibold mt-1 inline-block">
+              <span className="text-[11px] text-purple-600 dark:text-purple-400 font-semibold mt-1 inline-block">
                 {overview?.pipeline?.wonDeals || 1} Won Deals
               </span>
             </div>
 
-            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs">
-              <div className="flex items-center justify-between text-slate-500 mb-1">
+            <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+              <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
                 <span className="text-xs font-medium">Average Deal Size</span>
-                <Briefcase className="w-4 h-4 text-blue-600" />
+                <Briefcase className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               </div>
-              <p className="text-xl font-bold text-slate-900 tracking-tight">
+              <p className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                 ${(overview?.pipeline?.averageDealSize || 63750).toLocaleString()}
               </p>
-              <span className="text-[11px] text-blue-600 font-semibold mt-1 inline-block">
+              <span className="text-[11px] text-blue-600 dark:text-blue-400 font-semibold mt-1 inline-block">
                 Across All Tiers
               </span>
             </div>
 
-            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs">
-              <div className="flex items-center justify-between text-slate-500 mb-1">
+            <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+              <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
                 <span className="text-xs font-medium">Task Velocity</span>
-                <CheckCircle2 className="w-4 h-4 text-amber-600" />
+                <CheckCircle2 className="w-4 h-4 text-amber-600 dark:text-amber-400" />
               </div>
-              <p className="text-xl font-bold text-slate-900 tracking-tight">
+              <p className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                 {overview?.tasks?.completionRatePercent || 33}%
               </p>
-              <span className="text-[11px] text-amber-600 font-semibold mt-1 inline-block">
+              <span className="text-[11px] text-amber-600 dark:text-amber-400 font-semibold mt-1 inline-block">
                 {overview?.tasks?.completed || 2} of {overview?.tasks?.total || 6} Completed
               </span>
             </div>
 
-            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs">
-              <div className="flex items-center justify-between text-slate-500 mb-1">
+            <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+              <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
                 <span className="text-xs font-medium">Touchpoints</span>
-                <Activity className="w-4 h-4 text-rose-600" />
+                <Activity className="w-4 h-4 text-rose-600 dark:text-rose-400" />
               </div>
-              <p className="text-xl font-bold text-slate-900 tracking-tight">
+              <p className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                 {overview?.activities?.total || 12}
               </p>
-              <span className="text-[11px] text-rose-600 font-semibold mt-1 inline-block">
+              <span className="text-[11px] text-rose-600 dark:text-rose-400 font-semibold mt-1 inline-block">
                 Emails, Calls & Notes
               </span>
             </div>
@@ -324,19 +324,19 @@ export default function AnalyticsReportsView() {
           {/* Section 2: Pipeline Conversion Funnel (§27) & Stage Distribution */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Conversion Funnel Widget */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                    <Filter className="w-4 h-4 text-indigo-600" />
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <Filter className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                     Pipeline Stage Conversion Funnel (Spec §27)
                   </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     Conversion progression and deal volume through each sales stage.
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                  <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">
                     {funnel?.overallConversion || 25}% End-to-End Conversion
                   </span>
                 </div>
@@ -349,18 +349,18 @@ export default function AnalyticsReportsView() {
                     <div className="flex items-center justify-between text-xs font-semibold mb-1">
                       <div className="flex items-center gap-2">
                         <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: stage.colorTag }}></span>
-                        <span className="text-slate-800">{stage.name}</span>
-                        <span className="text-[10px] text-slate-400">({stage.probability}% win prob)</span>
+                        <span className="text-slate-800 dark:text-slate-200">{stage.name}</span>
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500">({stage.probability}% win prob)</span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-slate-600">${stage.totalValue.toLocaleString()}</span>
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
+                        <span className="text-slate-600 dark:text-slate-300">${stage.totalValue.toLocaleString()}</span>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                           {stage.dealCount} deals
                         </span>
                       </div>
                     </div>
 
-                    <div className="w-full bg-slate-100 h-6 rounded-lg overflow-hidden flex items-center relative">
+                    <div className="w-full bg-slate-100 dark:bg-slate-800 h-6 rounded-lg overflow-hidden flex items-center relative">
                       <div
                         className="h-full rounded-lg transition-all duration-500 flex items-center justify-end px-2 text-[10px] font-bold text-white shadow-2xs"
                         style={{
@@ -373,8 +373,8 @@ export default function AnalyticsReportsView() {
                     </div>
 
                     {idx < (funnel?.stages?.length || 0) - 1 && (
-                      <div className="flex items-center justify-between text-[10px] text-slate-400 px-2 py-0.5">
-                        <span>Step transition rate: <strong className="text-slate-600">{stage.stepConversion}%</strong></span>
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500 px-2 py-0.5">
+                        <span>Step transition rate: <strong className="text-slate-600 dark:text-slate-300">{stage.stepConversion}%</strong></span>
                         {stage.dropOffCount > 0 && (
                           <span className="text-rose-500 font-medium">-{stage.dropOffCount} deal drop-off</span>
                         )}
@@ -386,15 +386,15 @@ export default function AnalyticsReportsView() {
             </div>
 
             {/* Pipeline Stage Value Distribution */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                      <BarChart3 className="w-4 h-4 text-indigo-600" />
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                       Stage Value Distribution & Weighted Forecast
                     </h3>
-                    <p className="text-xs text-slate-500 mt-0.5">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                       Actual pipeline value vs. probability-weighted expected revenue.
                     </p>
                   </div>
@@ -410,11 +410,11 @@ export default function AnalyticsReportsView() {
                     return (
                       <div key={stage.stage_id} className="space-y-1">
                         <div className="flex items-center justify-between text-xs">
-                          <span className="font-semibold text-slate-800">{stage.stage_name}</span>
-                          <span className="font-bold text-slate-900">${stageVal.toLocaleString()}</span>
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">{stage.stage_name}</span>
+                          <span className="font-bold text-slate-900 dark:text-white">${stageVal.toLocaleString()}</span>
                         </div>
 
-                        <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden flex">
+                        <div className="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden flex">
                           <div
                             className="h-full rounded-full transition-all duration-500"
                             style={{
@@ -424,7 +424,7 @@ export default function AnalyticsReportsView() {
                           ></div>
                         </div>
 
-                        <div className="flex items-center justify-between text-[10px] text-slate-500">
+                        <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400">
                           <span>Weighted: ${Math.round(weightedVal).toLocaleString()}</span>
                           <span>{stage.deal_count} active opportunities</span>
                         </div>
@@ -434,9 +434,9 @@ export default function AnalyticsReportsView() {
                 </div>
               </div>
 
-              <div className="p-3 bg-indigo-50/70 border border-indigo-100 rounded-xl mt-4 flex items-center justify-between text-xs">
-                <span className="text-indigo-900 font-semibold">Total Forecasting Confidence</span>
-                <span className="text-indigo-700 font-bold">
+              <div className="p-3 bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50 rounded-xl mt-4 flex items-center justify-between text-xs">
+                <span className="text-indigo-900 dark:text-indigo-200 font-semibold">Total Forecasting Confidence</span>
+                <span className="text-indigo-700 dark:text-indigo-300 font-bold">
                   ${Math.round(overview?.pipeline?.weightedForecast || 168000).toLocaleString()} expected
                 </span>
               </div>
@@ -446,57 +446,57 @@ export default function AnalyticsReportsView() {
           {/* Section 3: Operational Breakdown Widgets (Touchpoints, Contact Journey, Tasks) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Outreach Velocity by Channel */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-3">
-                <Activity className="w-4 h-4 text-indigo-600" />
+            <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-3">
+                <Activity className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 Customer Outreach Volume (30D)
               </h3>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
                   <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 rounded-lg bg-blue-100 text-blue-700">
+                    <div className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400">
                       <Mail className="w-3.5 h-3.5" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-slate-800">Email Messages</p>
-                      <p className="text-[10px] text-slate-500">Outreach & Follow-ups</p>
+                      <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">Email Messages</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400">Outreach & Follow-ups</p>
                     </div>
                   </div>
-                  <span className="text-sm font-bold text-slate-900">{overview?.activities?.emails || 4}</span>
+                  <span className="text-sm font-bold text-slate-900 dark:text-white">{overview?.activities?.emails || 4}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
                   <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 rounded-lg bg-emerald-100 text-emerald-700">
+                    <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400">
                       <Phone className="w-3.5 h-3.5" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-slate-800">Phone Calls</p>
-                      <p className="text-[10px] text-slate-500">Telephony & Logs</p>
+                      <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">Phone Calls</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400">Telephony & Logs</p>
                     </div>
                   </div>
-                  <span className="text-sm font-bold text-slate-900">{overview?.activities?.calls || 2}</span>
+                  <span className="text-sm font-bold text-slate-900 dark:text-white">{overview?.activities?.calls || 2}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
                   <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 rounded-lg bg-amber-100 text-amber-700">
+                    <div className="p-1.5 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400">
                       <FileText className="w-3.5 h-3.5" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-slate-800">Internal Notes</p>
-                      <p className="text-[10px] text-slate-500">Rep observations</p>
+                      <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">Internal Notes</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400">Rep observations</p>
                     </div>
                   </div>
-                  <span className="text-sm font-bold text-slate-900">{overview?.activities?.notes || 4}</span>
+                  <span className="text-sm font-bold text-slate-900 dark:text-white">{overview?.activities?.notes || 4}</span>
                 </div>
               </div>
             </div>
 
             {/* Contact Lifecycle Breakdown */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-3">
-                <Users className="w-4 h-4 text-purple-600" />
+            <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-3">
+                <Users className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                 Contact Lifecycle Distribution
               </h3>
               <div className="space-y-2.5">
@@ -509,29 +509,29 @@ export default function AnalyticsReportsView() {
                   <div key={item.lifecycle_stage} className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-                      <span className="capitalize font-medium text-slate-700">
+                      <span className="capitalize font-medium text-slate-700 dark:text-slate-300">
                         {item.lifecycle_stage.replace(/_/g, ' ')}
                       </span>
                     </div>
-                    <span className="font-bold text-slate-900">{item.count}</span>
+                    <span className="font-bold text-slate-900 dark:text-white">{item.count}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Task Execution Velocity */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-3">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-3">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 Task Execution Health
               </h3>
               <div className="space-y-3">
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-slate-600 font-medium">Completion Rate</span>
-                    <span className="font-bold text-emerald-600">{overview?.tasks?.completionRatePercent || 33}%</span>
+                    <span className="text-slate-600 dark:text-slate-300 font-medium">Completion Rate</span>
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400">{overview?.tasks?.completionRatePercent || 33}%</span>
                   </div>
-                  <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                  <div className="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
                     <div
                       className="bg-emerald-500 h-full rounded-full transition-all"
                       style={{ width: `${overview?.tasks?.completionRatePercent || 33}%` }}
@@ -539,18 +539,18 @@ export default function AnalyticsReportsView() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-center">
-                  <div className="p-2 rounded-lg bg-slate-50">
-                    <span className="block text-[10px] text-slate-500 font-medium">Pending</span>
-                    <span className="text-sm font-bold text-amber-600">{overview?.tasks?.pending || 3}</span>
+                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-center">
+                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60">
+                    <span className="block text-[10px] text-slate-500 dark:text-slate-400 font-medium">Pending</span>
+                    <span className="text-sm font-bold text-amber-600 dark:text-amber-400">{overview?.tasks?.pending || 3}</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-50">
-                    <span className="block text-[10px] text-slate-500 font-medium">In Progress</span>
-                    <span className="text-sm font-bold text-blue-600">{overview?.tasks?.inProgress || 1}</span>
+                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60">
+                    <span className="block text-[10px] text-slate-500 dark:text-slate-400 font-medium">In Progress</span>
+                    <span className="text-sm font-bold text-blue-600 dark:text-blue-400">{overview?.tasks?.inProgress || 1}</span>
                   </div>
-                  <div className="p-2 rounded-lg bg-slate-50">
-                    <span className="block text-[10px] text-slate-500 font-medium">Completed</span>
-                    <span className="text-sm font-bold text-emerald-600">{overview?.tasks?.completed || 2}</span>
+                  <div className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/60">
+                    <span className="block text-[10px] text-slate-500 dark:text-slate-400 font-medium">Completed</span>
+                    <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{overview?.tasks?.completed || 2}</span>
                   </div>
                 </div>
               </div>
@@ -566,26 +566,26 @@ export default function AnalyticsReportsView() {
             {reports.map((report) => (
               <div
                 key={report.id}
-                className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between"
+                className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-100">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800">
                       {report.entity_type}
                     </span>
-                    <span className="text-xs text-slate-400 capitalize">{report.chart_type} Chart</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500 capitalize">{report.chart_type} Chart</span>
                   </div>
-                  <h3 className="text-base font-bold text-slate-900">{report.name}</h3>
-                  <p className="text-xs text-slate-500 mt-1 line-clamp-2">{report.description}</p>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">{report.name}</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">{report.description}</p>
                 </div>
 
-                <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
-                  <div className="text-[11px] text-slate-400">
-                    Metric: <strong className="text-slate-700 capitalize">{report.metric_type}({report.metric_field})</strong>
+                <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                  <div className="text-[11px] text-slate-400 dark:text-slate-500">
+                    Metric: <strong className="text-slate-700 dark:text-slate-300 capitalize">{report.metric_type}({report.metric_field})</strong>
                   </div>
                   <button
                     onClick={() => handleOpenReport(report)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 rounded-lg transition-colors"
                   >
                     <Play className="w-3 h-3" />
                     <span>Run Report</span>
@@ -599,22 +599,22 @@ export default function AnalyticsReportsView() {
 
       {/* QUERY BUILDER / REPORT CREATION MODAL */}
       {isQueryModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-150">
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-indigo-100 text-indigo-700">
+                <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400">
                   <BarChart3 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">Custom Query Builder & Report Generator</h3>
-                  <p className="text-xs text-slate-500">Compile parameterized SQL aggregations across CRM objects.</p>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">Custom Query Builder & Report Generator</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Compile parameterized SQL aggregations across CRM objects.</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsQueryModalOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -625,11 +625,11 @@ export default function AnalyticsReportsView() {
               {/* Form Controls Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Target Entity Table</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Target Entity Table</label>
                   <select
                     value={querySpec.entityType}
                     onChange={(e) => setQuerySpec({ ...querySpec, entityType: e.target.value })}
-                    className="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800"
+                    className="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100"
                   >
                     <option value="deals">Deals & Opportunities</option>
                     <option value="contacts">Contacts</option>
@@ -640,12 +640,12 @@ export default function AnalyticsReportsView() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Metric Aggregation</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Metric Aggregation</label>
                   <div className="grid grid-cols-2 gap-2">
                     <select
                       value={querySpec.metricType}
                       onChange={(e) => setQuerySpec({ ...querySpec, metricType: e.target.value })}
-                      className="text-xs bg-slate-50 border border-slate-300 rounded-lg px-2 py-2 text-slate-800"
+                      className="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-2 text-slate-800 dark:text-slate-100"
                     >
                       <option value="count">COUNT</option>
                       <option value="sum">SUM</option>
@@ -655,7 +655,7 @@ export default function AnalyticsReportsView() {
                     <select
                       value={querySpec.metricField}
                       onChange={(e) => setQuerySpec({ ...querySpec, metricField: e.target.value })}
-                      className="text-xs bg-slate-50 border border-slate-300 rounded-lg px-2 py-2 text-slate-800"
+                      className="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-2 text-slate-800 dark:text-slate-100"
                     >
                       <option value="value">Deal Value ($)</option>
                       <option value="weighted_value">Weighted Value</option>
@@ -666,11 +666,11 @@ export default function AnalyticsReportsView() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Group By Field</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Group By Field</label>
                   <select
                     value={querySpec.groupBy}
                     onChange={(e) => setQuerySpec({ ...querySpec, groupBy: e.target.value })}
-                    className="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800"
+                    className="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-800 dark:text-slate-100"
                   >
                     {querySpec.entityType === 'deals' && (
                       <>
@@ -707,21 +707,21 @@ export default function AnalyticsReportsView() {
               {/* Report Name & Description */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Report Title</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Report Title</label>
                   <input
                     type="text"
                     value={querySpec.name}
                     onChange={(e) => setQuerySpec({ ...querySpec, name: e.target.value })}
-                    className="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-3 py-2"
+                    className="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg px-3 py-2 placeholder-slate-400 dark:placeholder-slate-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Description</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Description</label>
                   <input
                     type="text"
                     value={querySpec.description}
                     onChange={(e) => setQuerySpec({ ...querySpec, description: e.target.value })}
-                    className="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-3 py-2"
+                    className="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg px-3 py-2 placeholder-slate-400 dark:placeholder-slate-500"
                   />
                 </div>
               </div>
@@ -742,7 +742,7 @@ export default function AnalyticsReportsView() {
                   <button
                     type="button"
                     onClick={() => exportToCSV(queryResults.dataPoints, `${querySpec.name.replace(/\s+/g, '_')}.csv`)}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Export CSV</span>
@@ -752,12 +752,12 @@ export default function AnalyticsReportsView() {
 
               {/* Live Preview Results Area */}
               {queryResults && (
-                <div className="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-4">
+                <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-800/40 space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-800">
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                       Query Execution Results ({queryResults.dataPoints?.length || 0} Groups)
                     </span>
-                    <span className="text-xs font-semibold text-indigo-700">
+                    <span className="text-xs font-semibold text-indigo-700 dark:text-indigo-400">
                       Total Metric Sum: ${queryResults.totalMetricSum?.toLocaleString()}
                     </span>
                   </div>
@@ -767,10 +767,10 @@ export default function AnalyticsReportsView() {
                     {queryResults.dataPoints?.map((dp, i) => (
                       <div key={i} className="space-y-1">
                         <div className="flex items-center justify-between text-xs">
-                          <span className="font-semibold text-slate-700">{dp.label}</span>
-                          <span className="font-bold text-slate-900">{dp.formattedValue} ({dp.percentage}%)</span>
+                          <span className="font-semibold text-slate-700 dark:text-slate-300">{dp.label}</span>
+                          <span className="font-bold text-slate-900 dark:text-white">{dp.formattedValue} ({dp.percentage}%)</span>
                         </div>
-                        <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                        <div className="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
                           <div
                             className="bg-indigo-600 h-full rounded-full transition-all duration-300"
                             style={{ width: `${Math.max(5, dp.percentage)}%` }}
@@ -781,9 +781,9 @@ export default function AnalyticsReportsView() {
                   </div>
 
                   {/* Data Table */}
-                  <div className="border border-slate-200 rounded-lg overflow-hidden bg-white mt-4">
+                  <div className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden bg-white dark:bg-slate-900 mt-4">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-100 text-slate-600 uppercase text-[10px]">
+                      <thead className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 uppercase text-[10px]">
                         <tr>
                           <th className="p-2.5 font-semibold">Group / Dimension</th>
                           <th className="p-2.5 font-semibold">Aggregated Value</th>
@@ -791,13 +791,13 @@ export default function AnalyticsReportsView() {
                           <th className="p-2.5 font-semibold">Share (%)</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                         {queryResults.dataPoints?.map((dp, i) => (
-                          <tr key={i} className="hover:bg-slate-50">
-                            <td className="p-2.5 font-medium text-slate-800">{dp.label}</td>
-                            <td className="p-2.5 font-bold text-slate-900">{dp.formattedValue}</td>
-                            <td className="p-2.5 text-slate-500">{dp.count}</td>
-                            <td className="p-2.5 text-indigo-600 font-semibold">{dp.percentage}%</td>
+                          <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                            <td className="p-2.5 font-medium text-slate-800 dark:text-slate-200">{dp.label}</td>
+                            <td className="p-2.5 font-bold text-slate-900 dark:text-white">{dp.formattedValue}</td>
+                            <td className="p-2.5 text-slate-500 dark:text-slate-400">{dp.count}</td>
+                            <td className="p-2.5 text-indigo-600 dark:text-indigo-400 font-semibold">{dp.percentage}%</td>
                           </tr>
                         ))}
                       </tbody>
@@ -808,11 +808,11 @@ export default function AnalyticsReportsView() {
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+            <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => setIsQueryModalOpen(false)}
-                className="px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-800"
+                className="px-4 py-2 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white"
               >
                 Close
               </button>
@@ -832,19 +832,19 @@ export default function AnalyticsReportsView() {
 
       {/* SINGLE REPORT VIEWER DRAWER / MODAL */}
       {viewingReport && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-150">
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-150">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-100 text-indigo-700">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
                   {viewingReport.entity_type} · {viewingReport.chart_type}
                 </span>
-                <h3 className="text-base font-bold text-slate-900 mt-1">{viewingReport.name}</h3>
-                <p className="text-xs text-slate-500">{viewingReport.description}</p>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white mt-1">{viewingReport.name}</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{viewingReport.description}</p>
               </div>
               <button
                 onClick={() => setViewingReport(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -854,12 +854,12 @@ export default function AnalyticsReportsView() {
               {viewingResults ? (
                 <>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-500">
-                      Total: <strong className="text-slate-900">${viewingResults.totalMetricSum?.toLocaleString()}</strong>
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                      Total: <strong className="text-slate-900 dark:text-white">${viewingResults.totalMetricSum?.toLocaleString()}</strong>
                     </span>
                     <button
                       onClick={() => exportToCSV(viewingResults.dataPoints, `${viewingReport.name}.csv`)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700"
                     >
                       <Download className="w-3.5 h-3.5" />
                       <span>Download CSV</span>
@@ -870,10 +870,10 @@ export default function AnalyticsReportsView() {
                     {viewingResults.dataPoints?.map((dp, i) => (
                       <div key={i} className="space-y-1">
                         <div className="flex items-center justify-between text-xs">
-                          <span className="font-semibold text-slate-700">{dp.label}</span>
-                          <span className="font-bold text-slate-900">{dp.formattedValue} ({dp.percentage}%)</span>
+                          <span className="font-semibold text-slate-700 dark:text-slate-300">{dp.label}</span>
+                          <span className="font-bold text-slate-900 dark:text-white">{dp.formattedValue} ({dp.percentage}%)</span>
                         </div>
-                        <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                        <div className="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden">
                           <div
                             className="bg-indigo-600 h-full rounded-full"
                             style={{ width: `${Math.max(5, dp.percentage)}%` }}
@@ -884,14 +884,14 @@ export default function AnalyticsReportsView() {
                   </div>
                 </>
               ) : (
-                <div className="p-12 text-center text-slate-400">Loading report results...</div>
+                <div className="p-12 text-center text-slate-400 dark:text-slate-500">Loading report results...</div>
               )}
             </div>
 
-            <div className="px-6 py-3 border-t border-slate-200 bg-slate-50 flex justify-end">
+            <div className="px-6 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex justify-end">
               <button
                 onClick={() => setViewingReport(null)}
-                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800"
+                className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white"
               >
                 Close
               </button>

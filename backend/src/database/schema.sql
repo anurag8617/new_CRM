@@ -1233,6 +1233,267 @@ CREATE TABLE IF NOT EXISTS `campaign_recipients` (
   CONSTRAINT `fk_cr_contact` FOREIGN KEY (`contact_id`) REFERENCES `contacts` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ---------------------------------------------------------------------
+-- 46. DEVELOPER API KEYS (Spec §37 Scoped API Keys & Rate Limiting)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `api_keys` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(150) NOT NULL,
+  `key_prefix` VARCHAR(16) NOT NULL,
+  `key_hash` VARCHAR(128) NOT NULL,
+  `scopes_json` JSON NOT NULL,
+  `rate_limit_per_minute` INT UNSIGNED NOT NULL DEFAULT 60,
+  `status` ENUM('active', 'revoked', 'expired') NOT NULL DEFAULT 'active',
+  `expires_at` TIMESTAMP NULL,
+  `last_used_at` TIMESTAMP NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_api_keys_org` (`organization_id`, `status`),
+  INDEX `idx_api_keys_hash` (`key_hash`),
+  CONSTRAINT `fk_api_keys_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_api_keys_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 47. WEBHOOK ENDPOINTS (Spec §31, §37 Outgoing Event Subscriptions)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `webhook_endpoints` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `target_url` VARCHAR(1000) NOT NULL,
+  `secret_token` VARCHAR(255) NOT NULL,
+  `subscribed_events_json` JSON NOT NULL,
+  `status` ENUM('active', 'paused', 'failing') NOT NULL DEFAULT 'active',
+  `failure_count` INT UNSIGNED NOT NULL DEFAULT 0,
+  `last_delivery_at` TIMESTAMP NULL,
+  `last_status_code` INT NULL,
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_webhooks_org_status` (`organization_id`, `status`),
+  CONSTRAINT `fk_webhooks_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_webhooks_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 48. WEBHOOK DELIVERIES (Spec §31, §41 Idempotency & HMAC Deliveries)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `webhook_deliveries` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `webhook_endpoint_id` BIGINT UNSIGNED NOT NULL,
+  `event_type` VARCHAR(100) NOT NULL,
+  `idempotency_key` VARCHAR(100) NOT NULL,
+  `payload_json` JSON NOT NULL,
+  `request_headers_json` JSON NULL,
+  `response_status` INT NULL,
+  `response_body` TEXT NULL,
+  `duration_ms` INT UNSIGNED NOT NULL DEFAULT 0,
+  `status` ENUM('success', 'failed', 'retrying') NOT NULL DEFAULT 'success',
+  `attempt_number` INT UNSIGNED NOT NULL DEFAULT 1,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_wd_endpoint` (`webhook_endpoint_id`, `created_at`),
+  INDEX `idx_wd_org` (`organization_id`, `status`),
+  INDEX `idx_wd_idempotency` (`idempotency_key`),
+  CONSTRAINT `fk_wd_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_wd_endpoint` FOREIGN KEY (`webhook_endpoint_id`) REFERENCES `webhook_endpoints` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 49. THIRD-PARTY INTEGRATIONS (Spec §36 Native Integration Connectors)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `integrations` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `provider` ENUM('slack', 'stripe', 'google_calendar', 'hubspot', 'zapier') NOT NULL,
+  `name` VARCHAR(150) NOT NULL,
+  `status` ENUM('connected', 'disconnected', 'error') NOT NULL DEFAULT 'disconnected',
+  `config_json` JSON NULL,
+  `last_sync_at` TIMESTAMP NULL,
+  `sync_count` INT UNSIGNED NOT NULL DEFAULT 0,
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_integ_org_provider` (`organization_id`, `provider`),
+  INDEX `idx_integ_org` (`organization_id`, `status`),
+  CONSTRAINT `fk_integ_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_integ_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 50. INTEGRATION SYNC LOGS (Spec §36, §40 Integration Audit Trails)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `integration_sync_logs` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `integration_id` BIGINT UNSIGNED NOT NULL,
+  `direction` ENUM('inbound', 'outbound') NOT NULL DEFAULT 'outbound',
+  `action` VARCHAR(100) NOT NULL,
+  `status` ENUM('success', 'failed') NOT NULL DEFAULT 'success',
+  `details_json` JSON NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_sync_logs_integ` (`integration_id`, `created_at`),
+  INDEX `idx_sync_logs_org` (`organization_id`),
+  CONSTRAINT `fk_sync_logs_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_sync_logs_integ` FOREIGN KEY (`integration_id`) REFERENCES `integrations` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 51. FORMS (Spec §23 Visual Form Designer & Public Lead Capture)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `forms` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `workspace_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `slug` VARCHAR(255) NOT NULL,
+  `description` TEXT NULL,
+  `submit_button_text` VARCHAR(100) NOT NULL DEFAULT 'Submit',
+  `success_message` TEXT NULL,
+  `redirect_url` VARCHAR(500) NULL,
+  `status` ENUM('draft', 'published', 'archived') NOT NULL DEFAULT 'published',
+  `theme_config_json` JSON NULL,
+  `captcha_enabled` TINYINT(1) NOT NULL DEFAULT 0,
+  `create_deal_on_submit` TINYINT(1) NOT NULL DEFAULT 0,
+  `deal_pipeline_id` BIGINT UNSIGNED NULL,
+  `deal_stage_id` BIGINT UNSIGNED NULL,
+  `default_deal_value` DECIMAL(15,2) NULL,
+  `notification_emails_json` JSON NULL,
+  `total_views` INT UNSIGNED NOT NULL DEFAULT 0,
+  `total_submissions` INT UNSIGNED NOT NULL DEFAULT 0,
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_forms_org_slug` (`organization_id`, `slug`),
+  INDEX `idx_forms_org_status` (`organization_id`, `status`),
+  CONSTRAINT `fk_forms_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_forms_ws` FOREIGN KEY (`workspace_id`) REFERENCES `workspaces` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_forms_pipeline` FOREIGN KEY (`deal_pipeline_id`) REFERENCES `pipelines` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_forms_stage` FOREIGN KEY (`deal_stage_id`) REFERENCES `pipeline_stages` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_forms_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 52. FORM FIELDS (Spec §23 Dynamic Form Field Configuration & Mappings)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `form_fields` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `form_id` BIGINT UNSIGNED NOT NULL,
+  `label` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `field_type` ENUM('text', 'email', 'phone', 'number', 'textarea', 'select', 'checkbox', 'radio', 'hidden', 'date') NOT NULL DEFAULT 'text',
+  `placeholder` VARCHAR(255) NULL,
+  `help_text` VARCHAR(255) NULL,
+  `is_required` TINYINT(1) NOT NULL DEFAULT 0,
+  `default_value` VARCHAR(255) NULL,
+  `options_json` JSON NULL,
+  `sort_order` INT UNSIGNED NOT NULL DEFAULT 0,
+  `map_to_entity` ENUM('contact', 'company', 'deal', 'ticket', 'custom_field') NOT NULL DEFAULT 'contact',
+  `map_to_field` VARCHAR(100) NOT NULL DEFAULT 'first_name',
+  `validation_rules_json` JSON NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_ff_form_sort` (`form_id`, `sort_order`),
+  CONSTRAINT `fk_ff_form` FOREIGN KEY (`form_id`) REFERENCES `forms` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 53. FORM SUBMISSIONS (Spec §23, §39 Lead Ingestion & Attribution)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `form_submissions` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `form_id` BIGINT UNSIGNED NOT NULL,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `workspace_id` BIGINT UNSIGNED NOT NULL,
+  `submitted_data_json` JSON NOT NULL,
+  `contact_id` BIGINT UNSIGNED NULL,
+  `company_id` BIGINT UNSIGNED NULL,
+  `deal_id` BIGINT UNSIGNED NULL,
+  `ip_address` VARCHAR(45) NULL,
+  `user_agent` TEXT NULL,
+  `referrer_url` VARCHAR(500) NULL,
+  `utm_source` VARCHAR(100) NULL,
+  `utm_medium` VARCHAR(100) NULL,
+  `utm_campaign` VARCHAR(100) NULL,
+  `status` ENUM('processed', 'pending', 'spam', 'failed') NOT NULL DEFAULT 'processed',
+  `routing_result_json` JSON NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_fsub_form` (`form_id`, `created_at`),
+  INDEX `idx_fsub_org` (`organization_id`, `created_at`),
+  INDEX `idx_fsub_contact` (`contact_id`),
+  CONSTRAINT `fk_fsub_form` FOREIGN KEY (`form_id`) REFERENCES `forms` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_fsub_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_fsub_ws` FOREIGN KEY (`workspace_id`) REFERENCES `workspaces` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_fsub_contact` FOREIGN KEY (`contact_id`) REFERENCES `contacts` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_fsub_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_fsub_deal` FOREIGN KEY (`deal_id`) REFERENCES `deals` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 54. LEAD ROUTING RULES (Spec §38 Multi-Tenant Round-Robin & Routing)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `lead_routing_rules` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `workspace_id` BIGINT UNSIGNED NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `description` TEXT NULL,
+  `routing_type` ENUM('round_robin', 'territory', 'deal_size', 'weighted', 'fallback') NOT NULL DEFAULT 'round_robin',
+  `priority` INT NOT NULL DEFAULT 10,
+  `conditions_json` JSON NULL,
+  `assignee_user_ids_json` JSON NOT NULL,
+  `current_index` INT UNSIGNED NOT NULL DEFAULT 0,
+  `is_active` TINYINT(1) NOT NULL DEFAULT 1,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  INDEX `idx_lrr_org_priority` (`organization_id`, `priority`),
+  CONSTRAINT `fk_lrr_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_lrr_ws` FOREIGN KEY (`workspace_id`) REFERENCES `workspaces` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------
+-- 55. LANDING PAGES (Spec §23 Hosted Lead Capture Landing Pages)
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `landing_pages` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organization_id` BIGINT UNSIGNED NOT NULL,
+  `workspace_id` BIGINT UNSIGNED NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `slug` VARCHAR(255) NOT NULL,
+  `headline` VARCHAR(255) NOT NULL,
+  `subheadline` TEXT NULL,
+  `hero_cta_text` VARCHAR(100) NOT NULL DEFAULT 'Get Started Free',
+  `body_content` LONGTEXT NULL,
+  `form_id` BIGINT UNSIGNED NULL,
+  `seo_meta_json` JSON NULL,
+  `theme_config_json` JSON NULL,
+  `status` ENUM('draft', 'published', 'archived') NOT NULL DEFAULT 'published',
+  `total_views` INT UNSIGNED NOT NULL DEFAULT 0,
+  `total_conversions` INT UNSIGNED NOT NULL DEFAULT 0,
+  `created_by` BIGINT UNSIGNED NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_lp_org_slug` (`organization_id`, `slug`),
+  INDEX `idx_lp_org_status` (`organization_id`, `status`),
+  CONSTRAINT `fk_lp_org` FOREIGN KEY (`organization_id`) REFERENCES `organizations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_lp_ws` FOREIGN KEY (`workspace_id`) REFERENCES `workspaces` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_lp_form` FOREIGN KEY (`form_id`) REFERENCES `forms` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_lp_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 

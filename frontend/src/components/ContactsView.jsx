@@ -10,22 +10,11 @@ import {
   Building2, 
   Mail, 
   Phone, 
-  Filter, 
-  RefreshCw,
-  Loader2,
-  X,
-  AlertCircle
+  RefreshCw, 
+  Loader2, 
+  AlertCircle 
 } from 'lucide-react';
-
-const STAGE_COLORS = {
-  subscriber: 'bg-slate-100 text-slate-700',
-  lead: 'bg-blue-50 text-blue-700 border-blue-200',
-  marketing_qualified_lead: 'bg-purple-50 text-purple-700 border-purple-200',
-  sales_qualified_lead: 'bg-indigo-50 text-indigo-700 border-indigo-200',
-  opportunity: 'bg-amber-50 text-amber-700 border-amber-200',
-  customer: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  evangelist: 'bg-rose-50 text-rose-700 border-rose-200',
-};
+import { Button, Card, Badge, Modal, Input } from './ui';
 
 export default function ContactsView() {
   const [contacts, setContacts] = useState([]);
@@ -99,106 +88,138 @@ export default function ContactsView() {
     setCreateLoading(true);
     setCreateError(null);
     try {
-      await createContact(formData);
-      setIsCreateOpen(false);
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        jobTitle: '',
-        companyId: '',
-        lifecycleStage: 'lead',
-        leadStatus: 'new',
+      const res = await createContact({
+        ...formData,
+        companyId: formData.companyId ? Number(formData.companyId) : null,
       });
-      await fetchContacts();
+      if (res.success) {
+        setIsCreateOpen(false);
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          jobTitle: '',
+          companyId: '',
+          lifecycleStage: 'lead',
+          leadStatus: 'new',
+        });
+        await fetchContacts();
+      }
     } catch (err) {
-      setCreateError(err.response?.data?.message || err.message || 'Creation failed');
+      setCreateError(err.response?.data?.message || err.message || 'Error creating contact');
     } finally {
       setCreateLoading(false);
     }
   };
 
+  const getStageVariant = (stage) => {
+    switch (stage) {
+      case 'customer':
+      case 'evangelist':
+        return 'success';
+      case 'opportunity':
+      case 'sales_qualified_lead':
+        return 'warning';
+      case 'lead':
+      case 'marketing_qualified_lead':
+        return 'info';
+      default:
+        return 'neutral';
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Top Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-4">
+      {/* Page Header (§7.1) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Contacts Directory (§6)</h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Standard sales object with timeline activities, company associations, and stage workflows.
+          <h2 className="text-xl font-semibold text-[var(--text-primary)]">Contacts</h2>
+          <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+            Manage stakeholders, leads, and customer accounts.
           </p>
         </div>
 
-        <button
-          onClick={() => setIsCreateOpen(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-sm shadow-indigo-200 transition-colors self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>New Contact</span>
-        </button>
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={fetchContacts}
+            disabled={loading}
+            className="p-2 text-[var(--text-secondary)] bg-[var(--bg-surface-raised)] border border-[var(--border-subtle)] rounded-[var(--radius-sm)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-50"
+            title="Refresh Contacts"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+
+          <Button
+            variant="primary"
+            onClick={() => setIsCreateOpen(true)}
+            icon={Plus}
+          >
+            New Contact
+          </Button>
+        </div>
       </div>
 
-      {/* Filter / Search Bar */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+      {/* Filter and Search Bar (§7.1) */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-[var(--bg-surface-raised)] border border-[var(--border-subtle)] rounded-[var(--radius-md)]">
+        <div className="relative flex-1 min-w-[220px] max-w-sm">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] pointer-events-none" />
           <input
             type="text"
-            placeholder="Search by name, email, job title, company..."
+            placeholder="Search by name, email, or company..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-200"
+            className="w-full h-8 pl-9 pr-3 text-xs bg-[var(--bg-input)] border border-[var(--border-default)] rounded-[var(--radius-sm)] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:border-[var(--border-focus)] transition-colors"
           />
         </div>
 
-        <select
-          value={selectedStage}
-          onChange={(e) => setSelectedStage(e.target.value)}
-          className="px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg text-slate-700 focus:outline-none focus:border-indigo-600"
-        >
-          <option value="">All Lifecycle Stages</option>
-          <option value="lead">Lead</option>
-          <option value="marketing_qualified_lead">MQL</option>
-          <option value="sales_qualified_lead">SQL</option>
-          <option value="opportunity">Opportunity</option>
-          <option value="customer">Customer</option>
-        </select>
+        <div className="flex items-center gap-2">
+          <select
+            value={selectedStage}
+            onChange={(e) => setSelectedStage(e.target.value)}
+            className="h-8 px-2.5 text-xs bg-[var(--bg-input)] border border-[var(--border-default)] rounded-[var(--radius-sm)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--border-focus)] cursor-pointer"
+          >
+            <option value="">All Lifecycle Stages</option>
+            <option value="subscriber">Subscriber</option>
+            <option value="lead">Lead</option>
+            <option value="marketing_qualified_lead">MQL</option>
+            <option value="sales_qualified_lead">SQL</option>
+            <option value="opportunity">Opportunity</option>
+            <option value="customer">Customer</option>
+            <option value="evangelist">Evangelist</option>
+          </select>
 
-        <button
-          onClick={fetchContacts}
-          title="Refresh contacts"
-          className="p-2 bg-white border border-slate-300 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors shrink-0"
-        >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-        </button>
+          <span className="text-xs text-[var(--text-tertiary)] tabular-nums">
+            {contacts.length} records
+          </span>
+        </div>
       </div>
 
-      {/* Contacts Table */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      {/* Table Container (§6.4) */}
+      <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] overflow-hidden bg-[var(--bg-surface-raised)]">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
-                <th className="py-3 px-4">Contact</th>
-                <th className="py-3 px-4">Company</th>
-                <th className="py-3 px-4">Phone</th>
-                <th className="py-3 px-4">Lifecycle Stage</th>
-                <th className="py-3 px-4">Lead Status</th>
-                <th className="py-3 px-4 text-right">Actions</th>
+              <tr className="h-10 bg-[var(--bg-app)] border-b border-[var(--border-default)] text-[var(--text-secondary)] font-medium">
+                <th className="py-2.5 px-4 font-medium">Contact</th>
+                <th className="py-2.5 px-4 font-medium">Company</th>
+                <th className="py-2.5 px-4 font-medium">Phone</th>
+                <th className="py-2.5 px-4 font-medium">Lifecycle Stage</th>
+                <th className="py-2.5 px-4 font-medium">Lead Status</th>
+                <th className="py-2.5 px-4 font-medium text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-[var(--border-subtle)]">
               {loading && contacts.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="py-8 text-center text-slate-400">
-                    <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-indigo-600" />
+                  <td colSpan="6" className="py-12 text-center text-[var(--text-tertiary)]">
+                    <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2 text-[var(--text-tertiary)]" />
                     <span>Loading contact records...</span>
                   </td>
                 </tr>
               ) : contacts.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="py-8 text-center text-slate-400">
+                  <td colSpan="6" className="py-12 text-center text-[var(--text-tertiary)]">
                     No contacts matching search criteria.
                   </td>
                 </tr>
@@ -207,63 +228,63 @@ export default function ContactsView() {
                   <tr
                     key={contact.id}
                     onClick={() => setActiveContactId(contact.id)}
-                    className="hover:bg-slate-50/80 cursor-pointer transition-colors"
+                    className="h-10 hover:bg-[var(--bg-hover)] cursor-pointer transition-colors"
                   >
-                    <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">
+                    <td className="py-2.5 px-4">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-7 h-7 rounded-full bg-[var(--bg-surface-sunken)] border border-[var(--border-subtle)] text-[var(--text-primary)] flex items-center justify-center font-medium text-xs shrink-0">
                           {contact.first_name[0]}{contact.last_name[0]}
                         </div>
                         <div>
-                          <p className="font-semibold text-slate-900 leading-tight">
+                          <p className="font-medium text-[var(--text-primary)] hover:underline">
                             {contact.first_name} {contact.last_name}
                           </p>
-                          <p className="text-[11px] text-slate-500">{contact.email}</p>
+                          <p className="text-[11px] text-[var(--text-tertiary)]">{contact.email}</p>
                         </div>
                       </div>
                     </td>
 
-                    <td className="py-3.5 px-4 text-slate-700 font-medium">
+                    <td className="py-2.5 px-4 text-[var(--text-secondary)]">
                       {contact.company_name ? (
-                        <span className="inline-flex items-center gap-1.5 text-slate-800">
-                          <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                        <span className="inline-flex items-center gap-1.5 text-[var(--text-primary)]">
+                          <Building2 className="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
                           <span>{contact.company_name}</span>
                         </span>
                       ) : (
-                        <span className="text-slate-400 italic">None</span>
+                        <span className="text-[var(--text-tertiary)]">—</span>
                       )}
                     </td>
 
-                    <td className="py-3.5 px-4 text-slate-600 font-mono">
+                    <td className="py-2.5 px-4 text-[var(--text-secondary)] font-mono text-[11px]">
                       {contact.phone || '—'}
                     </td>
 
-                    <td className="py-3.5 px-4">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${STAGE_COLORS[contact.lifecycle_stage] || 'bg-slate-100'}`}>
+                    <td className="py-2.5 px-4">
+                      <Badge variant={getStageVariant(contact.lifecycle_stage)}>
                         {contact.lifecycle_stage.replace(/_/g, ' ')}
-                      </span>
+                      </Badge>
                     </td>
 
-                    <td className="py-3.5 px-4 capitalize text-slate-600">
+                    <td className="py-2.5 px-4 capitalize text-[var(--text-secondary)]">
                       {contact.lead_status.replace(/_/g, ' ')}
                     </td>
 
-                    <td className="py-3.5 px-4 text-right">
+                    <td className="py-2.5 px-4 text-right">
                       <div className="inline-flex items-center gap-1">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setActiveContactId(contact.id);
                           }}
-                          title="View Timeline & Details"
-                          className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors"
+                          title="View Details"
+                          className="p-1 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] rounded transition-colors"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
                         <button
                           onClick={(e) => handleDelete(contact.id, e)}
                           title="Delete Contact"
-                          className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"
+                          className="p-1 text-[var(--text-tertiary)] hover:text-[var(--danger)] hover:bg-[var(--danger-soft)] rounded transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -288,148 +309,149 @@ export default function ContactsView() {
 
       {/* Create Contact Modal */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full overflow-hidden">
-            <div className="p-6 border-b border-slate-200 flex items-center justify-between">
+        <Modal
+          isOpen={isCreateOpen}
+          onClose={() => setIsCreateOpen(false)}
+          title="Create New Contact"
+          description="Record will be tenant-scoped to your active organization."
+        >
+          <form onSubmit={handleCreateSubmit} className="space-y-4">
+            {createError && (
+              <div className="p-3 bg-[var(--danger-soft)] border border-[var(--danger)]/30 rounded-[var(--radius-sm)] text-xs text-[var(--danger)] flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{createError}</span>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Create New Contact</h3>
-                <p className="text-xs text-slate-500">Record will be tenant-scoped to your active organization.</p>
-              </div>
-              <button onClick={() => setIsCreateOpen(false)} className="text-slate-400 hover:text-slate-600">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateSubmit} className="p-6 space-y-4">
-              {createError && (
-                <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-800 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-                  <span>{createError}</span>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">First Name *</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.firstName}
-                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-600"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Last Name *</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.lastName}
-                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-600"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Email *</label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-600"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Phone</label>
-                  <input
-                    type="text"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-600"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Job Title</label>
+                <label className="block text-xs font-medium text-[var(--text-primary)] mb-1">First Name *</label>
                 <input
                   type="text"
-                  value={formData.jobTitle}
-                  onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
-                  placeholder="e.g. VP of Product"
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-600"
+                  required
+                  placeholder="Jane"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  className="w-full h-9 px-3 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:border-[var(--border-focus)]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Associated Company</label>
+                <label className="block text-xs font-medium text-[var(--text-primary)] mb-1">Last Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Cooper"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  className="w-full h-9 px-3 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:border-[var(--border-focus)]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-[var(--text-primary)] mb-1">Email Address *</label>
+              <input
+                type="email"
+                required
+                placeholder="jane.cooper@example.com"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="w-full h-9 px-3 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:border-[var(--border-focus)]"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-[var(--text-primary)] mb-1">Phone</label>
+                <input
+                  type="text"
+                  placeholder="+1 (555) 000-0000"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="w-full h-9 px-3 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:border-[var(--border-focus)]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-[var(--text-primary)] mb-1">Job Title</label>
+                <input
+                  type="text"
+                  placeholder="VP of Engineering"
+                  value={formData.jobTitle}
+                  onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+                  className="w-full h-9 px-3 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:border-[var(--border-focus)]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-[var(--text-primary)] mb-1">Associated Company</label>
+              <select
+                value={formData.companyId}
+                onChange={(e) => setFormData({ ...formData, companyId: e.target.value })}
+                className="w-full h-9 px-3 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--border-focus)]"
+              >
+                <option value="">No Company</option>
+                {companies.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-[var(--text-primary)] mb-1">Lifecycle Stage</label>
                 <select
-                  value={formData.companyId}
-                  onChange={(e) => setFormData({ ...formData, companyId: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white focus:outline-none focus:border-indigo-600"
+                  value={formData.lifecycleStage}
+                  onChange={(e) => setFormData({ ...formData, lifecycleStage: e.target.value })}
+                  className="w-full h-9 px-3 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--border-focus)]"
                 >
-                  <option value="">No Company Assigned</option>
-                  {companies.map((comp) => (
-                    <option key={comp.id} value={comp.id}>
-                      {comp.name} {comp.domain ? `(${comp.domain})` : ''}
-                    </option>
-                  ))}
+                  <option value="subscriber">Subscriber</option>
+                  <option value="lead">Lead</option>
+                  <option value="marketing_qualified_lead">MQL</option>
+                  <option value="sales_qualified_lead">SQL</option>
+                  <option value="opportunity">Opportunity</option>
+                  <option value="customer">Customer</option>
+                  <option value="evangelist">Evangelist</option>
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Lifecycle Stage</label>
-                  <select
-                    value={formData.lifecycleStage}
-                    onChange={(e) => setFormData({ ...formData, lifecycleStage: e.target.value })}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white focus:outline-none focus:border-indigo-600"
-                  >
-                    <option value="lead">Lead</option>
-                    <option value="marketing_qualified_lead">MQL</option>
-                    <option value="sales_qualified_lead">SQL</option>
-                    <option value="opportunity">Opportunity</option>
-                    <option value="customer">Customer</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Lead Status</label>
-                  <select
-                    value={formData.leadStatus}
-                    onChange={(e) => setFormData({ ...formData, leadStatus: e.target.value })}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white focus:outline-none focus:border-indigo-600"
-                  >
-                    <option value="new">New</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="connected">Connected</option>
-                    <option value="open_deal">Open Deal</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-xs font-medium text-[var(--text-primary)] mb-1">Lead Status</label>
+                <select
+                  value={formData.leadStatus}
+                  onChange={(e) => setFormData({ ...formData, leadStatus: e.target.value })}
+                  className="w-full h-9 px-3 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--border-focus)]"
+                >
+                  <option value="new">New</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="qualified">Qualified</option>
+                  <option value="unqualified">Unqualified</option>
+                </select>
               </div>
+            </div>
 
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsCreateOpen(false)}
-                  className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={createLoading}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-colors flex items-center gap-1.5"
-                >
-                  {createLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                  <span>Create Contact</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+            <div className="flex items-center justify-end gap-2.5 pt-3">
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={() => setIsCreateOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                type="submit"
+                loading={createLoading}
+              >
+                Save Contact
+              </Button>
+            </div>
+          </form>
+        </Modal>
       )}
     </div>
   );

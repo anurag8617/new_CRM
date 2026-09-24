@@ -278,44 +278,44 @@ export default function TicketsView() {
   const getPriorityBadge = (priority) => {
     switch (priority) {
       case 'urgent':
-        return <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200"><AlertTriangle className="w-3 h-3 text-rose-600 animate-pulse" /> Urgent</span>;
+        return <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800"><AlertTriangle className="w-3 h-3 text-rose-600 dark:text-rose-400 animate-pulse" /> Urgent</span>;
       case 'high':
-        return <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">High</span>;
+        return <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">High</span>;
       case 'medium':
-        return <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">Medium</span>;
+        return <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800">Medium</span>;
       case 'low':
       default:
-        return <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">Low</span>;
+        return <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Low</span>;
     }
   };
 
   const getStatusBadge = (status) => {
     switch (status) {
       case 'new':
-        return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">New</span>;
+        return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300">New</span>;
       case 'open':
-        return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Open</span>;
+        return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300">Open</span>;
       case 'pending_customer':
-        return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Pending Customer</span>;
+        return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300">Pending Customer</span>;
       case 'on_hold':
-        return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-800">On Hold</span>;
+        return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">On Hold</span>;
       case 'resolved':
-        return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Resolved</span>;
+        return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">Resolved</span>;
       case 'closed':
-        return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-200 text-slate-700">Closed</span>;
+        return <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Closed</span>;
       default:
-        return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600">{status}</span>;
+        return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">{status}</span>;
     }
   };
 
   const getSlaBadge = (slaStatus) => {
     switch (slaStatus) {
       case 'within_sla':
-        return <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600"><CheckCircle2 className="w-3.5 h-3.5" /> Within SLA</span>;
+        return <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="w-3.5 h-3.5" /> Within SLA</span>;
       case 'approaching_breach':
-        return <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded"><Clock className="w-3.5 h-3.5 animate-spin" /> Approaching Breach</span>;
+        return <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded"><Clock className="w-3.5 h-3.5 animate-spin" /> Approaching Breach</span>;
       case 'breached':
-        return <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded"><ShieldAlert className="w-3.5 h-3.5" /> SLA Breached</span>;
+        return <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 px-2 py-0.5 rounded"><ShieldAlert className="w-3.5 h-3.5" /> SLA Breached</span>;
       default:
         return null;
     }
@@ -336,18 +336,18 @@ export default function TicketsView() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-slate-50 overflow-hidden">
+    <div className="flex-1 flex flex-col h-full bg-transparent overflow-hidden transition-colors">
       {/* Top Header & Support Action Ribbon */}
-      <div className="bg-white border-b border-slate-200 px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 transition-colors">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+            <span className="p-2 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-lg">
               <Headphones className="w-5 h-5" />
             </span>
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Omnichannel Support & SLA Engine</h1>
-            <span className="text-xs font-semibold px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full">Spec §23, §26</span>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Omnichannel Support & SLA Engine</h1>
+            <span className="text-xs font-semibold px-2 py-0.5 bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 rounded-full">Spec §23, §26</span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Real-time multi-channel support tickets, SLA policy timers, customer conversation thread, and knowledge base.
           </p>
         </div>
@@ -355,28 +355,28 @@ export default function TicketsView() {
         <div className="flex items-center flex-wrap gap-2">
           <button
             onClick={() => setShowKbModal(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 shadow-sm transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition"
           >
-            <BookOpen className="w-3.5 h-3.5 text-indigo-600" />
+            <BookOpen className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
             Knowledge Base ({kbArticles.length})
           </button>
           <button
             onClick={() => setShowCannedModal(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 shadow-sm transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition"
           >
             <Zap className="w-3.5 h-3.5 text-amber-500" />
             Canned Replies
           </button>
           <button
             onClick={() => setShowSlaModal(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 shadow-sm transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition"
           >
-            <Clock className="w-3.5 h-3.5 text-emerald-600" />
+            <Clock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             SLA Policies ({slaPolicies.length})
           </button>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-sm transition"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition"
           >
             <Plus className="w-4 h-4" />
             New Ticket
@@ -385,54 +385,54 @@ export default function TicketsView() {
       </div>
 
       {/* Operational KPI Ribbon (§26) */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 px-6 py-3 bg-slate-100 border-b border-slate-200">
-        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs flex items-center gap-3">
-          <div className="p-2.5 bg-blue-50 text-blue-600 rounded-lg">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 px-6 py-3 bg-slate-100 dark:bg-transparent border-b border-slate-200 dark:border-slate-800">
+        <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3 transition-colors">
+          <div className="p-2.5 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-lg">
             <LifeBuoy className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs font-medium text-slate-500">Active Queue</div>
-            <div className="text-lg font-bold text-slate-900">{metrics?.openTickets ?? 0} Tickets</div>
+            <div className="text-xs font-medium text-slate-500 dark:text-slate-400">Active Queue</div>
+            <div className="text-lg font-bold text-slate-900 dark:text-white">{metrics?.openTickets ?? 0} Tickets</div>
           </div>
         </div>
 
-        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs flex items-center gap-3">
-          <div className="p-2.5 bg-rose-50 text-rose-600 rounded-lg">
+        <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3 transition-colors">
+          <div className="p-2.5 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 rounded-lg">
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs font-medium text-slate-500">Urgent Backlog</div>
-            <div className="text-lg font-bold text-rose-600">{metrics?.urgentBacklog ?? 0} Urgent</div>
+            <div className="text-xs font-medium text-slate-500 dark:text-slate-400">Urgent Backlog</div>
+            <div className="text-lg font-bold text-rose-600 dark:text-rose-400">{metrics?.urgentBacklog ?? 0} Urgent</div>
           </div>
         </div>
 
-        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs flex items-center gap-3">
-          <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-lg">
+        <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3 transition-colors">
+          <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-lg">
             <CheckCircle2 className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs font-medium text-slate-500">SLA Compliance</div>
-            <div className="text-lg font-bold text-emerald-600">{metrics?.slaCompliancePercent ?? 100}%</div>
+            <div className="text-xs font-medium text-slate-500 dark:text-slate-400">SLA Compliance</div>
+            <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{metrics?.slaCompliancePercent ?? 100}%</div>
           </div>
         </div>
 
-        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs flex items-center gap-3">
-          <div className="p-2.5 bg-purple-50 text-purple-600 rounded-lg">
+        <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3 transition-colors">
+          <div className="p-2.5 bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 rounded-lg">
             <Clock className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs font-medium text-slate-500">Avg Resolution</div>
-            <div className="text-lg font-bold text-slate-900">{metrics?.avgResolutionHours ?? '1.2'}h</div>
+            <div className="text-xs font-medium text-slate-500 dark:text-slate-400">Avg Resolution</div>
+            <div className="text-lg font-bold text-slate-900 dark:text-white">{metrics?.avgResolutionHours ?? '1.2'}h</div>
           </div>
         </div>
 
-        <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-xs flex items-center gap-3 col-span-2 md:col-span-1">
-          <div className="p-2.5 bg-amber-50 text-amber-500 rounded-lg">
+        <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-3 col-span-2 md:col-span-1 transition-colors">
+          <div className="p-2.5 bg-amber-50 dark:bg-amber-950/60 text-amber-500 rounded-lg">
             <Star className="w-5 h-5 fill-amber-400" />
           </div>
           <div>
-            <div className="text-xs font-medium text-slate-500">CSAT Score</div>
-            <div className="text-lg font-bold text-slate-900">{metrics?.avgCsatScore ?? '5.0'} / 5.0</div>
+            <div className="text-xs font-medium text-slate-500 dark:text-slate-400">CSAT Score</div>
+            <div className="text-lg font-bold text-slate-900 dark:text-white">{metrics?.avgCsatScore ?? '5.0'} / 5.0</div>
           </div>
         </div>
       </div>
@@ -440,11 +440,11 @@ export default function TicketsView() {
       {/* Main Content Area: Left Tickets List, Right Detail & Omnichannel Conversation */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Panel: Ticket Filter Bar & Table List */}
-        <div className={`flex-1 flex flex-col bg-white overflow-hidden border-r border-slate-200 ${selectedTicket ? 'hidden lg:flex lg:w-1/2 xl:w-5/12' : 'w-full'}`}>
+        <div className={`flex-1 flex flex-col bg-white dark:bg-slate-900 overflow-hidden border-r border-slate-200 dark:border-slate-800 transition-colors ${selectedTicket ? 'hidden lg:flex lg:w-1/2 xl:w-5/12' : 'w-full'}`}>
           {/* Filter Toolbar */}
-          <div className="p-4 border-b border-slate-200 space-y-3">
+          <div className="p-4 border-b border-slate-200 dark:border-slate-800 space-y-3">
             {/* Status Tabs */}
-            <div className="flex border-b border-slate-200 gap-4 text-xs font-medium">
+            <div className="flex border-b border-slate-200 dark:border-slate-800 gap-4 text-xs font-medium">
               {[
                 { id: 'open_all', label: 'Open Queue' },
                 { id: 'pending_customer', label: 'Pending Customer' },
@@ -454,7 +454,7 @@ export default function TicketsView() {
                 <button
                   key={tab.id}
                   onClick={() => setStatusTab(tab.id)}
-                  className={`pb-2 transition relative ${statusTab === tab.id ? 'text-indigo-600 font-semibold border-b-2 border-indigo-600' : 'text-slate-500 hover:text-slate-800'}`}
+                  className={`pb-2 transition relative ${statusTab === tab.id ? 'text-indigo-600 dark:text-indigo-400 font-semibold border-b-2 border-indigo-600 dark:border-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}`}
                 >
                   {tab.label}
                 </button>
@@ -464,21 +464,21 @@ export default function TicketsView() {
             {/* Search and Dropdown Filters */}
             <div className="flex items-center gap-2">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" />
                 <input
                   type="text"
                   placeholder="Search ticket #, subject, client..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && loadAllData()}
-                  className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                  className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               <select
                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value)}
-                className="text-xs px-2.5 py-1.5 border border-slate-300 rounded-lg bg-white text-slate-700"
+                className="text-xs px-2.5 py-1.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
               >
                 <option value="all">All Priorities</option>
                 <option value="urgent">Urgent</option>
@@ -490,7 +490,7 @@ export default function TicketsView() {
               <select
                 value={channelFilter}
                 onChange={(e) => setChannelFilter(e.target.value)}
-                className="text-xs px-2.5 py-1.5 border border-slate-300 rounded-lg bg-white text-slate-700"
+                className="text-xs px-2.5 py-1.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
               >
                 <option value="all">All Channels</option>
                 <option value="email">Email</option>
@@ -502,37 +502,37 @@ export default function TicketsView() {
               <button
                 onClick={loadAllData}
                 title="Refresh Tickets"
-                className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition"
+                className="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
               >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-indigo-600' : ''}`} />
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-indigo-600 dark:text-indigo-400' : ''}`} />
               </button>
             </div>
           </div>
 
           {/* Tickets List */}
-          <div className="flex-1 overflow-y-auto divide-y divide-slate-100">
+          <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
             {loading ? (
-              <div className="p-8 text-center text-xs text-slate-400 flex flex-col items-center justify-center gap-2">
+              <div className="p-8 text-center text-xs text-slate-400 dark:text-slate-500 flex flex-col items-center justify-center gap-2">
                 <RefreshCw className="w-5 h-5 animate-spin text-indigo-500" />
                 Loading support tickets...
               </div>
             ) : tickets.length === 0 ? (
-              <div className="p-12 text-center text-slate-400">
-                <LifeBuoy className="w-10 h-10 mx-auto text-slate-300 mb-2" />
-                <p className="text-sm font-medium text-slate-600">No support tickets found</p>
-                <p className="text-xs text-slate-400 mt-1">Try adjusting your filters or open a new ticket.</p>
+              <div className="p-12 text-center text-slate-400 dark:text-slate-500">
+                <LifeBuoy className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-600 mb-2" />
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-300">No support tickets found</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Try adjusting your filters or open a new ticket.</p>
               </div>
             ) : (
               tickets.map((ticket) => (
                 <div
                   key={ticket.id}
                   onClick={() => handleSelectTicket(ticket.id)}
-                  className={`p-4 cursor-pointer transition flex flex-col gap-2 hover:bg-slate-50 ${selectedTicket?.id === ticket.id ? 'bg-indigo-50/60 border-l-4 border-indigo-600' : ''}`}
+                  className={`p-4 cursor-pointer transition flex flex-col gap-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 ${selectedTicket?.id === ticket.id ? 'bg-indigo-50/60 dark:bg-indigo-950/40 border-l-4 border-indigo-600 dark:border-indigo-500' : ''}`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-slate-700">{ticket.ticket_number}</span>
-                      <span className="p-1 bg-slate-100 rounded text-slate-600">
+                      <span className="font-mono text-xs font-bold text-slate-700 dark:text-slate-300">{ticket.ticket_number}</span>
+                      <span className="p-1 bg-slate-100 dark:bg-slate-800 rounded text-slate-600 dark:text-slate-300">
                         {getChannelIcon(ticket.channel)}
                       </span>
                       {getStatusBadge(ticket.status)}
@@ -540,18 +540,18 @@ export default function TicketsView() {
                     {getPriorityBadge(ticket.priority)}
                   </div>
 
-                  <h3 className="text-sm font-semibold text-slate-900 truncate">
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white truncate">
                     {ticket.subject}
                   </h3>
 
-                  <p className="text-xs text-slate-500 line-clamp-1">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
                     {ticket.description}
                   </p>
 
-                  <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
+                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-1">
                     <div className="flex items-center gap-2 truncate">
                       {ticket.company_name ? (
-                        <span className="font-medium text-slate-700 flex items-center gap-1 truncate">
+                        <span className="font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1 truncate">
                           <Building2 className="w-3 h-3 text-slate-400 shrink-0" />
                           {ticket.company_name}
                         </span>
@@ -562,7 +562,7 @@ export default function TicketsView() {
 
                     <div className="flex items-center gap-3 shrink-0">
                       {getSlaBadge(ticket.sla_status)}
-                      <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                      <span className="text-[11px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
                         <MessageSquare className="w-3 h-3" />
                         {ticket.message_count || 1}
                       </span>
@@ -576,27 +576,27 @@ export default function TicketsView() {
 
         {/* Right Panel: Selected Ticket Details & Omnichannel Conversation Thread */}
         {selectedTicket ? (
-          <div className="flex-1 flex flex-col bg-white overflow-hidden">
+          <div className="flex-1 flex flex-col bg-white dark:bg-slate-900 overflow-hidden transition-colors">
             {/* Drawer Header */}
-            <div className="px-6 py-3.5 border-b border-slate-200 bg-white flex items-center justify-between gap-4">
+            <div className="px-6 py-3.5 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setSelectedTicket(null)}
-                  className="lg:hidden p-1 text-slate-500 hover:bg-slate-100 rounded"
+                  className="lg:hidden p-1 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"
                 >
                   <X className="w-5 h-5" />
                 </button>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">
+                    <span className="font-mono text-xs font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded">
                       {selectedTicket.ticket_number}
                     </span>
-                    <span className="flex items-center gap-1 text-xs text-slate-500 capitalize">
+                    <span className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 capitalize">
                       {getChannelIcon(selectedTicket.channel)} {selectedTicket.channel.replace('_', ' ')}
                     </span>
                     {getPriorityBadge(selectedTicket.priority)}
                   </div>
-                  <h2 className="text-base font-bold text-slate-900 mt-1">
+                  <h2 className="text-base font-bold text-slate-900 dark:text-white mt-1">
                     {selectedTicket.subject}
                   </h2>
                 </div>
@@ -607,7 +607,7 @@ export default function TicketsView() {
                 <select
                   value={selectedTicket.status}
                   onChange={(e) => handleStatusChange(e.target.value)}
-                  className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-800 shadow-xs focus:ring-2 focus:ring-indigo-500"
+                  className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-xs focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="new">New</option>
                   <option value="open">Open</option>
@@ -618,7 +618,7 @@ export default function TicketsView() {
                 </select>
                 <button
                   onClick={() => setSelectedTicket(null)}
-                  className="hidden lg:flex p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100"
+                  className="hidden lg:flex p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -626,8 +626,8 @@ export default function TicketsView() {
             </div>
 
             {/* Sub-header: Requester Context & SLA Countdown Banner */}
-            <div className="px-6 py-2.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs">
-              <div className="flex items-center flex-wrap gap-4 text-slate-600">
+            <div className="px-6 py-2.5 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs">
+              <div className="flex items-center flex-wrap gap-4 text-slate-600 dark:text-slate-300">
                 <span className="flex items-center gap-1">
                   <User className="w-3.5 h-3.5 text-slate-400" />
                   <strong>Requester:</strong> {selectedTicket.contact_name || 'Sarah Connor'} ({selectedTicket.contact_email || 'customer@client.com'})
@@ -649,7 +649,7 @@ export default function TicketsView() {
                   {getSlaBadge(selectedTicket.sla_status)}
                 </span>
                 {selectedTicket.sla_policy_name && (
-                  <span className="text-[11px] text-slate-400">
+                  <span className="text-[11px] text-slate-400 dark:text-slate-500">
                     Policy: {selectedTicket.sla_policy_name}
                   </span>
                 )}
@@ -657,7 +657,7 @@ export default function TicketsView() {
             </div>
 
             {/* Conversation Messages Thread */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/50">
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/50 dark:bg-slate-950/50">
               {selectedTicket.messages && selectedTicket.messages.length > 0 ? (
                 selectedTicket.messages.map((msg) => {
                   const isInternal = msg.message_type === 'internal_note';
@@ -668,10 +668,10 @@ export default function TicketsView() {
                       key={msg.id}
                       className={`rounded-xl border p-4 shadow-2xs transition ${
                         isInternal
-                          ? 'bg-amber-50/80 border-amber-200 text-amber-900'
+                          ? 'bg-amber-50/80 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900/60 text-amber-900 dark:text-amber-200'
                           : isCustomer
-                          ? 'bg-white border-slate-200 text-slate-800'
-                          : 'bg-indigo-50/60 border-indigo-200 text-slate-800'
+                          ? 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200'
+                          : 'bg-indigo-50/60 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/60 text-slate-800 dark:text-slate-200'
                       }`}
                     >
                       <div className="flex items-center justify-between pb-2 border-b border-inherit mb-2.5">
@@ -679,30 +679,30 @@ export default function TicketsView() {
                           <span
                             className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
                               isInternal
-                                ? 'bg-amber-200 text-amber-800'
+                                ? 'bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200'
                                 : isCustomer
-                                ? 'bg-slate-200 text-slate-700'
-                                : 'bg-indigo-200 text-indigo-800'
+                                ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200'
+                                : 'bg-indigo-200 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200'
                             }`}
                           >
                             {msg.sender_name?.charAt(0) || 'U'}
                           </span>
-                          <span className="text-xs font-semibold">
+                          <span className="text-xs font-semibold text-slate-900 dark:text-white">
                             {msg.sender_name}
                           </span>
-                          <span className="text-[11px] text-slate-500">
+                          <span className="text-[11px] text-slate-500 dark:text-slate-400">
                             {isInternal ? (
-                              <span className="inline-flex items-center gap-1 font-semibold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">
+                              <span className="inline-flex items-center gap-1 font-semibold text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 px-1.5 py-0.5 rounded">
                                 <Lock className="w-3 h-3" /> Internal Agent Note
                               </span>
                             ) : isCustomer ? (
-                              <span className="text-slate-500 font-medium">Customer Inquiry</span>
+                              <span className="text-slate-500 dark:text-slate-400 font-medium">Customer Inquiry</span>
                             ) : (
-                              <span className="text-indigo-600 font-medium">Support Agent Reply</span>
+                              <span className="text-indigo-600 dark:text-indigo-400 font-medium">Support Agent Reply</span>
                             )}
                           </span>
                         </div>
-                        <span className="text-[11px] text-slate-400">
+                        <span className="text-[11px] text-slate-400 dark:text-slate-500">
                           {new Date(msg.created_at).toLocaleString()}
                         </span>
                       </div>
@@ -714,24 +714,24 @@ export default function TicketsView() {
                   );
                 })
               ) : (
-                <div className="p-4 bg-white rounded-lg border border-slate-200 text-xs text-slate-600">
+                <div className="p-4 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300">
                   {selectedTicket.description}
                 </div>
               )}
 
               {/* CSAT Feedback Banner (If Ticket Resolved/Closed) */}
               {['resolved', 'closed'].includes(selectedTicket.status) && (
-                <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/80">
+                <div className="p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/80 dark:bg-emerald-950/40">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="p-1.5 bg-emerald-100 text-emerald-700 rounded-lg">
+                      <div className="p-1.5 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-lg">
                         <CheckCircle2 className="w-4 h-4" />
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-emerald-900">
+                        <h4 className="text-xs font-bold text-emerald-900 dark:text-emerald-300">
                           Issue Resolved & Ticket Verified
                         </h4>
-                        <p className="text-[11px] text-emerald-700">
+                        <p className="text-[11px] text-emerald-700 dark:text-emerald-400">
                           Resolved at: {selectedTicket.resolved_at ? new Date(selectedTicket.resolved_at).toLocaleString() : 'Just now'}
                         </p>
                       </div>
@@ -743,16 +743,16 @@ export default function TicketsView() {
                         {[1, 2, 3, 4, 5].map((star) => (
                           <Star
                             key={star}
-                            className={`w-4 h-4 ${star <= selectedTicket.csat_score ? 'text-amber-400 fill-amber-400' : 'text-slate-300'}`}
+                            className={`w-4 h-4 ${star <= selectedTicket.csat_score ? 'text-amber-400 fill-amber-400' : 'text-slate-300 dark:text-slate-600'}`}
                           />
                         ))}
-                        <span className="ml-1 text-xs font-bold text-slate-700">
+                        <span className="ml-1 text-xs font-bold text-slate-700 dark:text-slate-300">
                           {selectedTicket.csat_score}.0 / 5.0
                         </span>
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-slate-600">Simulate CSAT:</span>
+                        <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Simulate CSAT:</span>
                         <div className="flex items-center">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <button
@@ -761,7 +761,7 @@ export default function TicketsView() {
                               className="p-0.5 hover:scale-110 transition"
                             >
                               <Star
-                                className={`w-4 h-4 ${star <= csatRating ? 'text-amber-400 fill-amber-400' : 'text-slate-300'}`}
+                                className={`w-4 h-4 ${star <= csatRating ? 'text-amber-400 fill-amber-400' : 'text-slate-300 dark:text-slate-600'}`}
                               />
                             </button>
                           ))}
@@ -777,7 +777,7 @@ export default function TicketsView() {
                   </div>
 
                   {selectedTicket.csat_comment && (
-                    <div className="mt-2 text-xs text-slate-700 italic border-t border-emerald-200/60 pt-2">
+                    <div className="mt-2 text-xs text-slate-700 dark:text-slate-300 italic border-t border-emerald-200/60 dark:border-emerald-800/60 pt-2">
                       "{selectedTicket.csat_comment}"
                     </div>
                   )}
@@ -786,19 +786,19 @@ export default function TicketsView() {
             </div>
 
             {/* Omnichannel Reply Composer Box */}
-            <div className="p-4 bg-white border-t border-slate-200">
+            <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 transition-colors">
               {/* Type Switcher: Public Reply vs Internal Note */}
               <div className="flex items-center justify-between pb-2 mb-2">
                 <div className="flex items-center gap-2 text-xs">
                   <button
                     onClick={() => setMessageType('public_reply')}
-                    className={`px-3 py-1 rounded-md font-semibold transition ${messageType === 'public_reply' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}
+                    className={`px-3 py-1 rounded-md font-semibold transition ${messageType === 'public_reply' ? 'bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                   >
                     Public Reply (to Customer)
                   </button>
                   <button
                     onClick={() => setMessageType('internal_note')}
-                    className={`inline-flex items-center gap-1 px-3 py-1 rounded-md font-semibold transition ${messageType === 'internal_note' ? 'bg-amber-100 text-amber-800' : 'text-slate-500 hover:text-slate-700'}`}
+                    className={`inline-flex items-center gap-1 px-3 py-1 rounded-md font-semibold transition ${messageType === 'internal_note' ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                   >
                     <Lock className="w-3 h-3" /> Internal Agent Note
                   </button>
@@ -806,14 +806,14 @@ export default function TicketsView() {
 
                 {/* Canned Response Dropdown */}
                 {cannedResponses.length > 0 && (
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
                     <Zap className="w-3.5 h-3.5 text-amber-500" />
                     <span>Quick Snippets:</span>
                     <select
                       onChange={(e) => {
                         if (e.target.value) handleInsertCanned(e.target.value);
                       }}
-                      className="text-xs px-2 py-0.5 rounded border border-slate-300 bg-slate-50 text-slate-700"
+                      className="text-xs px-2 py-0.5 rounded border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                     >
                       <option value="">Insert template...</option>
                       {cannedResponses.map((cr) => (
@@ -838,14 +838,14 @@ export default function TicketsView() {
                 onChange={(e) => setReplyText(e.target.value)}
                 className={`w-full p-2.5 text-xs rounded-lg border focus:outline-hidden focus:ring-2 transition ${
                   messageType === 'internal_note'
-                    ? 'border-amber-300 bg-amber-50/40 focus:ring-amber-500'
-                    : 'border-slate-300 focus:ring-indigo-500'
+                    ? 'border-amber-300 dark:border-amber-700 bg-amber-50/40 dark:bg-amber-950/20 text-slate-900 dark:text-white placeholder-amber-700/50 dark:placeholder-amber-400/50 focus:ring-amber-500'
+                    : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-indigo-500'
                 }`}
               />
 
               {/* Dispatch Action Buttons */}
               <div className="flex items-center justify-between pt-2 mt-1">
-                <span className="text-[11px] text-slate-400">
+                <span className="text-[11px] text-slate-400 dark:text-slate-500">
                   {messageType === 'internal_note' ? '🔒 Team-only audit log' : '📧 Client will be notified immediately'}
                 </span>
 
@@ -855,21 +855,21 @@ export default function TicketsView() {
                       <button
                         disabled={actionLoading || !replyText.trim()}
                         onClick={() => handleSendMessage('pending_customer')}
-                        className="px-3 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 disabled:opacity-50 transition"
+                        className="px-3 py-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/60 disabled:opacity-50 transition"
                       >
                         Reply & Set Pending
                       </button>
                       <button
                         disabled={actionLoading || !replyText.trim()}
                         onClick={() => handleSendMessage('resolved')}
-                        className="px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 disabled:opacity-50 transition"
+                        className="px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/60 disabled:opacity-50 transition"
                       >
                         Reply & Resolve
                       </button>
                       <button
                         disabled={actionLoading || !replyText.trim()}
                         onClick={() => handleSendMessage()}
-                        className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 shadow-sm transition"
+                        className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg disabled:opacity-50 shadow-sm transition"
                       >
                         <Send className="w-3.5 h-3.5" />
                         Send Reply
@@ -879,7 +879,7 @@ export default function TicketsView() {
                     <button
                       disabled={actionLoading || !replyText.trim()}
                       onClick={() => handleSendMessage()}
-                      className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-amber-600 rounded-lg hover:bg-amber-700 disabled:opacity-50 shadow-sm transition"
+                      className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-lg disabled:opacity-50 shadow-sm transition"
                     >
                       <Lock className="w-3.5 h-3.5" />
                       Save Internal Note
@@ -890,13 +890,13 @@ export default function TicketsView() {
             </div>
           </div>
         ) : (
-          <div className="hidden lg:flex flex-1 items-center justify-center p-12 bg-slate-50 text-center">
+          <div className="hidden lg:flex flex-1 items-center justify-center p-12 bg-slate-50 dark:bg-slate-950 text-center transition-colors">
             <div>
-              <div className="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-xs">
+              <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-xs">
                 <LifeBuoy className="w-7 h-7" />
               </div>
-              <h3 className="text-base font-bold text-slate-800">Support Workspace Ready</h3>
-              <p className="text-xs text-slate-500 max-w-sm mt-1">
+              <h3 className="text-base font-bold text-slate-800 dark:text-white">Support Workspace Ready</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mt-1">
                 Select a support ticket on the left to inspect conversation history, post replies, add internal notes, and monitor SLA countdown timers.
               </p>
             </div>
@@ -906,18 +906,18 @@ export default function TicketsView() {
 
       {/* CREATE TICKET MODAL */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
               <div className="flex items-center gap-2">
-                <span className="p-1.5 bg-indigo-100 text-indigo-700 rounded-lg">
+                <span className="p-1.5 bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 rounded-lg">
                   <LifeBuoy className="w-4 h-4" />
                 </span>
-                <h3 className="text-base font-bold text-slate-900">Open Support Ticket</h3>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Open Support Ticket</h3>
               </div>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 rounded"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -925,7 +925,7 @@ export default function TicketsView() {
 
             <form onSubmit={handleCreateTicketSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Ticket Subject / Title *
                 </label>
                 <input
@@ -934,19 +934,19 @@ export default function TicketsView() {
                   placeholder="e.g. SSO SAML 2.0 Auth Error or Invoice Query"
                   value={newTicket.subject}
                   onChange={(e) => setNewTicket({ ...newTicket, subject: e.target.value })}
-                  className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500"
+                  className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Priority & SLA Level
                   </label>
                   <select
                     value={newTicket.priority}
                     onChange={(e) => setNewTicket({ ...newTicket, priority: e.target.value })}
-                    className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 bg-white"
+                    className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                   >
                     <option value="urgent">Urgent (15m response / 2h resolution)</option>
                     <option value="high">High (1h response / 8h resolution)</option>
@@ -956,13 +956,13 @@ export default function TicketsView() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Channel Origin
                   </label>
                   <select
                     value={newTicket.channel}
                     onChange={(e) => setNewTicket({ ...newTicket, channel: e.target.value })}
-                    className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 bg-white"
+                    className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                   >
                     <option value="web_portal">Customer Web Portal</option>
                     <option value="email">Inbound Email</option>
@@ -974,7 +974,7 @@ export default function TicketsView() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Requester Contact
                   </label>
                   <select
@@ -988,7 +988,7 @@ export default function TicketsView() {
                         companyId: matched?.company_id ? String(matched.company_id) : newTicket.companyId
                       });
                     }}
-                    className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 bg-white"
+                    className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                   >
                     <option value="">Select contact...</option>
                     {contacts.map((c) => (
@@ -1000,13 +1000,13 @@ export default function TicketsView() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Customer Account (Company)
                   </label>
                   <select
                     value={newTicket.companyId}
                     onChange={(e) => setNewTicket({ ...newTicket, companyId: e.target.value })}
-                    className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 bg-white"
+                    className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                   >
                     <option value="">Select company...</option>
                     {companies.map((c) => (
@@ -1019,13 +1019,13 @@ export default function TicketsView() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Category
                 </label>
                 <select
                   value={newTicket.category}
                   onChange={(e) => setNewTicket({ ...newTicket, category: e.target.value })}
-                  className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 bg-white"
+                  className="w-full text-xs px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                 >
                   <option value="Technical Issue">Technical Issue</option>
                   <option value="Security & Identity">Security & Identity (SAML / SSO)</option>
@@ -1037,7 +1037,7 @@ export default function TicketsView() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Issue Description & Initial Notes *
                 </label>
                 <textarea
@@ -1046,15 +1046,15 @@ export default function TicketsView() {
                   placeholder="Detail the customer request, reproduction steps, or error logs..."
                   value={newTicket.description}
                   onChange={(e) => setNewTicket({ ...newTicket, description: e.target.value })}
-                  className="w-full text-xs p-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500"
+                  className="w-full text-xs p-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition"
+                  className="px-4 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
                 >
                   Cancel
                 </button>
@@ -1073,16 +1073,16 @@ export default function TicketsView() {
 
       {/* KNOWLEDGE BASE MODAL */}
       {showKbModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-3xl max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-3xl max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
               <div className="flex items-center gap-2">
-                <span className="p-1.5 bg-indigo-100 text-indigo-700 rounded-lg">
+                <span className="p-1.5 bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 rounded-lg">
                   <BookOpen className="w-4 h-4" />
                 </span>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">Knowledge Base & AI Grounding</h3>
-                  <p className="text-[11px] text-slate-500">Verified solution guides and documentation for agents and customer self-service.</p>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">Knowledge Base & AI Grounding</h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">Verified solution guides and documentation for agents and customer self-service.</p>
                 </div>
               </div>
               <button
@@ -1090,7 +1090,7 @@ export default function TicketsView() {
                   setShowKbModal(false);
                   setActiveKbArticle(null);
                 }}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 rounded"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1098,20 +1098,20 @@ export default function TicketsView() {
 
             <div className="flex-1 flex overflow-hidden">
               {/* Articles Directory */}
-              <div className="w-2/5 border-r border-slate-200 overflow-y-auto divide-y divide-slate-100 p-2">
+              <div className="w-2/5 border-r border-slate-200 dark:border-slate-800 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 p-2">
                 {kbArticles.map((art) => (
                   <div
                     key={art.id}
                     onClick={() => handleViewKbArticle(art.id)}
-                    className={`p-3 rounded-lg cursor-pointer transition ${activeKbArticle?.id === art.id ? 'bg-indigo-50 border border-indigo-200' : 'hover:bg-slate-50'}`}
+                    className={`p-3 rounded-lg cursor-pointer transition ${activeKbArticle?.id === art.id ? 'bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800' : 'hover:bg-slate-50 dark:hover:bg-slate-800/60'}`}
                   >
-                    <span className="text-[10px] font-semibold text-indigo-600 bg-indigo-100/60 px-1.5 py-0.5 rounded">
+                    <span className="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-100/60 dark:bg-indigo-950/80 px-1.5 py-0.5 rounded">
                       {art.category}
                     </span>
-                    <h4 className="text-xs font-bold text-slate-800 mt-1 line-clamp-2">
+                    <h4 className="text-xs font-bold text-slate-800 dark:text-white mt-1 line-clamp-2">
                       {art.title}
                     </h4>
-                    <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-2">
+                    <div className="flex items-center gap-3 text-[11px] text-slate-400 dark:text-slate-500 mt-2">
                       <span className="flex items-center gap-0.5">
                         <ThumbsUp className="w-3 h-3" /> {art.helpful_count} helpful
                       </span>
@@ -1122,32 +1122,32 @@ export default function TicketsView() {
               </div>
 
               {/* Article Content Viewer */}
-              <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50">
+              <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50 dark:bg-slate-950/50">
                 {activeKbArticle ? (
                   <div className="space-y-4">
                     <div>
-                      <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
+                      <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded">
                         {activeKbArticle.category}
                       </span>
-                      <h2 className="text-lg font-bold text-slate-900 mt-2">
+                      <h2 className="text-lg font-bold text-slate-900 dark:text-white mt-2">
                         {activeKbArticle.title}
                       </h2>
-                      <div className="flex items-center gap-3 text-xs text-slate-400 mt-1 border-b border-slate-200 pb-3">
+                      <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-slate-500 mt-1 border-b border-slate-200 dark:border-slate-800 pb-3">
                         <span>Published: {new Date(activeKbArticle.created_at).toLocaleDateString()}</span>
                         <span>Views: {activeKbArticle.view_count}</span>
                         <span>Helpful Votes: {activeKbArticle.helpful_count}</span>
                       </div>
                     </div>
 
-                    <div className="text-xs leading-relaxed text-slate-700 whitespace-pre-wrap font-sans bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+                    <div className="text-xs leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-wrap font-sans bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
                       {activeKbArticle.content}
                     </div>
 
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-200">
-                      <span className="text-xs text-slate-500">Was this article helpful?</span>
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800">
+                      <span className="text-xs text-slate-500 dark:text-slate-400">Was this article helpful?</span>
                       <button
                         onClick={() => handleHelpfulClick(activeKbArticle.id)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition"
                       >
                         <ThumbsUp className="w-3.5 h-3.5" />
                         Mark as Helpful (+1)
@@ -1155,7 +1155,7 @@ export default function TicketsView() {
                     </div>
                   </div>
                 ) : (
-                  <div className="h-full flex items-center justify-center text-slate-400 text-xs">
+                  <div className="h-full flex items-center justify-center text-slate-400 dark:text-slate-500 text-xs">
                     Select an article on the left to read full guide.
                   </div>
                 )}
@@ -1167,33 +1167,33 @@ export default function TicketsView() {
 
       {/* CANNED RESPONSES MODAL */}
       {showCannedModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
               <div className="flex items-center gap-2">
-                <span className="p-1.5 bg-amber-100 text-amber-700 rounded-lg">
+                <span className="p-1.5 bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 rounded-lg">
                   <Zap className="w-4 h-4" />
                 </span>
-                <h3 className="text-base font-bold text-slate-900">Canned Replies & Shortcuts</h3>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Canned Replies & Shortcuts</h3>
               </div>
               <button
                 onClick={() => setShowCannedModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 rounded"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-6 max-h-[70vh] overflow-y-auto divide-y divide-slate-100 space-y-3">
+            <div className="p-6 max-h-[70vh] overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 space-y-3">
               {cannedResponses.map((cr) => (
                 <div key={cr.id} className="pt-3 first:pt-0">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-900">{cr.title}</span>
-                    <span className="font-mono text-xs font-bold px-2 py-0.5 bg-amber-100 text-amber-800 rounded">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white">{cr.title}</span>
+                    <span className="font-mono text-xs font-bold px-2 py-0.5 bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 rounded">
                       {cr.shortcut}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-600 mt-1 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                  <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
                     {cr.body_text}
                   </p>
                 </div>
@@ -1205,44 +1205,44 @@ export default function TicketsView() {
 
       {/* SLA POLICIES MODAL */}
       {showSlaModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
               <div className="flex items-center gap-2">
-                <span className="p-1.5 bg-emerald-100 text-emerald-700 rounded-lg">
+                <span className="p-1.5 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-lg">
                   <Clock className="w-4 h-4" />
                 </span>
-                <h3 className="text-base font-bold text-slate-900">Service Level Agreements (SLA Matrix)</h3>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Service Level Agreements (SLA Matrix)</h3>
               </div>
               <button
                 onClick={() => setShowSlaModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 rounded"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-6 divide-y divide-slate-100 space-y-3">
+            <div className="p-6 divide-y divide-slate-100 dark:divide-slate-800 space-y-3">
               {slaPolicies.map((sp) => (
                 <div key={sp.id} className="pt-3 first:pt-0 flex items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-slate-900">{sp.name}</span>
+                      <span className="text-sm font-bold text-slate-900 dark:text-white">{sp.name}</span>
                       {getPriorityBadge(sp.priority)}
                       {sp.is_default ? (
-                        <span className="text-[10px] font-semibold bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] font-semibold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-1.5 py-0.5 rounded">
                           Default
                         </span>
                       ) : null}
                     </div>
-                    <p className="text-xs text-slate-500 mt-0.5">{sp.description}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{sp.description}</p>
                   </div>
 
                   <div className="text-right shrink-0">
-                    <div className="text-xs font-semibold text-indigo-600">
+                    <div className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">
                       1st Response: {sp.first_response_time_minutes} min
                     </div>
-                    <div className="text-xs text-slate-600">
+                    <div className="text-xs text-slate-600 dark:text-slate-400">
                       Resolution: {(sp.resolution_time_minutes / 60).toFixed(0)} hours
                     </div>
                   </div>

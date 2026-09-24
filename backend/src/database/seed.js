@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import mysql from 'mysql2/promise';
+import crypto from 'crypto';
 import { config } from '../config/env.js';
 
 export const seedDatabase = async () => {
@@ -88,6 +89,10 @@ export const seedDatabase = async () => {
       { module: 'sequences', action: 'manage', description: 'Create and configure multi-step cadences and enrollments' },
       { module: 'campaigns', action: 'view', description: 'View broadcast email campaigns and delivery analytics' },
       { module: 'campaigns', action: 'manage', description: 'Create, schedule and dispatch email broadcast campaigns' },
+
+      // Developer API Keys, Webhooks & Integrations (§31, §36, §37)
+      { module: 'integrations', action: 'view', description: 'View developer API keys, webhooks and integrations' },
+      { module: 'integrations', action: 'manage', description: 'Manage API keys, webhooks, and third-party sync connectors' },
 
       // Reports & Audit Logs
       { module: 'reports', action: 'view', description: 'View analytical reports and dashboards' },
@@ -1190,6 +1195,289 @@ export const seedDatabase = async () => {
           );
         }
       }
+    }
+
+    // -------------------------------------------------------------------
+    // 21. Seed Developer API Keys & Webhook Endpoints (§31, §36, §37)
+    // -------------------------------------------------------------------
+    console.log('[Seed] Seeding developer API keys, webhooks and native integrations...');
+    const [existingKeys] = await connection.query('SELECT id FROM api_keys WHERE organization_id = ? LIMIT 1;', [orgId]);
+    if (existingKeys.length === 0) {
+      
+      // 1. API Keys
+      const key1Raw = 'crm_live_9b4a7810ec7612f019a823cd';
+      const key1Hash = crypto.createHash('sha256').update(key1Raw).digest('hex');
+      const key2Raw = 'crm_live_7f21004ab12e987c551203aa';
+      const key2Hash = crypto.createHash('sha256').update(key2Raw).digest('hex');
+      const key3Raw = 'crm_live_3e88fa109b8214de883391bb';
+      const key3Hash = crypto.createHash('sha256').update(key3Raw).digest('hex');
+
+      await connection.query(
+        `INSERT INTO api_keys (organization_id, user_id, name, key_prefix, key_hash, scopes_json, rate_limit_per_minute, status, last_used_at)
+         VALUES 
+          (?, ?, 'Zapier Lead & Contact Ingestion', 'crm_live_9b4a', ?, ?, 120, 'active', DATE_SUB(NOW(), INTERVAL 2 HOUR)),
+          (?, ?, 'Stripe Billing & Payment Sync', 'crm_live_7f21', ?, ?, 60, 'active', DATE_SUB(NOW(), INTERVAL 1 DAY)),
+          (?, ?, 'Data Warehouse & ETL Pipeline', 'crm_live_3e88', ?, ?, 300, 'active', DATE_SUB(NOW(), INTERVAL 4 HOUR))
+         ON DUPLICATE KEY UPDATE name = VALUES(name);`,
+        [
+          orgId, adminUserId, key1Hash, JSON.stringify(['contacts:read', 'contacts:write', 'deals:read']),
+          orgId, adminUserId, key2Hash, JSON.stringify(['quotes:read', 'quotes:sign', 'deals:write']),
+          orgId, adminUserId, key3Hash, JSON.stringify(['*']),
+        ]
+      );
+
+      // 2. Webhook Endpoints
+      const [wh1] = await connection.query(
+        `INSERT INTO webhook_endpoints (organization_id, name, target_url, secret_token, subscribed_events_json, status, last_status_code, last_delivery_at, created_by)
+         VALUES (?, 'Zapier Production Deal Webhook', 'https://hooks.zapier.com/hooks/catch/91823/deal-won/', 'whsec_9b4a7810ec7612f019', ?, 'active', 200, DATE_SUB(NOW(), INTERVAL 1 HOUR), ?);`,
+        [orgId, JSON.stringify(['deal.created', 'deal.stage_changed']), adminUserId]
+      );
+      const wh1Id = wh1.insertId;
+
+      const [wh2] = await connection.query(
+        `INSERT INTO webhook_endpoints (organization_id, name, target_url, secret_token, subscribed_events_json, status, last_status_code, last_delivery_at, created_by)
+         VALUES (?, 'Slack Deal Announcements Channel', 'https://hooks.slack.com/services/T001/B002/X9941', 'whsec_3389a9c0429f01ab78', ?, 'active', 200, DATE_SUB(NOW(), INTERVAL 3 HOUR), ?);`,
+        [orgId, JSON.stringify(['deal.stage_changed', 'ticket.created']), adminUserId]
+      );
+      const wh2Id = wh2.insertId;
+
+      await connection.query(
+        `INSERT INTO webhook_endpoints (organization_id, name, target_url, secret_token, subscribed_events_json, status, created_by)
+         VALUES (?, 'Enterprise ERP Data Warehouse', 'https://erp.acme.global/api/v1/crm-listener', 'whsec_ee44129984bc019234', ?, 'active', ?);`,
+        [orgId, JSON.stringify(['quote.accepted', 'contact.created']), adminUserId]
+      );
+
+      // 3. Webhook Deliveries
+      await connection.query(
+        `INSERT INTO webhook_deliveries (organization_id, webhook_endpoint_id, event_type, idempotency_key, payload_json, request_headers_json, response_status, response_body, duration_ms, status)
+         VALUES 
+          (?, ?, 'deal.stage_changed', UUID(), ?, ?, 200, '{"received":true,"status":"queued"}', 48, 'success'),
+          (?, ?, 'deal.created', UUID(), ?, ?, 200, '{"ok":true,"channel":"#sales-wins"}', 52, 'success');`,
+        [
+          orgId, wh1Id,
+          JSON.stringify({ event: 'deal.stage_changed', dealId: 101, title: 'Enterprise Cloud Migration', stage: 'negotiation', value: 125000 }),
+          JSON.stringify({ 'Content-Type': 'application/json', 'X-CRM-Signature': 'sha256=9f823...', 'X-CRM-Event': 'deal.stage_changed' }),
+          orgId, wh2Id,
+          JSON.stringify({ event: 'deal.created', dealId: 104, title: 'Global Defense Telemetry License', value: 85000 }),
+          JSON.stringify({ 'Content-Type': 'application/json', 'X-CRM-Signature': 'sha256=31ac4...', 'X-CRM-Event': 'deal.created' }),
+        ]
+      );
+
+      // 4. Pre-Built Third-Party Integrations
+      await connection.query(
+        `INSERT INTO integrations (organization_id, provider, name, status, config_json, last_sync_at, sync_count, created_by)
+         VALUES 
+          (?, 'slack', 'Slack Deal & Support Bot', 'connected', ?, DATE_SUB(NOW(), INTERVAL 30 MINUTE), 24, ?),
+          (?, 'stripe', 'Stripe Billing & Invoicing Bridge', 'connected', ?, DATE_SUB(NOW(), INTERVAL 1 HOUR), 12, ?),
+          (?, 'google_calendar', 'Google Calendar Meeting Sync', 'connected', ?, DATE_SUB(NOW(), INTERVAL 2 HOUR), 38, ?),
+          (?, 'zapier', 'Zapier Multi-App Lead Ingestion', 'connected', ?, DATE_SUB(NOW(), INTERVAL 4 HOUR), 56, ?),
+          (?, 'hubspot', 'HubSpot Bi-directional Migration Sync', 'disconnected', ?, NULL, 0, ?)
+         ON DUPLICATE KEY UPDATE name = VALUES(name), status = VALUES(status), config_json = VALUES(config_json);`,
+        [
+          orgId, JSON.stringify({ channel: '#sales-announcements', notifyOnWon: true, notifyOnSlaBreach: true }), adminUserId,
+          orgId, JSON.stringify({ autoInvoiceOnAccept: true, syncPayments: true, webhookMode: 'live' }), adminUserId,
+          orgId, JSON.stringify({ calendarId: 'primary', syncSalesCalls: true, createTasks: true }), adminUserId,
+          orgId, JSON.stringify({ activeZaps: 3, ingestAsLead: true }), adminUserId,
+          orgId, JSON.stringify({ syncDirection: 'bidirectional', autoMergeDuplicates: true }), adminUserId,
+        ]
+      );
+
+      // 5. Integration Sync Logs
+      const [slackInteg] = await connection.query(`SELECT id FROM integrations WHERE organization_id = ? AND provider = 'slack'`, [orgId]);
+      const [stripeInteg] = await connection.query(`SELECT id FROM integrations WHERE organization_id = ? AND provider = 'stripe'`, [orgId]);
+
+      if (slackInteg.length > 0) {
+        await connection.query(
+          `INSERT INTO integration_sync_logs (organization_id, integration_id, direction, action, status, details_json)
+           VALUES 
+            (?, ?, 'outbound', 'deal.won_broadcast', 'success', ?),
+            (?, ?, 'outbound', 'sla.warning_alert', 'success', ?);`,
+          [
+            orgId, slackInteg[0].id,
+            JSON.stringify({ channel: '#sales-announcements', deal: 'Global Defense Telemetry ($85,000)', notifiedRep: 'Alex Vance' }),
+            orgId, slackInteg[0].id,
+            JSON.stringify({ channel: '#support-leads', ticket: 'API 504 Gateway Timeout during batch sync', minutesRemaining: 15 }),
+          ]
+        );
+      }
+
+      if (stripeInteg.length > 0) {
+        await connection.query(
+          `INSERT INTO integration_sync_logs (organization_id, integration_id, direction, action, status, details_json)
+           VALUES 
+            (?, ?, 'inbound', 'invoice.paid', 'success', ?);`,
+          [
+            orgId, stripeInteg[0].id,
+            JSON.stringify({ stripeInvoiceId: 'in_1M2x4K', customer: 'Acme Corp Global', amount: '$24,500.00', quoteId: 'Q-2026-0042' }),
+          ]
+        );
+      }
+    }
+
+    // =====================================================================
+    // STEP 15: FORMS, LANDING PAGES & LEAD ROUTING ENGINE (Spec §23, §38)
+    // =====================================================================
+    console.log('[Seed] Seeding Step 15: Forms, Landing Pages & Lead Routing Rules...');
+    const [existingForms] = await connection.query('SELECT id FROM forms WHERE organization_id = ? LIMIT 1', [orgId]);
+
+    if (existingForms.length === 0) {
+      // Fetch default pipeline and stage for automated deal creation
+      const [pipelines] = await connection.query('SELECT id FROM pipelines WHERE organization_id = ? LIMIT 1', [orgId]);
+      const defaultPipelineId = pipelines.length > 0 ? pipelines[0].id : null;
+      let defaultStageId = null;
+      if (defaultPipelineId) {
+        const [stages] = await connection.query('SELECT id FROM pipeline_stages WHERE pipeline_id = ? ORDER BY stage_order ASC LIMIT 1', [defaultPipelineId]);
+        defaultStageId = stages.length > 0 ? stages[0].id : null;
+      }
+
+      // 1. Enterprise Demo Request Form
+      const [form1Res] = await connection.query(
+        `INSERT INTO forms (organization_id, workspace_id, name, slug, description, submit_button_text, success_message, redirect_url, status, theme_config_json, captcha_enabled, create_deal_on_submit, deal_pipeline_id, deal_stage_id, default_deal_value, notification_emails_json, total_views, total_submissions, created_by)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'published', ?, 0, 1, ?, ?, 35000.00, ?, 342, 48, ?);`,
+        [
+          orgId, workspaceId,
+          'Enterprise Demo Request & Qualification',
+          'enterprise-demo',
+          'Request a dedicated 1-on-1 architecture walkthrough of the CRM Platform and custom integration capabilities.',
+          'Schedule Executive Demo',
+          'Thank you! Your demo request has been received. Our solutions engineering team will reach out within 15 minutes.',
+          '/thank-you?source=demo',
+          JSON.stringify({ primaryColor: '#4f46e5', borderRadius: '0.75rem', darkModeSupport: true }),
+          defaultPipelineId, defaultStageId,
+          JSON.stringify(['sales-leads@acmecorp.local', 'alex.vance@acmecorp.local']),
+          adminUserId,
+        ]
+      );
+      const form1Id = form1Res.insertId;
+
+      // Form 1 Fields
+      await connection.query(
+        `INSERT INTO form_fields (form_id, label, name, field_type, placeholder, help_text, is_required, default_value, options_json, sort_order, map_to_entity, map_to_field, validation_rules_json)
+         VALUES 
+          (?, 'First Name', 'first_name', 'text', 'Alex', 'Enter your given name', 1, NULL, NULL, 1, 'contact', 'first_name', NULL),
+          (?, 'Last Name', 'last_name', 'text', 'Morgan', 'Enter your family name', 1, NULL, NULL, 2, 'contact', 'last_name', NULL),
+          (?, 'Work Email', 'email', 'email', 'alex@company.com', 'We use this to verify business eligibility', 1, NULL, NULL, 3, 'contact', 'email', ?),
+          (?, 'Phone Number', 'phone', 'phone', '+1 (555) 234-5678', 'Direct mobile or office line', 0, NULL, NULL, 4, 'contact', 'phone', NULL),
+          (?, 'Company Name', 'company_name', 'text', 'Acme Systems Inc.', 'Official legal or trading name', 1, NULL, NULL, 5, 'company', 'name', NULL),
+          (?, 'Sales Team Size', 'team_size', 'select', 'Select team size', 'Helps us tailor your demonstration', 0, NULL, ?, 6, 'contact', 'custom_field', NULL),
+          (?, 'Estimated Deal Value ($)', 'deal_value', 'number', '50000', 'Approximate budget or deal opportunity size', 0, '25000', NULL, 7, 'deal', 'value', NULL),
+          (?, 'Key Business Objectives', 'objectives', 'textarea', 'Tell us about your sales workflows and requirements...', NULL, 0, NULL, NULL, 8, 'deal', 'description', NULL);`,
+        [
+          form1Id,
+          form1Id,
+          form1Id, JSON.stringify({ blockFreeEmails: false }),
+          form1Id,
+          form1Id,
+          form1Id, JSON.stringify(['1-10 Reps', '11-50 Reps', '51-200 Reps', '200+ Enterprise Reps']),
+          form1Id,
+          form1Id,
+        ]
+      );
+
+      // 2. Whitepaper & Architecture Blueprint Form
+      const [form2Res] = await connection.query(
+        `INSERT INTO forms (organization_id, workspace_id, name, slug, description, submit_button_text, success_message, redirect_url, status, theme_config_json, captcha_enabled, create_deal_on_submit, deal_pipeline_id, deal_stage_id, default_deal_value, notification_emails_json, total_views, total_submissions, created_by)
+         VALUES (?, ?, ?, ?, ?, ?, ?, NULL, 'published', ?, 0, 0, NULL, NULL, NULL, ?, 180, 24, ?);`,
+        [
+          orgId, workspaceId,
+          '2026 High-Scale Architecture Blueprint',
+          'architecture-blueprint',
+          'Download the full architectural specification and multi-tenant scaling benchmark report.',
+          'Download Whitepaper (PDF)',
+          'Success! Check your email inbox for your direct download link.',
+          JSON.stringify({ primaryColor: '#059669', borderRadius: '0.5rem', darkModeSupport: true }),
+          JSON.stringify(['growth-team@acmecorp.local']),
+          adminUserId,
+        ]
+      );
+      const form2Id = form2Res.insertId;
+
+      // Form 2 Fields
+      await connection.query(
+        `INSERT INTO form_fields (form_id, label, name, field_type, placeholder, help_text, is_required, default_value, options_json, sort_order, map_to_entity, map_to_field, validation_rules_json)
+         VALUES 
+          (?, 'Full Name', 'first_name', 'text', 'Dr. Evelyn Reed', NULL, 1, NULL, NULL, 1, 'contact', 'first_name', NULL),
+          (?, 'Corporate Email', 'email', 'email', 'evelyn@bioresearch.org', 'Download link will be dispatched here', 1, NULL, NULL, 2, 'contact', 'email', NULL),
+          (?, 'Job Title', 'job_title', 'text', 'VP of Engineering', NULL, 0, NULL, NULL, 3, 'contact', 'job_title', NULL);`,
+        [form2Id, form2Id, form2Id]
+      );
+
+      // 3. Multi-Tenant Lead Routing Rules (Spec §38)
+      await connection.query(
+        `INSERT INTO lead_routing_rules (organization_id, workspace_id, name, description, routing_type, priority, conditions_json, assignee_user_ids_json, current_index, is_active)
+         VALUES 
+          (?, ?, 'North America Enterprise Deal Desk', 'Routes enterprise opportunities with budget >= $50k to senior sales executive.', 'deal_size', 1, ?, ?, 0, 1),
+          (?, ?, 'General Inbound Round-Robin Reps', 'Evenly distributes all incoming qualified website leads across available account reps.', 'round_robin', 10, ?, ?, 0, 1),
+          (?, ?, 'Global Fallback Lead Handler', 'Fallback assignment for unconverted or uncategorized leads.', 'fallback', 99, ?, ?, 0, 1);`,
+        [
+          orgId, workspaceId,
+          JSON.stringify([{ field: 'deal_value', operator: 'greater_than_or_equal', value: 50000 }]),
+          JSON.stringify([adminUserId]),
+          orgId, workspaceId,
+          JSON.stringify([]),
+          JSON.stringify([adminUserId]),
+          orgId, workspaceId,
+          JSON.stringify([]),
+          JSON.stringify([adminUserId]),
+        ]
+      );
+
+      // 4. Hosted Landing Pages (Spec §23)
+      await connection.query(
+        `INSERT INTO landing_pages (organization_id, workspace_id, title, slug, headline, subheadline, hero_cta_text, body_content, form_id, seo_meta_json, theme_config_json, status, total_views, total_conversions, created_by)
+         VALUES 
+          (?, ?, 'Enterprise CRM Platform 2026 - Accelerated Revenue Engine', 'enterprise-suite-2026', 'Accelerate High-Velocity Sales With AI-Powered CRM', 'Unify sales pipelines, CPQ quote workflows, omnichannel support desk, and developer webhooks in one zero-friction platform.', 'Book Your Live Platform Demo', ?, ?, ?, ?, 'published', 420, 68, ?),
+          (?, ?, 'High-Scale Multi-Tenant System Blueprint', 'whitepaper-crm-2026', 'Read the High-Concurrency CRM Engineering Whitepaper', 'How we architected a 68-table multi-tenant CRM with sub-millisecond query execution and zero data leakage.', 'Get Free Architecture Whitepaper', ?, ?, ?, ?, 'published', 250, 42, ?);`,
+        [
+          orgId, workspaceId,
+          '### Why Modern Revenue Teams Choose Our CRM\n\n- **Unified Data Fabric:** Real-time synchronization across leads, accounts, CPQ, and ticket escalations.\n- **Developer-First Extensibility:** Webhooks, scoped HMAC API keys, and event bus integrations.\n- **Built-in Dark & Light Mode:** Optimized for round-the-clock sales and support operations.',
+          form1Id,
+          JSON.stringify({ title: 'Enterprise CRM Platform 2026', description: 'Next-gen enterprise CRM platform with native CPQ and developer APIs' }),
+          JSON.stringify({ theme: 'modern-indigo', containerWidth: 'max-w-4xl' }),
+          adminUserId,
+          orgId, workspaceId,
+          '### Engineering Whitepaper Highlights\n\n- Multi-tenant partitioning strategies with foreign key integrity.\n- HMAC-SHA256 authenticated webhook dispatches.\n- Automated round-robin lead allocation algorithms.',
+          form2Id,
+          JSON.stringify({ title: 'CRM Architecture Whitepaper', description: 'Deep-dive architectural paper for enterprise engineering teams' }),
+          JSON.stringify({ theme: 'emerald-focus', containerWidth: 'max-w-3xl' }),
+          adminUserId,
+        ]
+      );
+
+      // 5. Sample Form Submissions
+      const [sampleContact] = await connection.query('SELECT id, company_id FROM contacts WHERE organization_id = ? LIMIT 1', [orgId]);
+      const contactId = sampleContact.length > 0 ? sampleContact[0].id : null;
+      const companyId = sampleContact.length > 0 ? sampleContact[0].company_id : null;
+
+      await connection.query(
+        `INSERT INTO form_submissions (form_id, organization_id, workspace_id, submitted_data_json, contact_id, company_id, deal_id, ip_address, user_agent, referrer_url, utm_source, utm_medium, utm_campaign, status, routing_result_json)
+         VALUES 
+          (?, ?, ?, ?, ?, ?, NULL, '198.51.100.42', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', 'https://google.com/search?q=enterprise+crm', 'google', 'cpc', 'q1_demo_campaign', 'processed', ?),
+          (?, ?, ?, ?, ?, ?, NULL, '203.0.113.19', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', 'https://linkedin.com/feed', 'linkedin', 'social', 'cxo_thought_leadership', 'processed', ?);`,
+        [
+          form1Id, orgId, workspaceId,
+          JSON.stringify({
+            first_name: 'Sophia',
+            last_name: 'Kowalski',
+            email: 'sophia.kowalski@quantumdynamics.org',
+            phone: '+1 (555) 890-1234',
+            company_name: 'Quantum Dynamics',
+            team_size: '51-200 Reps',
+            deal_value: '60000',
+            objectives: 'Migrating 85 reps off legacy CRM to unify pipeline tracking and support SLAs.',
+          }),
+          contactId, companyId,
+          JSON.stringify({ assignedUserId: adminUserId, matchedRule: 'North America Enterprise Deal Desk', ruleType: 'deal_size' }),
+          form2Id, orgId, workspaceId,
+          JSON.stringify({
+            first_name: 'David',
+            email: 'david.chen@horizoncloud.net',
+            job_title: 'Chief Technology Officer',
+          }),
+          contactId, companyId,
+          JSON.stringify({ assignedUserId: adminUserId, matchedRule: 'General Inbound Round-Robin Reps', ruleType: 'round_robin' }),
+        ]
+      );
     }
 
     console.log('\n======================================================');

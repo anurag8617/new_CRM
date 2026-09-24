@@ -1,0 +1,181 @@
+/* UI.md Design System - CSS Design Tokens */
+
+:root {
+  /* Typography */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --text-xs:   12px;  --lh-xs:   16px;
+  --text-sm:   13px;  --lh-sm:   20px;
+  --text-base: 14px;  --lh-base: 22px;   /* default CRM UI text */
+  --text-md:   16px;  --lh-md:   26px;   /* chat message text */
+  --text-lg:   18px;  --lh-lg:   28px;
+  --text-xl:   22px;  --lh-xl:   30px;
+  --text-2xl:  28px;  --lh-2xl:  36px;
+
+  --weight-regular: 400;
+  --weight-medium:  500;
+  --weight-semibold: 600;
+
+  /* Spacing (4px base) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px; --space-12: 48px;
+
+  /* Radius */
+  --radius-xs: 4px;   /* tiny tags */
+  --radius-sm: 8px;   /* buttons, small inputs, menu items */
+  --radius-md: 12px;  /* inputs, cards */
+  --radius-lg: 16px;  /* modals, large cards */
+  --radius-xl: 24px;  /* chat composer */
+  --radius-full: 999px; /* pills, avatars */
+
+  /* Layout */
+  --sidebar-w: 260px;
+  --sidebar-w-collapsed: 64px;
+  --topbar-h: 56px;
+  --content-max-w: 1280px;
+  --chat-max-w: 768px;       /* AI Copilot message column */
+  --right-panel-w: 360px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+  --dur-slow: 260ms;
+
+  /* Z-index */
+  --z-sticky: 10; --z-dropdown: 50; --z-overlay: 90; --z-modal: 100; --z-toast: 120;
+}
+
+/* Light Theme (Default fallback) */
+:root,
+:root[data-theme="light"],
+html.light {
+  color-scheme: light;
+
+  --bg-app:            #ffffff;
+  --bg-sidebar:        #f9f9f9;
+  --bg-surface:        #ffffff;
+  --bg-surface-raised: #f4f4f4;
+  --bg-surface-sunken: #f7f7f8;
+  --bg-elevated:       #ffffff;
+  --bg-modal:          #ffffff;
+  --bg-overlay:        rgba(0, 0, 0, 0.35);
+
+  --bg-hover:          rgba(0, 0, 0, 0.04);
+  --bg-active:         rgba(0, 0, 0, 0.07);
+  --bg-selected:       #ececec;
+  --bg-input:          #ffffff;
+  --bg-input-hover:    #fafafa;
+
+  --text-primary:      #0d0d0d;
+  --text-secondary:    #5d5d5d;
+  --text-tertiary:     #8f8f8f;
+  --text-disabled:     #b8b8b8;
+  --text-inverse:      #ffffff;
+  --text-link:         #0b6bcb;
+
+  --border-subtle:     rgba(0, 0, 0, 0.06);
+  --border-default:    rgba(0, 0, 0, 0.10);
+  --border-strong:     rgba(0, 0, 0, 0.18);
+  --border-focus:      rgba(0, 0, 0, 0.45);
+
+  --btn-primary-bg:        #0d0d0d;
+  --btn-primary-bg-hover:  #2b2b2b;
+  --btn-primary-text:      #ffffff;
+  --btn-secondary-bg:      transparent;
+  --btn-secondary-bg-hover: rgba(0, 0, 0, 0.04);
+  --btn-secondary-border:  rgba(0, 0, 0, 0.12);
+
+  --accent:            #10a37f;
+  --accent-hover:      #0e8f70;
+  --accent-soft:       rgba(16, 163, 127, 0.10);
+  --accent-text:       #0b7a5f;
+
+  --success:           #1a9d5a;  --success-soft: rgba(26, 157, 90, 0.10);
+  --warning:           #b7791f;  --warning-soft: rgba(183, 121, 31, 0.10);
+  --danger:            #d92d20;  --danger-soft:  rgba(217, 45, 32, 0.08);
+  --info:              #1570ef;  --info-soft:    rgba(21, 112, 239, 0.08);
+
+  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg:  0 12px 40px rgba(0, 0, 0, 0.14);
+
+  --scrollbar-thumb:       rgba(0, 0, 0, 0.18);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.30);
+
+  --selection-bg: rgba(11, 107, 203, 0.20);
+}
+
+/* Dark Theme (ChatGPT-Style Neutral Gray) */
+:root[data-theme="dark"],
+html.dark {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --bg-app:            #212121;   /* main canvas (chat / content area) */
+  --bg-sidebar:        #171717;   /* left sidebar, darker than canvas */
+  --bg-surface:        #212121;   /* default page surface */
+  --bg-surface-raised: #2f2f2f;   /* inputs, composer, cards, user bubble */
+  --bg-surface-sunken: #181818;   /* code blocks, inset areas */
+  --bg-elevated:       #2a2a2a;   /* menus, popovers, dropdowns */
+  --bg-modal:          #2a2a2a;   /* dialogs */
+  --bg-overlay:        rgba(0, 0, 0, 0.6); /* modal backdrop */
+
+  /* Interactive surfaces */
+  --bg-hover:          rgba(255, 255, 255, 0.06);
+  --bg-active:         rgba(255, 255, 255, 0.10);
+  --bg-selected:       #2f2f2f;   /* selected sidebar item / table row */
+  --bg-input:          #2f2f2f;
+  --bg-input-hover:    #343434;
+
+  /* Text */
+  --text-primary:      #ececec;
+  --text-secondary:    #b4b4b4;
+  --text-tertiary:     #8e8e8e;
+  --text-disabled:     #676767;
+  --text-inverse:      #0d0d0d;   /* text on white buttons */
+  --text-link:         #7ab7ff;
+
+  /* Borders */
+  --border-subtle:     rgba(255, 255, 255, 0.08);
+  --border-default:    rgba(255, 255, 255, 0.12);
+  --border-strong:     rgba(255, 255, 255, 0.20);
+  --border-focus:      rgba(255, 255, 255, 0.45);
+
+  /* Primary action = neutral high-contrast (like ChatGPT send button) */
+  --btn-primary-bg:        #ffffff;
+  --btn-primary-bg-hover:  #e5e5e5;
+  --btn-primary-text:      #0d0d0d;
+  --btn-secondary-bg:      transparent;
+  --btn-secondary-bg-hover: rgba(255, 255, 255, 0.06);
+  --btn-secondary-border:  rgba(255, 255, 255, 0.15);
+
+  /* Brand / accent (use sparingly: AI badge, success, active toggles) */
+  --accent:            #10a37f;
+  --accent-hover:      #1ab98f;
+  --accent-soft:       rgba(16, 163, 127, 0.15);
+  --accent-text:       #34d3a8;
+
+  /* Semantic */
+  --success:           #34c77b;  --success-soft: rgba(52, 199, 123, 0.14);
+  --warning:           #f5a524;  --warning-soft: rgba(245, 165, 36, 0.14);
+  --danger:            #f0524d;  --danger-soft:  rgba(240, 82, 77, 0.14);
+  --info:              #5aa9ff;  --info-soft:    rgba(90, 169, 255, 0.14);
+
+  /* Shadows (subtle; borders do most of the work) */
+  --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.30);
+  --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg:  0 12px 40px rgba(0, 0, 0, 0.50);
+
+  /* Scrollbar */
+  --scrollbar-thumb:       rgba(255, 255, 255, 0.18);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.28);
+
+  /* Selection */
+  --selection-bg: rgba(122, 183, 255, 0.30);
+}
+
+::selection {
+  background: var(--selection-bg);
+}

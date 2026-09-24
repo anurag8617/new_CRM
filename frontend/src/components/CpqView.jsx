@@ -364,32 +364,32 @@ export default function CpqView() {
   return (
     <div className="space-y-6">
       {/* Top Banner & Metrics Header */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-200">
+          <div className="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-200 dark:shadow-none">
             <Receipt className="w-6 h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight">Products, Pricebooks & CPQ Engine</h2>
-              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Products, Pricebooks & CPQ Engine</h2>
+              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
                 Spec §24, §25
               </span>
             </div>
-            <p className="text-sm text-slate-500 mt-0.5">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
               Multi-currency pricebooks, dynamic discount matrices, quote versioning & verified electronic signatures.
             </p>
           </div>
         </div>
 
         {/* Tab Controls */}
-        <div className="flex items-center gap-1.5 p-1 bg-slate-100/80 rounded-xl border border-slate-200">
+        <div className="flex items-center gap-1.5 p-1 bg-slate-100/80 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700">
           <button
             onClick={() => setActiveTab('quotes')}
             className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'quotes'
-                ? 'bg-white text-indigo-700 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
             }`}
           >
             <Receipt className="w-3.5 h-3.5" />
@@ -400,8 +400,8 @@ export default function CpqView() {
             onClick={() => setActiveTab('products')}
             className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'products'
-                ? 'bg-white text-indigo-700 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
             }`}
           >
             <ShoppingBag className="w-3.5 h-3.5" />
@@ -412,8 +412,8 @@ export default function CpqView() {
             onClick={() => setActiveTab('pricebooks')}
             className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'pricebooks'
-                ? 'bg-white text-indigo-700 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
             }`}
           >
             <Tag className="w-3.5 h-3.5" />
@@ -424,46 +424,46 @@ export default function CpqView() {
 
       {/* KPI Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs flex items-center justify-between">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs flex items-center justify-between transition-colors">
           <div>
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Quoted Value</span>
-            <div className="text-xl font-bold text-slate-900 mt-1">${totalQuoteValue.toLocaleString()}</div>
-            <span className="text-[11px] text-emerald-600 font-medium">Across all open & closed quotes</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Quoted Value</span>
+            <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">${totalQuoteValue.toLocaleString()}</div>
+            <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">Across all open & closed quotes</span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
             <DollarSign className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs flex items-center justify-between">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs flex items-center justify-between transition-colors">
           <div>
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Executed / Signed</span>
-            <div className="text-xl font-bold text-slate-900 mt-1">{signedQuoteCount} Quotes</div>
-            <span className="text-[11px] text-emerald-600 font-medium">DocuSign verified agreements</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Executed / Signed</span>
+            <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">{signedQuoteCount} Quotes</div>
+            <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">DocuSign verified agreements</span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
             <FileCheck2 className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs flex items-center justify-between">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs flex items-center justify-between transition-colors">
           <div>
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Catalog SKUs</span>
-            <div className="text-xl font-bold text-slate-900 mt-1">{products.length} Products</div>
-            <span className="text-[11px] text-slate-500 font-medium">Software, Add-ons & Services</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Catalog SKUs</span>
+            <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">{products.length} Products</div>
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Software, Add-ons & Services</span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
             <ShoppingBag className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs flex items-center justify-between">
+        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-2xs flex items-center justify-between transition-colors">
           <div>
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Active Price Books</span>
-            <div className="text-xl font-bold text-slate-900 mt-1">{priceBooks.length} Books</div>
-            <span className="text-[11px] text-indigo-600 font-medium">Tier-1 & Standard Corporate</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active Price Books</span>
+            <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">{priceBooks.length} Books</div>
+            <span className="text-[11px] text-indigo-600 dark:text-indigo-400 font-medium">Tier-1 & Standard Corporate</span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+          <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
             <Tag className="w-5 h-5" />
           </div>
         </div>
@@ -473,23 +473,23 @@ export default function CpqView() {
       {activeTab === 'quotes' && (
         <div className="space-y-4">
           {/* Controls Bar */}
-          <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 transition-colors">
             <div className="flex items-center gap-3 flex-1">
               <div className="relative flex-1 max-w-sm">
-                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" />
                 <input
                   type="text"
                   value={quoteSearch}
                   onChange={(e) => setQuoteSearch(e.target.value)}
                   placeholder="Search by quote #, title, or client..."
-                  className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+                  className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 dark:focus:border-indigo-400"
                 />
               </div>
 
               <select
                 value={quoteStatusFilter}
                 onChange={(e) => setQuoteStatusFilter(e.target.value)}
-                className="px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                className="px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
               >
                 <option value="all">All Statuses</option>
                 <option value="draft">Draft</option>
@@ -516,10 +516,10 @@ export default function CpqView() {
           </div>
 
           {/* Quotes Table */}
-          <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-800">
                   <tr>
                     <th className="py-3 px-4">Quote #</th>
                     <th className="py-3 px-4">Proposal Title</th>
@@ -531,10 +531,10 @@ export default function CpqView() {
                     <th className="py-3 px-4 text-center">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                   {filteredQuotes.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="py-8 text-center text-slate-400 italic">
+                      <td colSpan={8} className="py-8 text-center text-slate-400 dark:text-slate-500 italic">
                         No quotes match the selected criteria. Click "Configure New Quote" above.
                       </td>
                     </tr>
@@ -544,46 +544,46 @@ export default function CpqView() {
                       const isPendingSig = q.signature_status === 'pending_signature';
 
                       return (
-                        <tr key={q.id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="py-3 px-4 font-mono font-bold text-indigo-700">
+                        <tr key={q.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+                          <td className="py-3 px-4 font-mono font-bold text-indigo-700 dark:text-indigo-400">
                             {q.quote_number}
                           </td>
-                          <td className="py-3 px-4 font-medium text-slate-900 max-w-xs truncate">
+                          <td className="py-3 px-4 font-medium text-slate-900 dark:text-white max-w-xs truncate">
                             {q.title}
                           </td>
-                          <td className="py-3 px-4 font-medium text-slate-800">
+                          <td className="py-3 px-4 font-medium text-slate-800 dark:text-slate-200">
                             {q.company_name || 'Independent Client'}
                           </td>
-                          <td className="py-3 px-4 text-slate-500 max-w-xs truncate">
+                          <td className="py-3 px-4 text-slate-500 dark:text-slate-400 max-w-xs truncate">
                             {q.deal_title || '—'}
                           </td>
                           <td className="py-3 px-4">
                             <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
                               q.status === 'approved' || q.status === 'accepted'
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
                                 : q.status === 'presented' || q.status === 'in_review'
-                                ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                                : 'bg-slate-100 text-slate-600 border border-slate-200'
+                                ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
                             }`}>
                               {q.status.replace('_', ' ')}
                             </span>
                           </td>
                           <td className="py-3 px-4">
                             {isSigned ? (
-                              <span className="inline-flex items-center gap-1 text-[11px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                                <Check className="w-3 h-3 text-emerald-600" />
+                              <span className="inline-flex items-center gap-1 text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
+                                <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                                 <span>Signed</span>
                               </span>
                             ) : isPendingSig ? (
-                              <span className="inline-flex items-center gap-1 text-[11px] text-amber-700 font-semibold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                                <Clock className="w-3 h-3 text-amber-600" />
+                              <span className="inline-flex items-center gap-1 text-[11px] text-amber-700 dark:text-amber-400 font-semibold bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800">
+                                <Clock className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                                 <span>Awaiting E-Sign</span>
                               </span>
                             ) : (
-                              <span className="text-slate-400 text-[11px]">Unsigned</span>
+                              <span className="text-slate-400 dark:text-slate-500 text-[11px]">Unsigned</span>
                             )}
                           </td>
-                          <td className="py-3 px-4 text-right font-bold text-slate-900 font-mono">
+                          <td className="py-3 px-4 text-right font-bold text-slate-900 dark:text-white font-mono">
                             ${parseFloat(q.total_amount).toLocaleString()}
                           </td>
                           <td className="py-3 px-4 text-center">
@@ -591,14 +591,14 @@ export default function CpqView() {
                               <button
                                 onClick={() => handleInspectQuote(q.id)}
                                 title="Inspect Quote & Line Items"
-                                className="p-1.5 rounded-md hover:bg-slate-100 text-slate-600 hover:text-indigo-600 transition-colors"
+                                className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                               >
                                 <Eye className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => handleOpenPdf(q.id)}
                                 title="Print / PDF Invoice Preview"
-                                className="p-1.5 rounded-md hover:bg-slate-100 text-slate-600 hover:text-purple-600 transition-colors"
+                                className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                               >
                                 <Printer className="w-3.5 h-3.5" />
                               </button>
@@ -618,23 +618,23 @@ export default function CpqView() {
       {/* TAB 2: PRODUCT CATALOG */}
       {activeTab === 'products' && (
         <div className="space-y-4">
-          <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 transition-colors">
             <div className="flex items-center gap-3 flex-1">
               <div className="relative flex-1 max-w-sm">
-                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" />
                 <input
                   type="text"
                   value={productSearch}
                   onChange={(e) => setProductSearch(e.target.value)}
                   placeholder="Search by product name or SKU..."
-                  className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
                 />
               </div>
 
               <select
                 value={productCategoryFilter}
                 onChange={(e) => setProductCategoryFilter(e.target.value)}
-                className="px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
+                className="px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
               >
                 <option value="all">All Categories</option>
                 <option value="Software">Software</option>
@@ -661,57 +661,57 @@ export default function CpqView() {
               return (
                 <div
                   key={p.id}
-                  className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs flex flex-col justify-between hover:border-indigo-300 transition-all group"
+                  className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-xs flex flex-col justify-between hover:border-indigo-300 dark:hover:border-indigo-600 transition-all group"
                 >
                   <div className="space-y-2.5">
                     <div className="flex items-start justify-between">
-                      <span className="font-mono text-[10px] font-bold uppercase px-2 py-0.5 bg-slate-100 text-slate-600 rounded">
+                      <span className="font-mono text-[10px] font-bold uppercase px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded">
                         {p.sku}
                       </span>
                       <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${
                         p.pricing_type === 'recurring'
-                          ? 'bg-purple-50 text-purple-700 border border-purple-200'
-                          : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          ? 'bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800'
+                          : 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
                       }`}>
                         {p.pricing_type}
                       </span>
                     </div>
 
                     <div>
-                      <h4 className="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                      <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                         {p.name}
                       </h4>
-                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
                         {p.description || 'Enterprise catalog component.'}
                       </p>
                     </div>
 
-                    <div className="pt-2 border-t border-slate-100 space-y-1 text-xs text-slate-600">
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1 text-xs text-slate-600 dark:text-slate-400">
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-400">Category:</span>
-                        <span className="font-medium">{p.category}</span>
+                        <span className="text-slate-400 dark:text-slate-500">Category:</span>
+                        <span className="font-medium text-slate-700 dark:text-slate-300">{p.category}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-400">Billing:</span>
-                        <span className="font-medium capitalize">{p.billing_frequency}</span>
+                        <span className="text-slate-400 dark:text-slate-500">Billing:</span>
+                        <span className="font-medium capitalize text-slate-700 dark:text-slate-300">{p.billing_frequency}</span>
                       </div>
                       {margin !== null && (
                         <div className="flex items-center justify-between">
-                          <span className="text-slate-400">Gross Margin:</span>
-                          <span className="font-semibold text-emerald-600 font-mono">~{margin}%</span>
+                          <span className="text-slate-400 dark:text-slate-500">Gross Margin:</span>
+                          <span className="font-semibold text-emerald-600 dark:text-emerald-400 font-mono">~{margin}%</span>
                         </div>
                       )}
                     </div>
                   </div>
 
-                  <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+                  <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] text-slate-400 uppercase font-semibold">List Price</span>
-                      <div className="text-base font-bold text-slate-900 font-mono">
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase font-semibold">List Price</span>
+                      <div className="text-base font-bold text-slate-900 dark:text-white font-mono">
                         ${parseFloat(p.unit_price).toLocaleString()}
                       </div>
                     </div>
-                    <span className="text-[10px] text-slate-400">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500">
                       {p.currency} / {p.billing_frequency}
                     </span>
                   </div>
@@ -726,37 +726,37 @@ export default function CpqView() {
       {activeTab === 'pricebooks' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {priceBooks.map((pb) => (
-            <div key={pb.id} className="bg-white rounded-xl border border-slate-200/80 p-6 shadow-xs space-y-4">
-              <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+            <div key={pb.id} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-xs space-y-4 transition-colors">
+              <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-base font-bold text-slate-900">{pb.name}</h3>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">{pb.name}</h3>
                     {pb.is_standard && (
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
                         STANDARD DEFAULT
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-500 mt-1">{pb.description}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{pb.description}</p>
                 </div>
-                <span className="font-mono text-xs font-semibold px-2 py-1 bg-slate-100 rounded text-slate-700">
+                <span className="font-mono text-xs font-semibold px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded text-slate-700 dark:text-slate-300">
                   {pb.currency}
                 </span>
               </div>
 
               <div>
-                <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block mb-2">
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider block mb-2">
                   Pricing Matrix & Entries ({pb.entry_count || 0})
                 </span>
-                <div className="bg-slate-50/70 p-3 rounded-lg border border-slate-200/60 space-y-2">
-                  <div className="flex items-center justify-between text-[11px] text-slate-400 font-bold uppercase border-b border-slate-200 pb-1.5">
+                <div className="bg-slate-50/70 dark:bg-slate-800/40 p-3 rounded-lg border border-slate-200/60 dark:border-slate-700 space-y-2">
+                  <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-bold uppercase border-b border-slate-200 dark:border-slate-700 pb-1.5">
                     <span>Product Catalog Item</span>
                     <span>Volume Matrix</span>
                   </div>
                   {products.map((prod) => (
                     <div key={prod.id} className="flex items-center justify-between text-xs py-1">
-                      <span className="font-medium text-slate-800">{prod.name}</span>
-                      <span className="font-mono font-semibold text-slate-900">
+                      <span className="font-medium text-slate-800 dark:text-slate-200">{prod.name}</span>
+                      <span className="font-mono font-semibold text-slate-900 dark:text-white">
                         ${pb.is_standard ? parseFloat(prod.unit_price).toLocaleString() : (parseFloat(prod.unit_price) * 0.85).toLocaleString()}
                       </span>
                     </div>
@@ -770,16 +770,16 @@ export default function CpqView() {
 
       {/* MODAL 1: CONFIGURE NEW QUOTE (CPQ BUILDER) */}
       {isNewQuoteModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-4xl rounded-2xl shadow-xl border border-slate-200 my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-4xl rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Configure Formal Quote (CPQ)</h3>
-                <p className="text-xs text-slate-500">Add product line items, adjust discounts, and link opportunities.</p>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Configure Formal Quote (CPQ)</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Add product line items, adjust discounts, and link opportunities.</p>
               </div>
               <button
                 onClick={() => setIsNewQuoteModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-slate-200 text-slate-500"
+                className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -788,23 +788,23 @@ export default function CpqView() {
             <form onSubmit={handleCreateQuoteSubmit} className="p-6 space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Proposal Title</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Proposal Title</label>
                   <input
                     type="text"
                     required
                     value={quoteForm.title}
                     onChange={(e) => setQuoteForm(prev => ({ ...prev, title: e.target.value }))}
                     placeholder="e.g. Enterprise Platform Expansion & Support Proposal"
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Price Book Matrix</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Price Book Matrix</label>
                   <select
                     value={quoteForm.priceBookId}
                     onChange={(e) => setQuoteForm(prev => ({ ...prev, priceBookId: e.target.value }))}
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                   >
                     {priceBooks.map(pb => (
                       <option key={pb.id} value={pb.id}>
@@ -817,7 +817,7 @@ export default function CpqView() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Associated Deal</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Associated Deal</label>
                   <select
                     value={quoteForm.dealId}
                     onChange={(e) => {
@@ -829,7 +829,7 @@ export default function CpqView() {
                         contactId: selDeal?.contact_id || prev.contactId
                       }));
                     }}
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                   >
                     <option value="">-- Optional Deal --</option>
                     {deals.map(d => (
@@ -841,11 +841,11 @@ export default function CpqView() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Company Account</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Company Account</label>
                   <select
                     value={quoteForm.companyId}
                     onChange={(e) => setQuoteForm(prev => ({ ...prev, companyId: e.target.value }))}
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                   >
                     <option value="">-- Select Company --</option>
                     {companies.map(c => (
@@ -855,11 +855,11 @@ export default function CpqView() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Decision Maker Contact</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Decision Maker Contact</label>
                   <select
                     value={quoteForm.contactId}
                     onChange={(e) => setQuoteForm(prev => ({ ...prev, contactId: e.target.value }))}
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                   >
                     <option value="">-- Select Contact --</option>
                     {contacts.map(ct => (
@@ -871,15 +871,15 @@ export default function CpqView() {
 
               {/* Dynamic Line Items Section */}
               <div className="space-y-3 pt-2">
-                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                    <ShoppingBag className="w-3.5 h-3.5 text-indigo-600" />
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+                    <ShoppingBag className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                     <span>Configured Products & Line Items</span>
                   </h4>
                   <button
                     type="button"
                     onClick={handleAddLineItem}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-700"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Item</span>
@@ -888,12 +888,12 @@ export default function CpqView() {
 
                 <div className="space-y-2">
                   {quoteForm.lineItems.map((item, idx) => (
-                    <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 grid grid-cols-12 gap-2 items-center text-xs">
+                    <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/80 dark:border-slate-700 grid grid-cols-12 gap-2 items-center text-xs">
                       <div className="col-span-4">
                         <select
                           value={item.productId}
                           onChange={(e) => handleUpdateLineItem(idx, 'productId', e.target.value)}
-                          className="w-full px-2 py-1.5 rounded border border-slate-300 bg-white text-xs font-medium"
+                          className="w-full px-2 py-1.5 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-xs font-medium"
                         >
                           {products.map(p => (
                             <option key={p.id} value={p.id}>
@@ -910,7 +910,7 @@ export default function CpqView() {
                           value={item.quantity}
                           onChange={(e) => handleUpdateLineItem(idx, 'quantity', e.target.value)}
                           placeholder="Qty"
-                          className="w-full px-2 py-1.5 rounded border border-slate-300 bg-white text-xs text-center"
+                          className="w-full px-2 py-1.5 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-xs text-center"
                         />
                       </div>
 
@@ -920,7 +920,7 @@ export default function CpqView() {
                           value={item.unitPrice}
                           onChange={(e) => handleUpdateLineItem(idx, 'unitPrice', e.target.value)}
                           placeholder="Unit Price"
-                          className="w-full px-2 py-1.5 rounded border border-slate-300 bg-white text-xs text-right font-mono"
+                          className="w-full px-2 py-1.5 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-xs text-right font-mono"
                         />
                       </div>
 
@@ -932,11 +932,11 @@ export default function CpqView() {
                           value={item.discountPercent}
                           onChange={(e) => handleUpdateLineItem(idx, 'discountPercent', e.target.value)}
                           placeholder="Disc %"
-                          className="w-full px-2 py-1.5 rounded border border-slate-300 bg-white text-xs text-center"
+                          className="w-full px-2 py-1.5 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-xs text-center"
                         />
                       </div>
 
-                      <div className="col-span-1 text-right font-bold font-mono text-slate-800">
+                      <div className="col-span-1 text-right font-bold font-mono text-slate-800 dark:text-slate-200">
                         ${((item.quantity * item.unitPrice) * (1 - item.discountPercent / 100)).toLocaleString()}
                       </div>
 
@@ -944,7 +944,7 @@ export default function CpqView() {
                         <button
                           type="button"
                           onClick={() => handleRemoveLineItem(idx)}
-                          className="p-1 rounded text-slate-400 hover:text-rose-600"
+                          className="p-1 rounded text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -955,40 +955,40 @@ export default function CpqView() {
               </div>
 
               {/* Totals & Discounts Summary */}
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/80 flex flex-col md:flex-row justify-between gap-4">
+              <div className="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200/80 dark:border-slate-700 flex flex-col md:flex-row justify-between gap-4">
                 <div className="space-y-2 flex-1">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-[11px] font-semibold text-slate-600">Overall Discount Type</label>
+                      <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">Overall Discount Type</label>
                       <select
                         value={quoteForm.discountType}
                         onChange={(e) => setQuoteForm(prev => ({ ...prev, discountType: e.target.value }))}
-                        className="w-full px-2 py-1 text-xs rounded border border-slate-300 bg-white"
+                        className="w-full px-2 py-1 text-xs rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                       >
                         <option value="fixed">Fixed Amount ($)</option>
                         <option value="percent">Percentage (%)</option>
                       </select>
                     </div>
                     <div>
-                      <label className="text-[11px] font-semibold text-slate-600">Discount Value</label>
+                      <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">Discount Value</label>
                       <input
                         type="number"
                         min="0"
                         value={quoteForm.discountValue}
                         onChange={(e) => setQuoteForm(prev => ({ ...prev, discountValue: e.target.value }))}
-                        className="w-full px-2 py-1 text-xs rounded border border-slate-300 bg-white font-mono"
+                        className="w-full px-2 py-1 text-xs rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-mono"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="w-64 space-y-1.5 text-xs text-slate-700">
+                <div className="w-64 space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
                   <div className="flex justify-between">
                     <span>Subtotal:</span>
                     <span className="font-mono font-semibold">${formSubtotal.toLocaleString()}</span>
                   </div>
                   {formDiscount > 0 && (
-                    <div className="flex justify-between text-emerald-600 font-semibold">
+                    <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-semibold">
                       <span>Discount:</span>
                       <span className="font-mono">-${formDiscount.toLocaleString()}</span>
                     </div>
@@ -997,18 +997,18 @@ export default function CpqView() {
                     <span>Tax ({quoteForm.taxRate}%):</span>
                     <span className="font-mono font-semibold">${formTax.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-base font-bold text-indigo-700 border-t border-slate-200 pt-1.5">
+                  <div className="flex justify-between text-base font-bold text-indigo-700 dark:text-indigo-400 border-t border-slate-200 dark:border-slate-700 pt-1.5">
                     <span>Grand Total:</span>
                     <span className="font-mono">${formTotal.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setIsNewQuoteModalOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                  className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   Cancel
                 </button>
@@ -1026,46 +1026,46 @@ export default function CpqView() {
 
       {/* MODAL 2: ADD PRODUCT */}
       {isNewProductModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
-          <div className="bg-white w-full max-w-lg rounded-2xl shadow-xl border border-slate-200 p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-bold text-slate-900">Add Product to Catalog</h3>
-              <button onClick={() => setIsNewProductModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs p-4">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">Add Product to Catalog</h3>
+              <button onClick={() => setIsNewProductModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreateProductSubmit} className="space-y-3.5">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700">Product Name</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Product Name</label>
                 <input
                   type="text"
                   required
                   value={newProductForm.name}
                   onChange={(e) => setNewProductForm(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="e.g. Multi-Tenant Dedicated Sandbox"
-                  className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500/20"
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">SKU Code</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">SKU Code</label>
                   <input
                     type="text"
                     required
                     value={newProductForm.sku}
                     onChange={(e) => setNewProductForm(prev => ({ ...prev, sku: e.target.value }))}
                     placeholder="SKU-SNDBX-01"
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 font-mono"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Category</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Category</label>
                   <select
                     value={newProductForm.category}
                     onChange={(e) => setNewProductForm(prev => ({ ...prev, category: e.target.value }))}
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                   >
                     <option value="Software">Software</option>
                     <option value="Professional Services">Professional Services</option>
@@ -1076,7 +1076,7 @@ export default function CpqView() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">List Unit Price ($)</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">List Unit Price ($)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -1084,15 +1084,15 @@ export default function CpqView() {
                     value={newProductForm.unitPrice}
                     onChange={(e) => setNewProductForm(prev => ({ ...prev, unitPrice: e.target.value }))}
                     placeholder="12000.00"
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 font-mono"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Billing Cycle</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Billing Cycle</label>
                   <select
                     value={newProductForm.billingFrequency}
                     onChange={(e) => setNewProductForm(prev => ({ ...prev, billingFrequency: e.target.value }))}
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 bg-white"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                   >
                     <option value="annual">Annual</option>
                     <option value="monthly">Monthly</option>
@@ -1102,21 +1102,21 @@ export default function CpqView() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700">Description</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Description</label>
                 <textarea
                   rows={2}
                   value={newProductForm.description}
                   onChange={(e) => setNewProductForm(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Technical description of this offering..."
-                  className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300"
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setIsNewProductModalOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                  className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   Cancel
                 </button>
@@ -1134,38 +1134,38 @@ export default function CpqView() {
 
       {/* MODAL 3: QUOTE DETAIL INSPECTOR & APPROVAL WORKFLOW */}
       {isDetailModalOpen && selectedQuoteDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-3xl rounded-2xl shadow-xl border border-slate-200 my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs font-bold text-indigo-700 px-2 py-0.5 bg-indigo-50 rounded border border-indigo-200">
+                  <span className="font-mono text-xs font-bold text-indigo-700 dark:text-indigo-400 px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950/60 rounded border border-indigo-200 dark:border-indigo-800">
                     {selectedQuoteDetail.quote_number}
                   </span>
-                  <h3 className="text-base font-bold text-slate-900">{selectedQuoteDetail.title}</h3>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">{selectedQuoteDetail.title}</h3>
                 </div>
-                <p className="text-xs text-slate-500 mt-1">
-                  Prepared for: <strong>{selectedQuoteDetail.company_name}</strong> · Contact: <strong>{selectedQuoteDetail.contact_name}</strong>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Prepared for: <strong className="text-slate-800 dark:text-slate-200">{selectedQuoteDetail.company_name}</strong> · Contact: <strong className="text-slate-800 dark:text-slate-200">{selectedQuoteDetail.contact_name}</strong>
                 </p>
               </div>
-              <button onClick={() => setIsDetailModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+              <button onClick={() => setIsDetailModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="p-6 space-y-5">
               {/* Status and Action Buttons */}
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase block">Lifecycle Stage</span>
-                    <span className="font-bold text-xs uppercase px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase block">Lifecycle Stage</span>
+                    <span className="font-bold text-xs uppercase px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
                       {selectedQuoteDetail.status}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase block">DocuSign State</span>
-                    <span className="font-semibold text-xs text-slate-700 capitalize">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase block">DocuSign State</span>
+                    <span className="font-semibold text-xs text-slate-700 dark:text-slate-300 capitalize">
                       {selectedQuoteDetail.signature_status}
                     </span>
                   </div>
@@ -1205,7 +1205,7 @@ export default function CpqView() {
 
                   <button
                     onClick={() => handleOpenPdf(selectedQuoteDetail.id)}
-                    className="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold flex items-center gap-1"
+                    className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center gap-1"
                   >
                     <Printer className="w-3.5 h-3.5" />
                     <span>View PDF</span>
@@ -1214,9 +1214,9 @@ export default function CpqView() {
               </div>
 
               {/* Line Items Table */}
-              <div className="border border-slate-200 rounded-xl overflow-hidden">
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-600">
+                  <thead className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
                     <tr>
                       <th className="py-2.5 px-3">Item</th>
                       <th className="py-2.5 px-3">Billing</th>
@@ -1226,18 +1226,18 @@ export default function CpqView() {
                       <th className="py-2.5 px-3 text-right">Line Total</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-700">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                     {(selectedQuoteDetail.lineItems || []).map((li, idx) => (
                       <tr key={idx}>
-                        <td className="py-2.5 px-3 font-medium text-slate-900">
+                        <td className="py-2.5 px-3 font-medium text-slate-900 dark:text-white">
                           {li.product_name}
-                          <span className="block font-mono text-[10px] text-slate-400">{li.sku}</span>
+                          <span className="block font-mono text-[10px] text-slate-400 dark:text-slate-500">{li.sku}</span>
                         </td>
                         <td className="py-2.5 px-3 capitalize">{li.billing_frequency}</td>
                         <td className="py-2.5 px-3">{parseFloat(li.quantity).toFixed(0)}</td>
                         <td className="py-2.5 px-3 font-mono">${parseFloat(li.unit_price).toLocaleString()}</td>
                         <td className="py-2.5 px-3">{parseFloat(li.discount_percent) > 0 ? `${li.discount_percent}%` : '—'}</td>
-                        <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900">
+                        <td className="py-2.5 px-3 text-right font-mono font-bold text-slate-900 dark:text-white">
                           ${parseFloat(li.line_total).toLocaleString()}
                         </td>
                       </tr>
@@ -1248,13 +1248,13 @@ export default function CpqView() {
 
               {/* Financial summary */}
               <div className="flex justify-end">
-                <div className="w-72 space-y-1.5 text-xs text-slate-700 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div className="w-72 space-y-1.5 text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                   <div className="flex justify-between">
                     <span>Subtotal:</span>
                     <span className="font-mono font-semibold">${parseFloat(selectedQuoteDetail.subtotal).toLocaleString()}</span>
                   </div>
                   {parseFloat(selectedQuoteDetail.discount_amount) > 0 && (
-                    <div className="flex justify-between text-emerald-600 font-semibold">
+                    <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-semibold">
                       <span>Discount Applied:</span>
                       <span className="font-mono">-${parseFloat(selectedQuoteDetail.discount_amount).toLocaleString()}</span>
                     </div>
@@ -1265,7 +1265,7 @@ export default function CpqView() {
                       <span className="font-mono font-semibold">${parseFloat(selectedQuoteDetail.tax_amount).toLocaleString()}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-sm font-bold text-indigo-700 border-t border-slate-200 pt-1.5">
+                  <div className="flex justify-between text-sm font-bold text-indigo-700 dark:text-indigo-400 border-t border-slate-200 dark:border-slate-700 pt-1.5">
                     <span>Contract Total:</span>
                     <span className="font-mono">${parseFloat(selectedQuoteDetail.total_amount).toLocaleString()} {selectedQuoteDetail.currency}</span>
                   </div>
@@ -1278,12 +1278,12 @@ export default function CpqView() {
 
       {/* MODAL 4: PRINTABLE PDF PREVIEW */}
       {isPdfModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
-          <div className="bg-white w-full max-w-4xl h-[85vh] rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs p-4">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-4xl h-[85vh] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
               <div className="flex items-center gap-2">
-                <Printer className="w-4 h-4 text-indigo-600" />
-                <span className="text-sm font-bold text-slate-800">Printable PDF Quote Preview</span>
+                <Printer className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <span className="text-sm font-bold text-slate-800 dark:text-white">Printable PDF Quote Preview</span>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -1295,18 +1295,18 @@ export default function CpqView() {
                 </button>
                 <button
                   onClick={() => setIsPdfModalOpen(false)}
-                  className="p-1 rounded-lg hover:bg-slate-200 text-slate-500"
+                  className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
-            <div className="flex-1 p-4 bg-slate-100 overflow-y-auto flex justify-center">
+            <div className="flex-1 p-4 bg-slate-100 dark:bg-slate-950 overflow-y-auto flex justify-center">
               <iframe
                 title="Quote PDF Preview"
                 srcDoc={pdfHtml}
-                className="w-full max-w-3xl h-full bg-white shadow-md rounded-lg border border-slate-300"
+                className="w-full max-w-3xl h-full bg-white shadow-md rounded-lg border border-slate-300 dark:border-slate-700"
               />
             </div>
           </div>

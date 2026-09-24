@@ -439,12 +439,12 @@ export default function SequencesCampaignsView() {
     <div className="space-y-6">
       {/* Toast Alert */}
       {actionSuccess && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl flex items-center justify-between shadow-sm animate-in fade-in duration-200">
+        <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 rounded-xl flex items-center justify-between shadow-sm animate-in fade-in duration-200">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             <span className="text-sm font-semibold">{actionSuccess}</span>
           </div>
-          <button onClick={() => setActionSuccess(null)} className="text-emerald-600 hover:text-emerald-800">
+          <button onClick={() => setActionSuccess(null)} className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-200">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -452,29 +452,29 @@ export default function SequencesCampaignsView() {
 
       {/* Error Alert */}
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl flex items-center justify-between shadow-sm">
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 rounded-xl flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-rose-600" />
+            <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400" />
             <span className="text-sm font-semibold">{error}</span>
           </div>
-          <button onClick={() => setError(null)} className="text-rose-600 hover:text-rose-800">
+          <button onClick={() => setError(null)} className="text-rose-600 dark:text-rose-400 hover:text-rose-800 dark:hover:text-rose-200">
             <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200 mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 mb-2">
+            <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
             <span>Step 13: Customer Sequences, Multi-Channel Outreach & Email Campaigns (Spec §14, §23)</span>
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <Send className="w-6 h-6 text-purple-600" />
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+            <Send className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             <span>Outreach Automation & Campaigns Engine</span>
           </h2>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Automated sales sequences with multi-step delay rules, LinkedIn and call touchpoints, auto-pause on reply, and broadcast email delivery tracking.
           </p>
         </div>
@@ -483,7 +483,7 @@ export default function SequencesCampaignsView() {
           <button
             onClick={loadAllData}
             disabled={loading}
-            className="px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors flex items-center gap-1.5"
+            className="px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded-lg transition-colors flex items-center gap-1.5"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Sync</span>
@@ -509,81 +509,81 @@ export default function SequencesCampaignsView() {
 
       {/* Overview KPI Ribbon (§14, §23) */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-medium">Active Sequences</span>
-            <Layers className="w-4 h-4 text-purple-500" />
+            <Layers className="w-4 h-4 text-purple-500 dark:text-purple-400" />
           </div>
-          <p className="text-2xl font-bold text-slate-900">{metrics?.sequences?.active || 0}</p>
-          <span className="text-[11px] text-purple-600 font-medium mt-1 inline-block">
+          <p className="text-2xl font-bold text-slate-900 dark:text-white">{metrics?.sequences?.active || 0}</p>
+          <span className="text-[11px] text-purple-600 dark:text-purple-400 font-medium mt-1 inline-block">
             {metrics?.sequences?.total || 0} Total Cadences
           </span>
         </div>
 
-        <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-medium">Enrolled Contacts</span>
-            <Users className="w-4 h-4 text-indigo-500" />
+            <Users className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
           </div>
-          <p className="text-2xl font-bold text-slate-900">{metrics?.sequences?.totalEnrolled || 0}</p>
-          <span className="text-[11px] text-indigo-600 font-medium mt-1 inline-block">
+          <p className="text-2xl font-bold text-slate-900 dark:text-white">{metrics?.sequences?.totalEnrolled || 0}</p>
+          <span className="text-[11px] text-indigo-600 dark:text-indigo-400 font-medium mt-1 inline-block">
             {metrics?.sequences?.activeEnrollments || 0} In Active Cadence
           </span>
         </div>
 
-        <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-medium">Reply Rate (§14)</span>
-            <MessageSquare className="w-4 h-4 text-emerald-500" />
+            <MessageSquare className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
           </div>
-          <p className="text-2xl font-bold text-slate-900">{metrics?.sequences?.replyRatePct || 0}%</p>
-          <span className="text-[11px] text-emerald-600 font-medium mt-1 inline-block flex items-center gap-1">
+          <p className="text-2xl font-bold text-slate-900 dark:text-white">{metrics?.sequences?.replyRatePct || 0}%</p>
+          <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium mt-1 inline-block flex items-center gap-1">
             <CheckCircle2 className="w-3 h-3" /> Auto-Pause on Reply
           </span>
         </div>
 
-        <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-medium">Broadcasts Sent</span>
-            <Send className="w-4 h-4 text-sky-500" />
+            <Send className="w-4 h-4 text-sky-500 dark:text-sky-400" />
           </div>
-          <p className="text-2xl font-bold text-slate-900">{metrics?.campaigns?.sent || 0}</p>
-          <span className="text-[11px] text-sky-600 font-medium mt-1 inline-block">
+          <p className="text-2xl font-bold text-slate-900 dark:text-white">{metrics?.campaigns?.sent || 0}</p>
+          <span className="text-[11px] text-sky-600 dark:text-sky-400 font-medium mt-1 inline-block">
             {metrics?.campaigns?.delivered || 0} Delivered
           </span>
         </div>
 
-        <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-medium">Broadcast Open Rate</span>
-            <Eye className="w-4 h-4 text-amber-500" />
+            <Eye className="w-4 h-4 text-amber-500 dark:text-amber-400" />
           </div>
-          <p className="text-2xl font-bold text-slate-900">{metrics?.campaigns?.openRatePct || 0}%</p>
-          <span className="text-[11px] text-amber-600 font-medium mt-1 inline-block">
+          <p className="text-2xl font-bold text-slate-900 dark:text-white">{metrics?.campaigns?.openRatePct || 0}%</p>
+          <span className="text-[11px] text-amber-600 dark:text-amber-400 font-medium mt-1 inline-block">
             {metrics?.campaigns?.opens || 0} Unique Opens
           </span>
         </div>
 
-        <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-medium">Click-Through (CTR)</span>
-            <MousePointer className="w-4 h-4 text-violet-500" />
+            <MousePointer className="w-4 h-4 text-violet-500 dark:text-violet-400" />
           </div>
-          <p className="text-2xl font-bold text-slate-900">{metrics?.campaigns?.clickRatePct || 0}%</p>
-          <span className="text-[11px] text-violet-600 font-medium mt-1 inline-block">
+          <p className="text-2xl font-bold text-slate-900 dark:text-white">{metrics?.campaigns?.clickRatePct || 0}%</p>
+          <span className="text-[11px] text-violet-600 dark:text-violet-400 font-medium mt-1 inline-block">
             {metrics?.campaigns?.clicks || 0} Link Clicks
           </span>
         </div>
       </div>
 
       {/* Navigation Sub-Tabs */}
-      <div className="flex border-b border-slate-200 bg-white px-4 rounded-xl shadow-2xs">
+      <div className="flex border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 rounded-xl shadow-2xs">
         <button
           onClick={() => setActiveTab('sequences')}
           className={`py-3 px-4 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 ${
             activeTab === 'sequences'
-              ? 'border-purple-600 text-purple-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-purple-600 text-purple-600 dark:text-purple-400 dark:border-purple-400'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
           }`}
         >
           <Layers className="w-4 h-4" />
@@ -594,8 +594,8 @@ export default function SequencesCampaignsView() {
           onClick={() => setActiveTab('enrollments')}
           className={`py-3 px-4 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 ${
             activeTab === 'enrollments'
-              ? 'border-purple-600 text-purple-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-purple-600 text-purple-600 dark:text-purple-400 dark:border-purple-400'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
           }`}
         >
           <Users className="w-4 h-4" />
@@ -606,8 +606,8 @@ export default function SequencesCampaignsView() {
           onClick={() => setActiveTab('campaigns')}
           className={`py-3 px-4 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 ${
             activeTab === 'campaigns'
-              ? 'border-purple-600 text-purple-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-purple-600 text-purple-600 dark:text-purple-400 dark:border-purple-400'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
           }`}
         >
           <Send className="w-4 h-4" />
@@ -618,8 +618,8 @@ export default function SequencesCampaignsView() {
           onClick={() => setActiveTab('analytics')}
           className={`py-3 px-4 text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 ${
             activeTab === 'analytics'
-              ? 'border-purple-600 text-purple-600'
-              : 'border-transparent text-slate-500 hover:text-slate-800'
+              ? 'border-purple-600 text-purple-600 dark:text-purple-400 dark:border-purple-400'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
           }`}
         >
           <BarChart2 className="w-4 h-4" />
@@ -634,28 +634,28 @@ export default function SequencesCampaignsView() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Sequences Master List (5 cols) */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm space-y-3">
+            <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-slate-800">Sales Sequences</h3>
-                <span className="text-xs text-slate-500">{filteredSequences.length} items</span>
+                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Sales Sequences</h3>
+                <span className="text-xs text-slate-500 dark:text-slate-400">{filteredSequences.length} items</span>
               </div>
 
               {/* Filters */}
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
-                  <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+                  <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" />
                   <input
                     type="text"
                     placeholder="Search cadences..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-purple-500"
+                    className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-purple-500"
                   />
                 </div>
                 <select
                   value={seqFilter}
                   onChange={(e) => setSeqFilter(e.target.value)}
-                  className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-600"
+                  className="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-600 dark:text-slate-300"
                 >
                   <option value="all">All Status</option>
                   <option value="active">Active</option>
@@ -674,35 +674,35 @@ export default function SequencesCampaignsView() {
                       onClick={() => handleSelectSequence(seq.id)}
                       className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                         isSelected
-                          ? 'border-purple-500 bg-purple-50/50 shadow-xs ring-1 ring-purple-400'
-                          : 'border-slate-200 bg-white hover:border-purple-300'
+                          ? 'border-purple-500 bg-purple-50/50 dark:bg-purple-950/40 shadow-xs ring-1 ring-purple-400'
+                          : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-purple-300 dark:hover:border-purple-700'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <h4 className="text-sm font-bold text-slate-900">{seq.name}</h4>
-                          <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{seq.description}</p>
+                          <h4 className="text-sm font-bold text-slate-900 dark:text-white">{seq.name}</h4>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">{seq.description}</p>
                         </div>
                         <span
-                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
                             seq.status === 'active'
-                              ? 'bg-emerald-100 text-emerald-700'
-                              : 'bg-slate-100 text-slate-600'
+                              ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
                           }`}
                         >
                           {seq.status}
                         </span>
                       </div>
 
-                      <div className="mt-3 flex items-center justify-between text-xs text-slate-500 border-t border-slate-100 pt-2">
-                        <span className="flex items-center gap-1 font-medium text-slate-700">
-                          <Layers className="w-3.5 h-3.5 text-purple-600" />
+                      <div className="mt-3 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2">
+                        <span className="flex items-center gap-1 font-medium text-slate-700 dark:text-slate-300">
+                          <Layers className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                           {seq.steps_count} Steps
                         </span>
                         <span>{seq.total_enrolled} enrolled</span>
                         <span>{seq.total_replied} replies</span>
                         {seq.pause_on_reply && (
-                          <span className="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-medium">
+                          <span className="text-[10px] bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 px-1.5 py-0.5 rounded font-medium">
                             Auto-Pause
                           </span>
                         )}
@@ -717,16 +717,16 @@ export default function SequencesCampaignsView() {
           {/* Sequence Detail & Cadence Step Visualizer (7 cols) */}
           <div className="lg:col-span-7">
             {selectedSequence ? (
-              <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-bold text-slate-900">{selectedSequence.name}</h3>
-                      <span className="text-[11px] font-semibold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white">{selectedSequence.name}</h3>
+                      <span className="text-[11px] font-semibold px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-full">
                         {selectedSequence.status}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 mt-1">{selectedSequence.description}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{selectedSequence.description}</p>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -749,61 +749,61 @@ export default function SequencesCampaignsView() {
                 </div>
 
                 {/* Cadence Metrics Bar */}
-                <div className="grid grid-cols-3 gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 text-center">
+                <div className="grid grid-cols-3 gap-3 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 text-center">
                   <div>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Total Enrolled</span>
-                    <span className="text-base font-bold text-slate-800">{selectedSequence.total_enrolled}</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Total Enrolled</span>
+                    <span className="text-base font-bold text-slate-800 dark:text-white">{selectedSequence.total_enrolled}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Completed</span>
-                    <span className="text-base font-bold text-emerald-600">{selectedSequence.total_completed}</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Completed</span>
+                    <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">{selectedSequence.total_completed}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Replies Received</span>
-                    <span className="text-base font-bold text-purple-600">{selectedSequence.total_replied}</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Replies Received</span>
+                    <span className="text-base font-bold text-purple-600 dark:text-purple-400">{selectedSequence.total_replied}</span>
                   </div>
                 </div>
 
                 {/* Cadence Visual Timeline */}
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-purple-600" />
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                     <span>Cadence Progression Rules ({selectedSequence.steps?.length || 0} Steps)</span>
                   </h4>
 
                   {selectedSequence.steps?.length === 0 ? (
-                    <div className="p-8 text-center border-2 border-dashed border-slate-200 rounded-xl">
-                      <p className="text-xs text-slate-500">No steps defined yet. Click "Add Touchpoint" to build this cadence.</p>
+                    <div className="p-8 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
+                      <p className="text-xs text-slate-500 dark:text-slate-400">No steps defined yet. Click "Add Touchpoint" to build this cadence.</p>
                     </div>
                   ) : (
-                    <div className="relative pl-6 space-y-4 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+                    <div className="relative pl-6 space-y-4 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-700">
                       {selectedSequence.steps?.map((step, idx) => (
                         <div
                           key={step.id}
-                          className="relative bg-slate-50/80 border border-slate-200 rounded-xl p-4 shadow-2xs hover:border-purple-300 transition-colors"
+                          className="relative bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow-2xs hover:border-purple-300 dark:hover:border-purple-600 transition-colors"
                         >
                           {/* Timeline dot */}
-                          <div className="absolute -left-6.5 top-4 w-5 h-5 rounded-full bg-white border-2 border-purple-500 flex items-center justify-center text-[10px] font-bold text-purple-700">
+                          <div className="absolute -left-6.5 top-4 w-5 h-5 rounded-full bg-white dark:bg-slate-900 border-2 border-purple-500 flex items-center justify-center text-[10px] font-bold text-purple-700 dark:text-purple-400">
                             {idx + 1}
                           </div>
 
                           <div className="flex items-start justify-between gap-3">
                             <div className="space-y-1">
                               <div className="flex items-center gap-2">
-                                <span className="p-1 rounded bg-white border border-slate-200 shadow-2xs">
+                                <span className="p-1 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-purple-600 dark:text-purple-400 shadow-2xs">
                                   {getStepIcon(step.step_type)}
                                 </span>
-                                <span className="text-xs font-bold uppercase text-slate-800">
+                                <span className="text-xs font-bold uppercase text-slate-800 dark:text-slate-200">
                                   Step {step.step_order}: {step.step_type.replace('_', ' ')}
                                 </span>
-                                <span className="text-[11px] font-semibold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
+                                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
                                   {step.delay_days > 0 ? `Wait ${step.delay_days} day(s)` : 'Immediate Touchpoint'}
                                 </span>
                               </div>
 
-                              <p className="text-sm font-semibold text-slate-900 mt-1">{step.subject || 'Automated Action'}</p>
+                              <p className="text-sm font-semibold text-slate-900 dark:text-white mt-1">{step.subject || 'Automated Action'}</p>
                               {step.body_template && (
-                                <p className="text-xs text-slate-600 font-mono bg-white p-2 rounded border border-slate-200 line-clamp-3 whitespace-pre-wrap">
+                                <p className="text-xs text-slate-600 dark:text-slate-300 font-mono bg-white dark:bg-slate-800/90 p-2 rounded border border-slate-200 dark:border-slate-700 line-clamp-3 whitespace-pre-wrap">
                                   {step.body_template}
                                 </p>
                               )}
@@ -811,7 +811,7 @@ export default function SequencesCampaignsView() {
 
                             <button
                               onClick={() => handleDeleteStep(step.id)}
-                              className="text-slate-400 hover:text-rose-600 p-1"
+                              className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1"
                               title="Delete Step"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -825,33 +825,33 @@ export default function SequencesCampaignsView() {
 
                 {/* Enrolled Contacts in this Sequence */}
                 {selectedSequence.enrollments?.length > 0 && (
-                  <div className="border-t border-slate-100 pt-4">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                  <div className="border-t border-slate-100 dark:border-slate-800 pt-4">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
                       Recent Sequence Enrollments ({selectedSequence.enrollments.length})
                     </h4>
                     <div className="space-y-2">
                       {selectedSequence.enrollments.slice(0, 5).map((en) => (
                         <div
                           key={en.id}
-                          className="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg text-xs"
+                          className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-800/50 rounded-lg text-xs"
                         >
                           <div>
-                            <span className="font-semibold text-slate-800">
+                            <span className="font-semibold text-slate-800 dark:text-slate-200">
                               {en.first_name} {en.last_name}
                             </span>
-                            <span className="text-slate-500 ml-2 font-mono text-[11px]">{en.email}</span>
+                            <span className="text-slate-500 dark:text-slate-400 ml-2 font-mono text-[11px]">{en.email}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
                               Step {en.current_step_order}
                             </span>
                             <span
-                              className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                              className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
                                 en.status === 'active'
-                                  ? 'bg-emerald-100 text-emerald-800'
+                                  ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
                                   : en.status === 'replied_unenrolled'
-                                  ? 'bg-purple-100 text-purple-800'
-                                  : 'bg-slate-200 text-slate-700'
+                                  ? 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border-purple-200 dark:border-purple-800'
+                                  : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700'
                               }`}
                             >
                               {en.status}
@@ -864,9 +864,9 @@ export default function SequencesCampaignsView() {
                 )}
               </div>
             ) : (
-              <div className="p-12 text-center bg-white rounded-2xl border border-slate-200">
-                <Layers className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-                <p className="text-sm font-semibold text-slate-700">Select a sequence to view cadence rules</p>
+              <div className="p-12 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <Layers className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Select a sequence to view cadence rules</p>
               </div>
             )}
           </div>
@@ -878,23 +878,23 @@ export default function SequencesCampaignsView() {
       {/* ================================================================= */}
       {activeTab === 'enrollments' && (
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <div className="relative flex-1 sm:w-64">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400 dark:text-slate-500" />
                 <input
                   type="text"
                   placeholder="Search enrolled contacts..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-purple-500"
+                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-purple-500"
                 />
               </div>
 
               <select
                 value={enrollStatusFilter}
                 onChange={(e) => setEnrollStatusFilter(e.target.value)}
-                className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-600"
+                className="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-600 dark:text-slate-300"
               >
                 <option value="all">All States</option>
                 <option value="active">Active</option>
@@ -904,16 +904,16 @@ export default function SequencesCampaignsView() {
               </select>
             </div>
 
-            <div className="text-xs text-slate-500">
-              Showing <span className="font-bold text-slate-800">{filteredEnrollments.length}</span> enrollments
+            <div className="text-xs text-slate-500 dark:text-slate-400">
+              Showing <span className="font-bold text-slate-800 dark:text-slate-200">{filteredEnrollments.length}</span> enrollments
             </div>
           </div>
 
           {/* Enrollments Table */}
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
+                <thead className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider">
                   <tr>
                     <th className="py-3 px-4">Contact</th>
                     <th className="py-3 px-4">Sequence Cadence</th>
@@ -923,46 +923,46 @@ export default function SequencesCampaignsView() {
                     <th className="py-3 px-4 text-right">Cadence Simulator</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filteredEnrollments.map((en) => (
-                    <tr key={en.id} className="hover:bg-slate-50/70 transition-colors">
+                    <tr key={en.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors">
                       <td className="py-3 px-4">
-                        <div className="font-bold text-slate-900">
+                        <div className="font-bold text-slate-900 dark:text-white">
                           {en.first_name} {en.last_name}
                         </div>
-                        <div className="text-slate-500 text-[11px] font-mono">{en.email}</div>
+                        <div className="text-slate-500 dark:text-slate-400 text-[11px] font-mono">{en.email}</div>
                         {en.company_name && (
-                          <span className="text-[10px] text-slate-400 font-medium">{en.company_name}</span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">{en.company_name}</span>
                         )}
                       </td>
 
                       <td className="py-3 px-4">
-                        <span className="font-semibold text-purple-700">{en.sequence_name}</span>
+                        <span className="font-semibold text-purple-700 dark:text-purple-400">{en.sequence_name}</span>
                       </td>
 
                       <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                        <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                           Step #{en.current_step_order}
                         </span>
                       </td>
 
                       <td className="py-3 px-4">
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                             en.status === 'active'
-                              ? 'bg-emerald-100 text-emerald-800'
+                              ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
                               : en.status === 'replied_unenrolled'
-                              ? 'bg-purple-100 text-purple-800'
+                              ? 'bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border-purple-200 dark:border-purple-800'
                               : en.status === 'completed'
-                              ? 'bg-slate-100 text-slate-700'
-                              : 'bg-amber-100 text-amber-800'
+                              ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                              : 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800'
                           }`}
                         >
                           {en.status}
                         </span>
                       </td>
 
-                      <td className="py-3 px-4 text-slate-500 text-[11px]">
+                      <td className="py-3 px-4 text-slate-500 dark:text-slate-400 text-[11px]">
                         {en.next_step_due_at ? new Date(en.next_step_due_at).toLocaleString() : '—'}
                       </td>
 
@@ -993,7 +993,7 @@ export default function SequencesCampaignsView() {
 
                               <button
                                 onClick={() => handleToggleEnrollmentStatus(en.id, en.status)}
-                                className="p-1 text-slate-400 hover:text-amber-600"
+                                className="p-1 text-slate-400 hover:text-amber-600 dark:hover:text-amber-400"
                                 title="Pause cadence"
                               >
                                 <Pause className="w-3.5 h-3.5" />
@@ -1012,13 +1012,13 @@ export default function SequencesCampaignsView() {
                           )}
 
                           {en.status === 'replied_unenrolled' && (
-                            <span className="text-[10px] text-purple-700 font-semibold bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                            <span className="text-[10px] text-purple-700 dark:text-purple-300 font-semibold bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800">
                               Replied & Unenrolled
                             </span>
                           )}
 
                           {en.status === 'completed' && (
-                            <span className="text-[10px] text-slate-500 font-medium">Cadence Finished</span>
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Cadence Finished</span>
                           )}
                         </div>
                       </td>
@@ -1038,10 +1038,10 @@ export default function SequencesCampaignsView() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Campaign List (5 cols) */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm space-y-3">
+            <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-slate-800">Broadcast Campaigns</h3>
-                <span className="text-xs text-slate-500">{campaigns.length} campaigns</span>
+                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Broadcast Campaigns</h3>
+                <span className="text-xs text-slate-500 dark:text-slate-400">{campaigns.length} campaigns</span>
               </div>
 
               <div className="space-y-2.5 max-h-[600px] overflow-y-auto pr-1">
@@ -1053,38 +1053,38 @@ export default function SequencesCampaignsView() {
                       onClick={() => handleSelectCampaign(camp.id)}
                       className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                         isSelected
-                          ? 'border-indigo-500 bg-indigo-50/50 shadow-xs ring-1 ring-indigo-400'
-                          : 'border-slate-200 bg-white hover:border-indigo-300'
+                          ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/40 shadow-xs ring-1 ring-indigo-400'
+                          : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-indigo-300 dark:hover:border-indigo-700'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <h4 className="text-sm font-bold text-slate-900">{camp.name}</h4>
-                          <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">{camp.subject}</p>
+                          <h4 className="text-sm font-bold text-slate-900 dark:text-white">{camp.name}</h4>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">{camp.subject}</p>
                         </div>
                         <span
-                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
                             camp.status === 'sent'
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-slate-100 text-slate-600'
+                              ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
                           }`}
                         >
                           {camp.status}
                         </span>
                       </div>
 
-                      <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs border-t border-slate-100 pt-2 text-slate-600">
+                      <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs border-t border-slate-100 dark:border-slate-800 pt-2 text-slate-600 dark:text-slate-300">
                         <div>
-                          <span className="text-[10px] text-slate-400 block">Recipients</span>
-                          <span className="font-bold">{camp.total_recipients}</span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 block">Recipients</span>
+                          <span className="font-bold text-slate-800 dark:text-white">{camp.total_recipients}</span>
                         </div>
                         <div>
-                          <span className="text-[10px] text-slate-400 block">Open Rate</span>
-                          <span className="font-bold text-emerald-600">{camp.open_rate}%</span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 block">Open Rate</span>
+                          <span className="font-bold text-emerald-600 dark:text-emerald-400">{camp.open_rate}%</span>
                         </div>
                         <div>
-                          <span className="text-[10px] text-slate-400 block">CTR</span>
-                          <span className="font-bold text-violet-600">{camp.click_rate}%</span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 block">CTR</span>
+                          <span className="font-bold text-violet-600 dark:text-violet-400">{camp.click_rate}%</span>
                         </div>
                       </div>
                     </div>
@@ -1097,17 +1097,17 @@ export default function SequencesCampaignsView() {
           {/* Campaign Detail & Recipient Engagement Tracker (7 cols) */}
           <div className="lg:col-span-7">
             {selectedCampaign ? (
-              <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-bold text-slate-900">{selectedCampaign.name}</h3>
-                      <span className="text-[11px] font-semibold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white">{selectedCampaign.name}</h3>
+                      <span className="text-[11px] font-semibold px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-full">
                         {selectedCampaign.status}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Subject: <span className="font-medium text-slate-700">{selectedCampaign.subject}</span>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                      Subject: <span className="font-medium text-slate-700 dark:text-slate-300">{selectedCampaign.subject}</span>
                     </p>
                   </div>
 
@@ -1123,35 +1123,35 @@ export default function SequencesCampaignsView() {
                 </div>
 
                 {/* Campaign Metrics Bar */}
-                <div className="grid grid-cols-4 gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200 text-center">
+                <div className="grid grid-cols-4 gap-3 p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 text-center">
                   <div>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Audience</span>
-                    <span className="text-lg font-bold text-slate-800">{selectedCampaign.total_recipients}</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Audience</span>
+                    <span className="text-lg font-bold text-slate-800 dark:text-white">{selectedCampaign.total_recipients}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Delivered</span>
-                    <span className="text-lg font-bold text-sky-600">{selectedCampaign.delivered_count}</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Delivered</span>
+                    <span className="text-lg font-bold text-sky-600 dark:text-sky-400">{selectedCampaign.delivered_count}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Opened ({selectedCampaign.open_rate}%)</span>
-                    <span className="text-lg font-bold text-emerald-600">{selectedCampaign.open_count}</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Opened ({selectedCampaign.open_rate}%)</span>
+                    <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{selectedCampaign.open_count}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Clicked ({selectedCampaign.click_rate}%)</span>
-                    <span className="text-lg font-bold text-violet-600">{selectedCampaign.click_count}</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Clicked ({selectedCampaign.click_rate}%)</span>
+                    <span className="text-lg font-bold text-violet-600 dark:text-violet-400">{selectedCampaign.click_count}</span>
                   </div>
                 </div>
 
                 {/* Recipient Engagement List */}
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-indigo-600" />
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                     <span>Recipient Tracking & Engagement Simulator ({selectedCampaign.recipients?.length || 0})</span>
                   </h4>
 
-                  <div className="border border-slate-200 rounded-xl overflow-hidden">
+                  <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                      <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-700">
                         <tr>
                           <th className="py-2.5 px-3">Recipient</th>
                           <th className="py-2.5 px-3">Engagement Status</th>
@@ -1159,37 +1159,37 @@ export default function SequencesCampaignsView() {
                           <th className="py-2.5 px-3 text-right">Event Simulator</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                         {selectedCampaign.recipients?.map((rec) => (
-                          <tr key={rec.id} className="hover:bg-slate-50/70">
+                          <tr key={rec.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
                             <td className="py-2.5 px-3">
-                              <span className="font-semibold text-slate-900 block">
+                              <span className="font-semibold text-slate-900 dark:text-white block">
                                 {rec.first_name} {rec.last_name}
                               </span>
-                              <span className="text-[11px] text-slate-500 font-mono">{rec.email}</span>
+                              <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">{rec.email}</span>
                             </td>
 
                             <td className="py-2.5 px-3">
                               <span
-                                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                                   rec.status === 'clicked'
-                                    ? 'bg-violet-100 text-violet-800'
+                                    ? 'bg-violet-100 dark:bg-violet-950/60 text-violet-800 dark:text-violet-300 border-violet-200 dark:border-violet-800'
                                     : rec.status === 'opened'
-                                    ? 'bg-emerald-100 text-emerald-800'
+                                    ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
                                     : rec.status === 'delivered' || rec.status === 'sent'
-                                    ? 'bg-sky-100 text-sky-800'
-                                    : 'bg-rose-100 text-rose-800'
+                                    ? 'bg-sky-100 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300 border-sky-200 dark:border-sky-800'
+                                    : 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800'
                                 }`}
                               >
                                 {rec.status}
                               </span>
                             </td>
 
-                            <td className="py-2.5 px-3 text-[11px] text-slate-500">
+                            <td className="py-2.5 px-3 text-[11px] text-slate-500 dark:text-slate-400">
                               {rec.clicked_at ? (
-                                <span className="text-violet-600 font-medium">Clicked</span>
+                                <span className="text-violet-600 dark:text-violet-400 font-medium">Clicked</span>
                               ) : rec.opened_at ? (
-                                <span className="text-emerald-600 font-medium">Opened</span>
+                                <span className="text-emerald-600 dark:text-emerald-400 font-medium">Opened</span>
                               ) : (
                                 <span>Sent</span>
                               )}
@@ -1200,7 +1200,7 @@ export default function SequencesCampaignsView() {
                                 {rec.status !== 'clicked' && (
                                   <button
                                     onClick={() => handleTrackRecipient(rec.id, 'click')}
-                                    className="px-2 py-0.5 bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 rounded text-[10px] font-semibold"
+                                    className="px-2 py-0.5 bg-violet-50 dark:bg-violet-950/50 hover:bg-violet-100 dark:hover:bg-violet-900/50 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800 rounded text-[10px] font-semibold"
                                     title="Simulate prospect clicking a link in email"
                                   >
                                     Simulate Click
@@ -1209,7 +1209,7 @@ export default function SequencesCampaignsView() {
                                 {rec.status !== 'opened' && rec.status !== 'clicked' && (
                                   <button
                                     onClick={() => handleTrackRecipient(rec.id, 'open')}
-                                    className="px-2 py-0.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded text-[10px] font-semibold"
+                                    className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded text-[10px] font-semibold"
                                     title="Simulate prospect opening email"
                                   >
                                     Simulate Open
@@ -1225,9 +1225,9 @@ export default function SequencesCampaignsView() {
                 </div>
               </div>
             ) : (
-              <div className="p-12 text-center bg-white rounded-2xl border border-slate-200">
-                <Send className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-                <p className="text-sm font-semibold text-slate-700">Select a campaign to view delivery and engagement analytics</p>
+              <div className="p-12 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <Send className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Select a campaign to view delivery and engagement analytics</p>
               </div>
             )}
           </div>
@@ -1240,79 +1240,79 @@ export default function SequencesCampaignsView() {
       {activeTab === 'analytics' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm space-y-3">
-              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                <Target className="w-4 h-4 text-purple-600" />
+            <div className="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                <Target className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                 <span>Multi-Channel Outreach Mix</span>
               </h3>
-              <p className="text-xs text-slate-500">Distribution of cadence touchpoint channels configured in active sequences.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Distribution of cadence touchpoint channels configured in active sequences.</p>
               <div className="space-y-2 pt-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="flex items-center gap-1.5 text-slate-700">
-                    <Mail className="w-3.5 h-3.5 text-sky-500" /> Automated Emails
+                  <span className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                    <Mail className="w-3.5 h-3.5 text-sky-500 dark:text-sky-400" /> Automated Emails
                   </span>
-                  <span className="font-bold text-slate-900">55%</span>
+                  <span className="font-bold text-slate-900 dark:text-white">55%</span>
                 </div>
-                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                   <div className="bg-sky-500 h-full rounded-full" style={{ width: '55%' }}></div>
                 </div>
 
                 <div className="flex items-center justify-between text-xs pt-2">
-                  <span className="flex items-center gap-1.5 text-slate-700">
-                    <Linkedin className="w-3.5 h-3.5 text-blue-600" /> LinkedIn Touches
+                  <span className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                    <Linkedin className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> LinkedIn Touches
                   </span>
-                  <span className="font-bold text-slate-900">25%</span>
+                  <span className="font-bold text-slate-900 dark:text-white">25%</span>
                 </div>
-                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                   <div className="bg-blue-600 h-full rounded-full" style={{ width: '25%' }}></div>
                 </div>
 
                 <div className="flex items-center justify-between text-xs pt-2">
-                  <span className="flex items-center gap-1.5 text-slate-700">
-                    <Phone className="w-3.5 h-3.5 text-emerald-500" /> Phone Discovery Touches
+                  <span className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                    <Phone className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" /> Phone Discovery Touches
                   </span>
-                  <span className="font-bold text-slate-900">20%</span>
+                  <span className="font-bold text-slate-900 dark:text-white">20%</span>
                 </div>
-                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                   <div className="bg-emerald-500 h-full rounded-full" style={{ width: '20%' }}></div>
                 </div>
               </div>
             </div>
 
-            <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm space-y-3">
-              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                <Flame className="w-4 h-4 text-amber-500" />
+            <div className="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                <Flame className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                 <span>Conversion Velocity & Reply Protection</span>
               </h3>
-              <p className="text-xs text-slate-500">Autonomous anti-collision rules auto-pause cadences immediately upon prospect reply.</p>
-              <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg text-xs space-y-2 mt-2">
+              <p className="text-xs text-slate-500 dark:text-slate-400">Autonomous anti-collision rules auto-pause cadences immediately upon prospect reply.</p>
+              <div className="p-3 bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 rounded-lg text-xs space-y-2 mt-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-purple-900">Auto-Pause Trigger</span>
-                  <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold text-[10px]">
+                  <span className="font-semibold text-purple-900 dark:text-purple-200">Auto-Pause Trigger</span>
+                  <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded font-bold text-[10px]">
                     Enabled (§14)
                   </span>
                 </div>
-                <p className="text-purple-700 text-[11px]">
+                <p className="text-purple-700 dark:text-purple-300 text-[11px]">
                   When a prospect replies to an email or outbound call, their enrollment transitions to{' '}
                   <span className="font-mono font-bold">replied_unenrolled</span> to prevent embarrassing automated follow-ups.
                 </p>
               </div>
             </div>
 
-            <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm space-y-3">
-              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                <Zap className="w-4 h-4 text-emerald-600" />
+            <div className="p-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                <Zap className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 <span>Email Deliverability & Reputation</span>
               </h3>
-              <p className="text-xs text-slate-500">Tenant-isolated tracking across all standard contacts and deals.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Tenant-isolated tracking across all standard contacts and deals.</p>
               <div className="grid grid-cols-2 gap-3 pt-2 text-center text-xs">
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                  <span className="text-[10px] text-slate-400 block uppercase">Bounce Rate</span>
-                  <span className="text-base font-bold text-emerald-600">0.0%</span>
+                <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700">
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 block uppercase">Bounce Rate</span>
+                  <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">0.0%</span>
                 </div>
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                  <span className="text-[10px] text-slate-400 block uppercase">Unsubscribe Rate</span>
-                  <span className="text-base font-bold text-slate-700">0.0%</span>
+                <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700">
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 block uppercase">Unsubscribe Rate</span>
+                  <span className="text-base font-bold text-slate-700 dark:text-slate-300">0.0%</span>
                 </div>
               </div>
             </div>
@@ -1324,43 +1324,43 @@ export default function SequencesCampaignsView() {
       {/* MODAL: CREATE SEQUENCE */}
       {/* ================================================================= */}
       {showCreateSeqModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Plus className="w-5 h-5 text-purple-600" />
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Plus className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 <span>Create Sales Sequence Cadence</span>
               </h3>
-              <button onClick={() => setShowCreateSeqModal(false)} className="text-slate-400 hover:text-slate-600">
+              <button onClick={() => setShowCreateSeqModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreateSequence} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Cadence Sequence Name *</label>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Cadence Sequence Name *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Executive Outbound Cadence"
                   value={newSeq.name}
                   onChange={(e) => setNewSeq({ ...newSeq, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-1 focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-lg focus:ring-1 focus:ring-purple-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Description / Strategy</label>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Description / Strategy</label>
                 <textarea
                   rows={2}
                   placeholder="Strategic goal, target personas, and touchpoint objectives"
                   value={newSeq.description}
                   onChange={(e) => setNewSeq({ ...newSeq, description: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-1 focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-lg focus:ring-1 focus:ring-purple-500"
                 />
               </div>
 
-              <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200">
+              <div className="flex items-center gap-2 p-3 bg-purple-50 dark:bg-purple-950/40 rounded-xl border border-purple-200 dark:border-purple-800">
                 <input
                   type="checkbox"
                   id="pauseOnReply"
@@ -1368,16 +1368,16 @@ export default function SequencesCampaignsView() {
                   onChange={(e) => setNewSeq({ ...newSeq, pause_on_reply: e.target.checked })}
                   className="rounded text-purple-600 focus:ring-purple-500 w-4 h-4"
                 />
-                <label htmlFor="pauseOnReply" className="font-semibold text-purple-900 cursor-pointer">
+                <label htmlFor="pauseOnReply" className="font-semibold text-purple-900 dark:text-purple-200 cursor-pointer">
                   Auto-pause sequence when contact replies (§14 Anti-Collision)
                 </label>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowCreateSeqModal(false)}
-                  className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50"
+                  className="px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-semibold hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   Cancel
                 </button>
@@ -1397,14 +1397,14 @@ export default function SequencesCampaignsView() {
       {/* MODAL: ADD CADENCE STEP */}
       {/* ================================================================= */}
       {showAddStepModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Plus className="w-5 h-5 text-purple-600" />
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Plus className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 <span>Add Cadence Step to "{selectedSequence?.name}"</span>
               </h3>
-              <button onClick={() => setShowAddStepModal(false)} className="text-slate-400 hover:text-slate-600">
+              <button onClick={() => setShowAddStepModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1412,11 +1412,11 @@ export default function SequencesCampaignsView() {
             <form onSubmit={handleAddStep} className="space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Touchpoint Type *</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Touchpoint Type *</label>
                   <select
                     value={newStep.step_type}
                     onChange={(e) => setNewStep({ ...newStep, step_type: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-1 focus:ring-purple-500 font-medium"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg focus:ring-1 focus:ring-purple-500 font-medium"
                   >
                     <option value="email">Automated Email</option>
                     <option value="call_reminder">Call Touchpoint Reminder</option>
@@ -1427,54 +1427,54 @@ export default function SequencesCampaignsView() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Delay After Prior Step (Days)</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Delay After Prior Step (Days)</label>
                   <input
                     type="number"
                     min="0"
                     max="60"
                     value={newStep.delay_days}
                     onChange={(e) => setNewStep({ ...newStep, delay_days: parseInt(e.target.value, 10) || 0 })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-1 focus:ring-purple-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-lg focus:ring-1 focus:ring-purple-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Subject / Touchpoint Title *</label>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Subject / Touchpoint Title *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Next steps for {{company_name}}"
                   value={newStep.subject}
                   onChange={(e) => setNewStep({ ...newStep, subject: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-1 focus:ring-purple-500"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-lg focus:ring-1 focus:ring-purple-500"
                 />
               </div>
 
               {newStep.step_type !== 'delay' && (
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="font-semibold text-slate-700">Body Template / Instructions</label>
+                    <label className="font-semibold text-slate-700 dark:text-slate-300">Body Template / Instructions</label>
                     <div className="flex items-center gap-1">
-                      <span className="text-[10px] text-slate-400">Insert tag:</span>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500">Insert tag:</span>
                       <button
                         type="button"
                         onClick={() => insertMergeTag('first_name')}
-                        className="px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded text-[10px] font-mono"
+                        className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded text-[10px] font-mono border border-slate-200 dark:border-slate-700"
                       >
                         first_name
                       </button>
                       <button
                         type="button"
                         onClick={() => insertMergeTag('company_name')}
-                        className="px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded text-[10px] font-mono"
+                        className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded text-[10px] font-mono border border-slate-200 dark:border-slate-700"
                       >
                         company_name
                       </button>
                       <button
                         type="button"
                         onClick={() => insertMergeTag('job_title')}
-                        className="px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded text-[10px] font-mono"
+                        className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded text-[10px] font-mono border border-slate-200 dark:border-slate-700"
                       >
                         job_title
                       </button>
@@ -1485,16 +1485,16 @@ export default function SequencesCampaignsView() {
                     placeholder="Hi {{first_name}}, following up on our previous note..."
                     value={newStep.body_template}
                     onChange={(e) => setNewStep({ ...newStep, body_template: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-1 focus:ring-purple-500 font-mono text-[11px]"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-lg focus:ring-1 focus:ring-purple-500 font-mono text-[11px]"
                   />
                 </div>
               )}
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowAddStepModal(false)}
-                  className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50"
+                  className="px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-semibold hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   Cancel
                 </button>
@@ -1514,30 +1514,30 @@ export default function SequencesCampaignsView() {
       {/* MODAL: ENROLL CONTACTS IN SEQUENCE */}
       {/* ================================================================= */}
       {showEnrollModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Users className="w-5 h-5 text-indigo-600" />
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 <span>Enroll Contacts in "{selectedSequence?.name}"</span>
               </h3>
-              <button onClick={() => setShowEnrollModal(false)} className="text-slate-400 hover:text-slate-600">
+              <button onClick={() => setShowEnrollModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleEnrollContacts} className="space-y-4 text-xs">
-              <p className="text-slate-500">
+              <p className="text-slate-500 dark:text-slate-400">
                 Select one or more active contacts to enroll in this cadence. Step 1 will be scheduled automatically.
               </p>
 
-              <div className="max-h-60 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-100 p-2 space-y-1">
+              <div className="max-h-60 overflow-y-auto border border-slate-200 dark:border-slate-700 rounded-xl divide-y divide-slate-100 dark:divide-slate-800 p-2 space-y-1">
                 {allContacts.map((c) => {
                   const isChecked = selectedContactIds.includes(c.id);
                   return (
                     <label
                       key={c.id}
-                      className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 cursor-pointer"
+                      className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer"
                     >
                       <div className="flex items-center gap-2.5">
                         <input
@@ -1553,13 +1553,13 @@ export default function SequencesCampaignsView() {
                           className="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"
                         />
                         <div>
-                          <span className="font-bold text-slate-900">
+                          <span className="font-bold text-slate-900 dark:text-white">
                             {c.first_name} {c.last_name}
                           </span>
-                          <span className="text-slate-500 text-[11px] ml-2 font-mono">{c.email}</span>
+                          <span className="text-slate-500 dark:text-slate-400 text-[11px] ml-2 font-mono">{c.email}</span>
                         </div>
                       </div>
-                      <span className="text-[10px] font-semibold bg-slate-100 px-2 py-0.5 rounded text-slate-600">
+                      <span className="text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded">
                         {c.lifecycle_stage}
                       </span>
                     </label>
@@ -1567,8 +1567,8 @@ export default function SequencesCampaignsView() {
                 })}
               </div>
 
-              <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                <span className="text-slate-500 font-medium">
+              <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">
                   {selectedContactIds.length} contact(s) selected
                 </span>
 
@@ -1576,7 +1576,7 @@ export default function SequencesCampaignsView() {
                   <button
                     type="button"
                     onClick={() => setShowEnrollModal(false)}
-                    className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50"
+                    className="px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-semibold hover:bg-slate-50 dark:hover:bg-slate-800"
                   >
                     Cancel
                   </button>
@@ -1598,46 +1598,46 @@ export default function SequencesCampaignsView() {
       {/* MODAL: SIMULATE PROSPECT REPLY (§14) */}
       {/* ================================================================= */}
       {showReplyModal && replyEnrollment && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-purple-600" />
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 <span>Simulate Prospect Reply (§14)</span>
               </h3>
-              <button onClick={() => setShowReplyModal(false)} className="text-slate-400 hover:text-slate-600">
+              <button onClick={() => setShowReplyModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSimulateReply} className="space-y-4 text-xs">
-              <div className="p-3 bg-purple-50 rounded-xl border border-purple-200 space-y-1">
-                <span className="text-purple-900 font-bold block">Prospect:</span>
-                <span className="text-slate-800 font-medium">
+              <div className="p-3 bg-purple-50 dark:bg-purple-950/40 rounded-xl border border-purple-200 dark:border-purple-800 space-y-1">
+                <span className="text-purple-900 dark:text-purple-200 font-bold block">Prospect:</span>
+                <span className="text-slate-800 dark:text-slate-200 font-medium">
                   {replyEnrollment.first_name} {replyEnrollment.last_name} ({replyEnrollment.email})
                 </span>
-                <p className="text-[11px] text-purple-700 mt-1">
+                <p className="text-[11px] text-purple-700 dark:text-purple-300 mt-1">
                   Enrolled in: <span className="font-semibold">{replyEnrollment.sequence_name}</span>. Submitting a reply will
                   trigger the auto-pause collision rule.
                 </p>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Reply Content *</label>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Reply Content *</label>
                 <textarea
                   rows={3}
                   required
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-1 focus:ring-purple-500 text-xs"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-lg focus:ring-1 focus:ring-purple-500 text-xs"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowReplyModal(false)}
-                  className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50"
+                  className="px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-semibold hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   Cancel
                 </button>
@@ -1657,14 +1657,14 @@ export default function SequencesCampaignsView() {
       {/* MODAL: CREATE BROADCAST CAMPAIGN (§23) */}
       {/* ================================================================= */}
       {showCreateCampaignModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-xl border border-slate-200 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Send className="w-5 h-5 text-indigo-600" />
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-xl w-full p-6 shadow-xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Send className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                 <span>Create Broadcast Email Campaign</span>
               </h3>
-              <button onClick={() => setShowCreateCampaignModal(false)} className="text-slate-400 hover:text-slate-600">
+              <button onClick={() => setShowCreateCampaignModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1672,23 +1672,23 @@ export default function SequencesCampaignsView() {
             <form onSubmit={handleCreateCampaign} className="space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Campaign Name *</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Campaign Name *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Q4 Platform Release Webinar"
                     value={newCampaign.name}
                     onChange={(e) => setNewCampaign({ ...newCampaign, name: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-1 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-lg focus:ring-1 focus:ring-indigo-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Target Audience Segment (§23) *</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Target Audience Segment (§23) *</label>
                   <select
                     value={newCampaign.target_segment}
                     onChange={(e) => setNewCampaign({ ...newCampaign, target_segment: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-1 focus:ring-indigo-500 font-medium"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg focus:ring-1 focus:ring-indigo-500 font-medium"
                   >
                     <option value="all_contacts">All Contacts in Tenant Org</option>
                     <option value="leads_only">Leads Only (stage = lead)</option>
@@ -1700,64 +1700,64 @@ export default function SequencesCampaignsView() {
               </div>
 
               {/* Dynamic Audience Preview Badge */}
-              <div className="p-3 bg-indigo-50/80 rounded-xl border border-indigo-200 flex items-center justify-between">
+              <div className="p-3 bg-indigo-50/80 dark:bg-indigo-950/40 rounded-xl border border-indigo-200 dark:border-indigo-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Target className="w-4 h-4 text-indigo-600" />
-                  <span className="font-semibold text-indigo-950">
-                    Live Audience Calculation: <span className="font-bold text-indigo-700">{audiencePreview.count}</span> eligible contacts
+                  <Target className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  <span className="font-semibold text-indigo-950 dark:text-indigo-200">
+                    Live Audience Calculation: <span className="font-bold text-indigo-700 dark:text-indigo-400">{audiencePreview.count}</span> eligible contacts
                   </span>
                 </div>
-                <span className="text-[11px] text-indigo-600 font-medium">Real-time DB query</span>
+                <span className="text-[11px] text-indigo-600 dark:text-indigo-400 font-medium">Real-time DB query</span>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Subject Line *</label>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Subject Line *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. You're invited: Architectural Blueprint Webinar"
                   value={newCampaign.subject}
                   onChange={(e) => setNewCampaign({ ...newCampaign, subject: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-1 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-lg focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Sender Name</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Sender Name</label>
                   <input
                     type="text"
                     value={newCampaign.from_name}
                     onChange={(e) => setNewCampaign({ ...newCampaign, from_name: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Sender Email</label>
+                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Sender Email</label>
                   <input
                     type="email"
                     value={newCampaign.from_email}
                     onChange={(e) => setNewCampaign({ ...newCampaign, from_email: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-mono text-[11px]"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg font-mono text-[11px]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">HTML Email Content</label>
+                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">HTML Email Content</label>
                 <textarea
                   rows={4}
                   value={newCampaign.html_content}
                   onChange={(e) => setNewCampaign({ ...newCampaign, html_content: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg font-mono text-[11px]"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono text-[11px] rounded-lg"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowCreateCampaignModal(false)}
-                  className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50"
+                  className="px-4 py-2 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-semibold hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   Cancel
                 </button>

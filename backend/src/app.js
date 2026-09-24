@@ -21,6 +21,8 @@ import aiRoutes from './modules/ai/ai.routes.js';
 import cpqRoutes from './modules/cpq/cpq.routes.js';
 import supportRoutes from './modules/support/support.routes.js';
 import marketingRoutes from './modules/marketing/marketing.routes.js';
+import integrationsRoutes from './modules/integrations/integrations.routes.js';
+import formsRoutes from './modules/forms/forms.routes.js';
 
 const app = express();
 
@@ -79,6 +81,8 @@ app.use('/api/v1/ai', aiRoutes);
 app.use('/api/v1/cpq', cpqRoutes);
 app.use('/api/v1/support', supportRoutes);
 app.use('/api/v1/marketing', marketingRoutes);
+app.use('/api/v1/integrations', integrationsRoutes);
+app.use('/api/v1/forms', formsRoutes);
 
 // System database status & schema metrics
 app.get('/api/v1/system/db-status', async (req, res, next) => {
@@ -125,6 +129,16 @@ app.get('/api/v1/system/db-status', async (req, res, next) => {
     const [[{ sequenceEnrollmentsCount }]] = await pool.query('SELECT COUNT(*) AS sequenceEnrollmentsCount FROM sequence_enrollments');
     const [[{ campaignCount }]] = await pool.query('SELECT COUNT(*) AS campaignCount FROM email_campaigns');
     const [[{ campaignRecipientsCount }]] = await pool.query('SELECT COUNT(*) AS campaignRecipientsCount FROM campaign_recipients');
+    const [[{ apiKeysCount }]] = await pool.query('SELECT COUNT(*) AS apiKeysCount FROM api_keys');
+    const [[{ webhooksCount }]] = await pool.query('SELECT COUNT(*) AS webhooksCount FROM webhook_endpoints');
+    const [[{ webhookDeliveriesCount }]] = await pool.query('SELECT COUNT(*) AS webhookDeliveriesCount FROM webhook_deliveries');
+    const [[{ integrationsCount }]] = await pool.query('SELECT COUNT(*) AS integrationsCount FROM integrations');
+    const [[{ integrationLogsCount }]] = await pool.query('SELECT COUNT(*) AS integrationLogsCount FROM integration_sync_logs');
+    const [[{ formsCount }]] = await pool.query('SELECT COUNT(*) AS formsCount FROM forms');
+    const [[{ formFieldsCount }]] = await pool.query('SELECT COUNT(*) AS formFieldsCount FROM form_fields');
+    const [[{ formSubmissionsCount }]] = await pool.query('SELECT COUNT(*) AS formSubmissionsCount FROM form_submissions');
+    const [[{ routingRulesCount }]] = await pool.query('SELECT COUNT(*) AS routingRulesCount FROM lead_routing_rules');
+    const [[{ landingPagesCount }]] = await pool.query('SELECT COUNT(*) AS landingPagesCount FROM landing_pages');
 
     // Fetch tenant sample
     const [orgs] = await pool.query('SELECT id, name, slug, currency, timezone, status FROM organizations LIMIT 1');
@@ -171,6 +185,16 @@ app.get('/api/v1/system/db-status', async (req, res, next) => {
         sequenceEnrollments: sequenceEnrollmentsCount,
         campaigns: campaignCount,
         campaignRecipients: campaignRecipientsCount,
+        apiKeys: apiKeysCount,
+        webhooks: webhooksCount,
+        webhookDeliveries: webhookDeliveriesCount,
+        integrations: integrationsCount,
+        integrationLogs: integrationLogsCount,
+        forms: formsCount,
+        formFields: formFieldsCount,
+        formSubmissions: formSubmissionsCount,
+        routingRules: routingRulesCount,
+        landingPages: landingPagesCount,
       },
       tenant: orgs[0] || null,
       adminUser: adminUsers[0] || null,

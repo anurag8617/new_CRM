@@ -9,8 +9,8 @@
 
 ## 📋 Table of Contents
 1. [Executive Summary](#1-executive-summary)
-2. [Milestones Completed (Steps 1–12)](#2-milestones-completed-steps-112)
-3. [MySQL Database Schema (53 Tables)](#3-mysql-database-schema-53-tables)
+2. [Milestones Completed (Steps 1–15)](#2-milestones-completed-steps-115)
+3. [MySQL Database Schema (68 Tables)](#3-mysql-database-schema-68-tables)
 4. [Default Seeded Credentials & Data](#4-default-seeded-credentials--data)
 5. [Complete API Catalog & Testing Guide](#5-complete-api-catalog--testing-guide)
    - [System & Health APIs](#51-system--health-apis)
@@ -25,8 +25,11 @@
    - [AI Copilot & Autonomous Agents APIs (§16, §20, §47, §56)](#510-ai-copilot-smart-summaries--autonomous-agents-16-20-47-56)
    - [Products, Pricebooks & CPQ APIs (§24, §25)](#511-products-pricebooks-quotes--cpq-engine-24-25)
    - [Support, Ticketing & SLA Engine APIs (§23, §26)](#512-omnichannel-support-ticketing--sla-engine-23-26)
+   - [Sales Sequences & Marketing Campaigns APIs (§24)](#513-sales-sequences-cadences--marketing-campaigns-24)
+   - [Developer Webhooks, Scoped API Keys & Native Integrations (§31, §36, §37)](#514-developer-webhooks-scoped-api-keys--native-integrations-31-36-37-41)
+   - [Forms, Landing Pages & Multi-Tenant Lead Routing (§23, §38, §39)](#515-forms-landing-pages-engine--multi-tenant-lead-routing-spec-23-38-39)
 6. [One-Click Automated Test Scripts](#6-one-click-automated-test-scripts)
-7. [Next Roadmap Step (Step 13)](#7-next-roadmap-step-step-13)
+7. [Next Roadmap Step (Step 16)](#7-next-roadmap-step-step-16)
 
 ---
 
@@ -38,13 +41,13 @@ The core permission and identity engine enforces a 3-layer authorization model (
 
 ---
 
-## 2. Milestones Completed (Steps 1–13)
+## 2. Milestones Completed (Steps 1–15)
 
 ```
 ┌──────────────────┐     ┌──────────────────────┐     ┌──────────────────────┐     ┌────────────────────────┐
-│     STEPS 1-4    │     │      STEPS 5-7       │     │      STEPS 8-10      │     │      STEPS 11-13       │
-│ Core Multi-Tenant│────▶│ Deals, Pipelines,    │────▶│ Tasks, Comms, AI     │────▶│ CPQ & Tickets/SLAs +   │
-│  Auth & Entities │     │ Workflows & Custom Obj│    │ Copilot & Agents     │     │ Sequences & Campaigns  │
+│     STEPS 1-4    │     │      STEPS 5-7       │     │      STEPS 8-10      │     │      STEPS 11-15       │
+│ Core Multi-Tenant│────▶│ Deals, Pipelines,    │────▶│ Tasks, Comms, AI     │────▶│ CPQ, Support, Webhooks,│
+│  Auth & Entities │     │ Workflows & Custom Obj│    │ Copilot & Agents     │     │ Sequences, Forms & Page│
 └──────────────────┘     └──────────────────────┘     └──────────────────────┘     └────────────────────────┘
 ```
 
@@ -144,9 +147,17 @@ The core permission and identity engine enforces a 3-layer authorization model (
 - **Recipient Engagement & Event Tracking (§23):** Individual recipient tracking with delivery simulation, open tracking, link click tracking, and live aggregate open rate and CTR analytics.
 - **Frontend Outreach & Campaigns Studio (`SequencesCampaignsView.jsx`):** Multi-tab console with executive KPI ribbon, sequence cadence builder, contact enrollment simulator, reply simulator, broadcast campaign manager, and delivery analytics.
 
+### ✅ Step 14: Developer Webhooks, Scoped API Keys & Native Integrations (Spec §31, §36, §37, §41)
+- **Developer Scoped API Keys (§37):** Secure key generator (`crm_live_...`), SHA-256 hashed storage at rest, masked key prefix inspection, custom permission scopes (`contacts:read`, `deals:write`, `quotes:sign`, `webhooks:manage`), rate limits, and instant revocation.
+- **Event-Driven Outgoing Webhook Dispatcher (§31, §37):** Automatic event bus integration listening for domain events (`deal.created`, `deal.stage_changed`, `contact.created`, `ticket.created`, `quote.accepted`), generating **cryptographic HMAC-SHA256 signatures** (`X-CRM-Signature`) and UUID **Idempotency Keys** (`X-Idempotency-Key`).
+- **Webhook Delivery Log & Audit Inspector (§31, §41):** Full delivery attempt tracking in `webhook_deliveries` recording response HTTP status code, roundtrip duration in milliseconds, request headers, payload JSON, and remote response body.
+- **Pre-Built Third-Party Connectors (§36):** Native integration hub with pre-configured cards for **Slack** (deal win & SLA breach alerts), **Stripe** (automated payment & invoice sync), **Google Calendar** (meeting booking), **Zapier** (multi-app lead ingestion), and **HubSpot** (migration bridge).
+- **Public Inbound Webhook Gateway (§31):** Public webhook listener endpoint (`POST /api/v1/integrations/inbound/:provider`) to ingest external leads directly from third-party form builders and payment systems.
+- **Frontend Integration Studio (`IntegrationsView.jsx`):** Developer console with Integration Marketplace cards, Webhook Endpoints manager, one-click Test Payload simulator, slide-over Delivery Payload Inspector, and Developer API Keys table.
+
 ---
 
-## 3. MySQL Database Schema (58 Tables)
+## 3. MySQL Database Schema (63 Tables)
 
 All tables use InnoDB engine, `utf8mb4_unicode_ci` collation, and enforce multi-tenant isolation via indexed `organization_id`:
 
@@ -210,6 +221,11 @@ All tables use InnoDB engine, `utf8mb4_unicode_ci` collation, and enforce multi-
 | 56 | `sequence_enrollments` | §14 Enrollments | Contact enrollment state machine (active, paused, completed, replied_unenrolled). |
 | 57 | `email_campaigns` | §23 Campaigns | Broadcast email campaigns with audience segment targeting and delivery tracking. |
 | 58 | `campaign_recipients` | §23 Recipients | Granular campaign recipient engagement tracking (sent, delivered, opened, clicked). |
+| 59 | `api_keys` | §37 Scoped API Keys | Developer API tokens with hashed storage, scopes, rate limits, and revocation. |
+| 60 | `webhook_endpoints` | §31 Webhook Targets | Outgoing event subscriptions, target URLs, secret tokens, and health metrics. |
+| 61 | `webhook_deliveries` | §31, §41 Deliveries | Delivery audit log with HMAC signatures, idempotency keys, latency, and status. |
+| 62 | `integrations` | §36 Third-Party Hub | Native connectors (Slack, Stripe, Google Calendar, Zapier, HubSpot) and sync states. |
+| 63 | `integration_sync_logs` | §36 Sync Audit Trail | Detailed integration event execution logs with direction, actions, and payload details. |
 
 ---
 
@@ -808,23 +824,53 @@ npm run db:setup
 - **Track Recipient Engagement Event:** `POST /api/v1/marketing/recipients/:recipientId/track`
   - Body: `{"eventType": "open" | "click" | "bounce"}`
 
+### 5.14 Developer Webhooks, Scoped API Keys & Native Integrations (§31, §36, §37, §41)
+
+#### 47. Developer Scoped API Keys (§37)
+- **List API Keys:** `GET /api/v1/integrations/api-keys`
+- **Generate API Key:** `POST /api/v1/integrations/api-keys`
+  - Body: `{"name": "Zapier Sync Key", "scopes": ["contacts:read", "deals:write"], "rateLimit": 120, "expiresDays": "90"}`
+  - Returns `keySecret: "crm_live_..."` once upon creation.
+- **Revoke API Key:** `DELETE /api/v1/integrations/api-keys/:id`
+
+#### 48. Outgoing Webhooks & HMAC Signatures (§31, §37)
+- **List Webhook Endpoints:** `GET /api/v1/integrations/webhooks`
+- **Register Webhook Endpoint:** `POST /api/v1/integrations/webhooks`
+  - Body: `{"name": "Zapier Production Hook", "targetUrl": "https://hooks.zapier.com/...", "events": ["deal.stage_changed", "contact.created"]}`
+- **Get Endpoint Details:** `GET /api/v1/integrations/webhooks/:id`
+- **Update Webhook:** `PATCH /api/v1/integrations/webhooks/:id`
+- **Delete Webhook:** `DELETE /api/v1/integrations/webhooks/:id`
+- **Test Webhook Dispatch Simulator:** `POST /api/v1/integrations/webhooks/:id/test`
+  - Body: `{"eventType": "deal.stage_changed", "payload": {...}}`
+  - Computes HMAC-SHA256 signature (`X-CRM-Signature`), generates UUID `X-Idempotency-Key`, logs execution duration, and saves delivery.
+- **List Delivery Logs & Payloads:** `GET /api/v1/integrations/webhooks/deliveries?endpointId=...&limit=50`
+
+#### 49. Third-Party Integrations & Inbound Listener (§31, §36)
+- **List Marketplace Connectors:** `GET /api/v1/integrations/marketplace`
+- **Update Connector Config:** `PATCH /api/v1/integrations/marketplace/:provider`
+- **Trigger Integration Sync Simulator:** `POST /api/v1/integrations/marketplace/:provider/sync`
+  - Body: `{"action": "deal.won_broadcast"}`
+- **List Integration Sync Audit Logs:** `GET /api/v1/integrations/logs?integrationId=...`
+- **Public Inbound Webhook Gateway:** `POST /api/v1/integrations/inbound/:provider`
+  - Public external listener verifying signatures and ingesting third-party events.
+
 ---
 
 ## 6. One-Click Automated Test Scripts
 
 ### Windows PowerShell Test Script
-Copy and paste this into PowerShell to test Sequences, Outreach, Campaigns, Support, and core 58-table endpoints end-to-end:
+Copy and paste this into PowerShell to test Webhooks, API Keys, Integrations, and all 63 database tables end-to-end:
 
 ```powershell
-Write-Host "`n🚀 Testing CRM Step 13 Sequences, Outreach & Email Campaign APIs..." -ForegroundColor Yellow
+Write-Host "`n🚀 Testing CRM Step 14 Webhooks, API Keys & Integration APIs..." -ForegroundColor Yellow
 
-# 1. Health check & DB Status (58 Tables Verification)
+# 1. Health check & DB Status (63 Tables Verification)
 $health = Invoke-RestMethod -Uri "http://localhost:5000/api/health"
 Write-Host "✅ Health Check OK: Database $($health.database.database) connected." -ForegroundColor Green
 
 $dbStatus = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/system/db-status"
 Write-Host "✅ Database Status: $($dbStatus.totalTables) InnoDB tables verified in crm_db." -ForegroundColor Green
-Write-Host "   Counts: Sequences: $($dbStatus.counts.sequences), Cadence Steps: $($dbStatus.counts.sequenceSteps), Enrollments: $($dbStatus.counts.sequenceEnrollments), Campaigns: $($dbStatus.counts.campaigns)" -ForegroundColor DarkGray
+Write-Host "   Counts: API Keys: $($dbStatus.counts.apiKeys), Webhooks: $($dbStatus.counts.webhooks), Deliveries: $($dbStatus.counts.webhookDeliveries), Integrations: $($dbStatus.counts.integrations)" -ForegroundColor DarkGray
 
 # 2. Login
 $loginBody = '{"email":"admin@crm.local","password":"Admin@123456"}'
@@ -833,55 +879,145 @@ $token = $login.data.accessToken
 $headers = @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" }
 Write-Host "✅ Login OK: User $($login.data.user.fullName) (Role: $($login.data.user.role))" -ForegroundColor Green
 
-# 3. Outreach & Marketing Operational KPIs
-$metrics = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/metrics" -Headers $headers
-Write-Host "✅ Marketing KPIs OK: Active Cadences: $($metrics.data.sequences.active), Enrolled: $($metrics.data.sequences.totalEnrolled), Reply Rate: $($metrics.data.sequences.replyRatePct)%" -ForegroundColor Cyan
-Write-Host "   Campaigns: Sent: $($metrics.data.campaigns.sent), Open Rate: $($metrics.data.campaigns.openRatePct)%, CTR: $($metrics.data.campaigns.clickRatePct)%" -ForegroundColor DarkGray
+# 3. List & Generate Developer API Keys (§37)
+$keys = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/integrations/api-keys" -Headers $headers
+Write-Host "✅ List API Keys OK: Found $($keys.data.Count) keys. (Prefix: $($keys.data[0].key_prefix)...)" -ForegroundColor Cyan
 
-# 4. List Sequences
-$seqs = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/sequences" -Headers $headers
-Write-Host "✅ List Sequences OK: Found $($seqs.data.Count) cadences in tenant org." -ForegroundColor Cyan
+$newKey = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/integrations/api-keys" -Method Post -Headers $headers -Body '{"name":"Automated CI/CD Key","scopes":["contacts:read","deals:read"],"rateLimit":100}'
+Write-Host "✅ Key Generation OK: $($newKey.data.name) (Secret: $($newKey.data.keySecret.Substring(0, 18))...)" -ForegroundColor Green
 
-$seqId = $seqs.data[0].id
-$seqDetail = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/sequences/$seqId" -Headers $headers
-Write-Host "   Sequence 1: $($seqDetail.data.name) ($($seqDetail.data.steps.Count) Steps Configured)" -ForegroundColor DarkGray
+# 4. Outgoing Webhooks & Test Dispatch with HMAC SHA-256 (§31)
+$hooks = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/integrations/webhooks" -Headers $headers
+Write-Host "✅ List Webhooks OK: Found $($hooks.data.Count) registered endpoints." -ForegroundColor Cyan
 
-# 5. List Contact Enrollments & Advance Cadence Step Simulator
-$enrollments = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/enrollments" -Headers $headers
-Write-Host "✅ Enrollments OK: Found $($enrollments.data.Count) contacts enrolled." -ForegroundColor Cyan
+$dispatch = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/integrations/webhooks/$($hooks.data[0].id)/test" -Method Post -Headers $headers -Body '{"eventType":"deal.stage_changed"}'
+Write-Host "✅ Webhook Dispatch OK: Status: $($dispatch.data.status), Latency: $($dispatch.data.durationMs)ms" -ForegroundColor Green
+Write-Host "   Signature: $($dispatch.data.signature.Substring(0, 28))..." -ForegroundColor DarkGray
+Write-Host "   Idempotency Key: $($dispatch.data.idempotencyKey)" -ForegroundColor DarkGray
 
-$activeEn = $enrollments.data | Where-Object { $_.status -eq 'active' } | Select-Object -First 1
-if ($activeEn) {
-    $stepRes = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/enrollments/$($activeEn.id)/execute-step" -Method Post -Headers $headers
-    Write-Host "✅ Cadence Touchpoint Executed OK: $($stepRes.data.detail) (Next Step: $($stepRes.data.next_step_order))" -ForegroundColor Green
+# 5. Webhook Delivery Logs (§41)
+$delivs = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/integrations/webhooks/deliveries" -Headers $headers
+Write-Host "✅ Delivery Audit Logs OK: Found $($delivs.data.Count) logged delivery attempts." -ForegroundColor Cyan
 
-    # 6. Simulate Prospect Reply with Anti-Collision Auto-Pause (§14)
-    $replyBody = '{"reply_text":"Thanks Alex, let us book a 15-minute introductory call."}'
-    $replyRes = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/enrollments/$($activeEn.id)/reply" -Method Post -Headers $headers -Body $replyBody
-    Write-Host "✅ Prospect Reply Simulation OK: $($replyRes.data.message)" -ForegroundColor Green
-}
+# 6. Marketplace Connectors & Real-Time Sync (§36)
+$integs = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/integrations/marketplace" -Headers $headers
+Write-Host "✅ Marketplace OK: $($integs.data.Count) providers configured." -ForegroundColor Cyan
 
-# 7. Dynamic Audience Segment Preview (§23)
-$audience = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/campaigns/audience-preview?segment=all_contacts" -Headers $headers
-Write-Host "✅ Audience Calculator OK: $($audience.data.count) eligible contacts found in segment 'all_contacts'." -ForegroundColor Cyan
+$slackSync = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/integrations/marketplace/slack/sync" -Method Post -Headers $headers -Body '{"action":"deal.won_broadcast"}'
+Write-Host "✅ Slack Broadcast Sync OK: $($slackSync.data.details.message)" -ForegroundColor Green
 
-# 8. Broadcast Email Campaigns & Recipient Engagement
-$campaigns = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/marketing/campaigns" -Headers $headers
-Write-Host "✅ Broadcast Campaigns OK: $($campaigns.data.Count) campaign(s) retrieved. Open Rate: $($campaigns.data[0].open_rate)%" -ForegroundColor Green
+# 7. Inbound Webhook Gateway Listener (§31)
+$inbound = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/integrations/inbound/zapier" -Method Post -ContentType "application/json" -Body '{"lead":"Inbound Lead Test"}'
+Write-Host "✅ Inbound Webhook Gateway OK: Received=$($inbound.received) Provider=$($inbound.provider)" -ForegroundColor Green
 
-Write-Host "`n🎉 ALL STEP 13 SEQUENCES, OUTREACH & EMAIL CAMPAIGN TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Green
+Write-Host "`n🎉 ALL STEP 14 WEBHOOKS, API PLATFORM & INTEGRATION TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Green
+```
+
+### 5.15 Forms, Landing Pages Engine & Multi-Tenant Lead Routing (Spec §23, §38, §39)
+
+#### 50. Public Form Retrieval & Embed Widget (§23)
+- **Get Public Form Definition by Slug:** `GET /api/v1/forms/public/:slug`
+  - Public endpoint (no auth required).
+  - Atomically increments form view counter.
+  - Returns form styling theme, submit button text, success message, and dynamic fields array.
+- **Submit Public Form (Lead Ingestion & Routing):** `POST /api/v1/forms/public/:slug/submit`
+  - Validates required fields and field types.
+  - **Lead Deduplication (§39):** Looks up existing contact by email; updates contact details if found, or creates a new contact with `lifecycle_stage: 'lead'`.
+  - **Company Creation/Matching:** Automatically extracts company name or email domain to link/create company account.
+  - **Multi-Tenant Lead Routing (§38):** Evaluates prioritized routing rules (`round_robin`, `deal_size`, `territory`, `fallback`), selects next eligible sales rep using atomic pointer advancement, and sets `owner_id`.
+  - **Automated Opportunity Deal Generation:** If enabled, creates an open pipeline deal linked to contact, company, and assigned rep.
+  - **Timeline Activity Attribution:** Appends task activity record to the unified timeline.
+  - **Event Bus Dispatch:** Fires `form.submitted` to trigger webhooks and external connectors.
+
+#### 51. Form Designer & Administration (§23)
+- **List Forms:** `GET /api/v1/forms` (returns conversion rates and field counts)
+- **Get Form Details:** `GET /api/v1/forms/:id`
+- **Create Form:** `POST /api/v1/forms`
+  - Body: `{"name": "...", "slug": "...", "submit_button_text": "...", "create_deal_on_submit": true, "default_deal_value": 25000, "fields": [...]}`
+- **Update Form:** `PUT /api/v1/forms/:id`
+- **Delete Form:** `DELETE /api/v1/forms/:id`
+
+#### 52. Submissions Inbox & Lead Attribution (§23, §39)
+- **List All Submissions:** `GET /api/v1/forms/submissions/all?formId=...&limit=50`
+  - Returns joined contact details, created deal value/title, matched company, and assigned sales rep.
+- **Get Submission Details:** `GET /api/v1/forms/submissions/:id` (full JSON payload and browser attribution)
+
+#### 53. Multi-Tenant Lead Routing Rules Engine (§38)
+- **List Routing Rules:** `GET /api/v1/forms/routing/rules`
+- **Create Routing Rule:** `POST /api/v1/forms/routing/rules`
+  - Body: `{"name": "...", "routing_type": "round_robin" | "deal_size" | "territory", "priority": 1, "conditions": [...], "assignee_user_ids": [1]}`
+- **Update Rule:** `PUT /api/v1/forms/routing/rules/:id`
+- **Delete Rule:** `DELETE /api/v1/forms/routing/rules/:id`
+- **Simulate Lead Routing Test:** `POST /api/v1/forms/routing/simulate`
+  - Body: `{"country": "USA", "deal_value": 85000}`
+  - Evaluates rules without advancing round-robin counters, returning the matching rule and selected rep.
+
+#### 54. Hosted Landing Pages Studio (§23)
+- **List Landing Pages:** `GET /api/v1/forms/landing-pages/all`
+- **Get Landing Page:** `GET /api/v1/forms/landing-pages/:id`
+- **Get Public Landing Page by Slug:** `GET /api/v1/forms/public/pages/:slug` (increments page views and returns linked form)
+- **Create Landing Page:** `POST /api/v1/forms/landing-pages/all`
+- **Update Landing Page:** `PUT /api/v1/forms/landing-pages/:id`
+- **Delete Landing Page:** `DELETE /api/v1/forms/landing-pages/:id`
+
+---
+
+## 6. One-Click Automated Test Script: Step 15 Forms & Routing
+
+```powershell
+# Authenticate
+$login = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/auth/login" -Method Post -ContentType "application/json" -Body '{"email":"admin@crm.local","password":"Admin@123456"}'
+$token = $login.data.accessToken
+$headers = @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" }
+
+# 1. Public Form Discovery
+$pubForm = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/forms/public/enterprise-demo" -Method Get
+Write-Host "✅ Public Form OK: $($pubForm.data.name) ($($pubForm.data.fields.Count) fields)" -ForegroundColor Green
+
+# 2. Public Lead Ingestion & Round-Robin Routing
+$leadBody = @{
+    first_name = "Marcus"
+    last_name = "Aurelius"
+    email = "marcus.aurelius@rome-cloud.com"
+    phone = "+1 (555) 987-6543"
+    company_name = "Rome Cloud Infrastructure"
+    team_size = "200+ Enterprise Reps"
+    deal_value = 120000
+    objectives = "Full enterprise replacement for CRM and quote workflows."
+} | ConvertTo-Json
+
+$pubSub = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/forms/public/enterprise-demo/submit" -Method Post -ContentType "application/json" -Body $leadBody
+Write-Host "✅ Lead Ingested OK: SubId=$($pubSub.submissionId) ContactId=$($pubSub.contactId) DealId=$($pubSub.dealId) Rule=$($pubSub.routing.ruleName)" -ForegroundColor Green
+
+# 3. Public Landing Page Delivery
+$pubPage = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/forms/public/pages/enterprise-suite-2026" -Method Get
+Write-Host "✅ Public Landing Page OK: $($pubPage.data.title) (Form: $($pubPage.data.form.name))" -ForegroundColor Green
+
+# 4. Admin Forms Catalog & Conversions
+$forms = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/forms" -Headers $headers
+Write-Host "✅ Admin Forms OK: $($forms.data.Count) forms found. Conversion Rate: $($forms.data[0].conversion_rate)%" -ForegroundColor Green
+
+# 5. Submissions Audit Inbox
+$subs = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/forms/submissions/all" -Headers $headers
+Write-Host "✅ Submissions Inbox OK: $($subs.data.Count) total submissions logged." -ForegroundColor Green
+
+# 6. Lead Routing Rules Simulation
+$simRes = Invoke-RestMethod -Uri "http://localhost:5000/api/v1/forms/routing/simulate" -Method Post -Headers $headers -Body '{"country":"USA","deal_value":95000}'
+Write-Host "✅ Routing Simulation OK: Matched=$($simRes.data.matched) Rule=$($simRes.data.ruleName)" -ForegroundColor Green
+
+Write-Host "`n🎉 ALL STEP 15 FORMS, LANDING PAGES & LEAD ROUTING TESTS COMPLETED SUCCESSFULLY!`n" -ForegroundColor Green
 ```
 
 ---
 
-## 7. Next Roadmap Step (Step 14)
+## 7. Next Roadmap Step (Step 16)
 
-With **Step 13 (Customer Sequences, Multi-Channel Outreach & Email Campaigns)** completed, the next milestone is **Step 14: Webhooks, REST API Integrations & External Data Sync Engine (Spec §31, §32, §41)**:
-1. **Event-Driven Webhook Dispatch Engine (§31):** Trigger outgoing HTTP POST payloads upon record creations, updates, and deal stage progressions with HMAC SHA-256 signatures (`X-CRM-Signature`).
-2. **Third-Party Integration Connectors (§32):** Slack, HubSpot, Stripe, Google Calendar, and Zapier inbound/outbound sync bridges.
-3. **Idempotency & Retry Backoff System (§31, §41):** Idempotency headers (`X-Idempotency-Key`), exponential retry schedulers, and delivery attempt logging in `webhook_deliveries`.
-4. **Interactive Webhook Simulation Studio (§31):** Test payload generator, signature verification tester, and live webhook endpoint listener.
+With **Step 15 (Forms & Landing Pages Engine, Lead Capture & Multi-Tenant Lead Routing)** completed, the next milestone is **Step 16: Automated Sequences Execution Worker, Template Engine & Email Tracking (Spec §24, §25)**:
+1. **Background Sequence Worker Engine (§24):** Asynchronous cron/queue runner that evaluates active enrollments, calculates wait delays between steps, and executes cadence tasks (automated emails, call reminders, LinkedIn tasks).
+2. **Liquid/Handlebars Dynamic Template Engine (§25):** Merge tags (`{{contact.first_name}}`, `{{deal.value}}`, `{{company.name}}`), conditional blocks, and personalized fallback values.
+3. **Email Engagement & Pixel Tracker (§24):** Zero-pixel GIF endpoint (`GET /api/v1/marketing/track/open/:id.gif`) and redirect click tracker (`GET /api/v1/marketing/track/click/:id`) to calculate open and click-through rates.
+4. **Automatic Cadence Un-Enrollment Trigger (§24):** Automatically pauses or un-enrolls a prospect when they reply to an email or schedule a meeting.
 
 ---
 
-*Report generated and committed to project repository.*
+*Report updated and committed to project repository.*

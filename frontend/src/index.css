@@ -1,9 +1,164 @@
+@import './styles/tokens.css';
+@import './styles/base.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
+/* Additional utility classes mapping cleanly to ChatGPT aesthetic */
+@layer utilities {
+  .bg-app {
+    background-color: var(--bg-app);
+  }
+  .bg-sidebar {
+    background-color: var(--bg-sidebar);
+  }
+  .bg-surface {
+    background-color: var(--bg-surface);
+  }
+  .bg-surface-raised {
+    background-color: var(--bg-surface-raised);
+  }
+  .bg-surface-sunken {
+    background-color: var(--bg-surface-sunken);
+  }
+  .bg-elevated {
+    background-color: var(--bg-elevated);
+  }
+  .bg-modal {
+    background-color: var(--bg-modal);
+  }
+  .bg-hover {
+    background-color: var(--bg-hover);
+  }
+  .bg-active {
+    background-color: var(--bg-active);
+  }
+  .bg-selected {
+    background-color: var(--bg-selected);
+  }
+  .bg-input {
+    background-color: var(--bg-input);
+  }
+
+  .text-primary {
+    color: var(--text-primary);
+  }
+  .text-secondary {
+    color: var(--text-secondary);
+  }
+  .text-tertiary {
+    color: var(--text-tertiary);
+  }
+  .text-disabled {
+    color: var(--text-disabled);
+  }
+  .text-inverse {
+    color: var(--text-inverse);
+  }
+  .text-accent {
+    color: var(--accent);
+  }
+
+  .border-subtle {
+    border-color: var(--border-subtle);
+  }
+  .border-default {
+    border-color: var(--border-default);
+  }
+  .border-strong {
+    border-color: var(--border-strong);
+  }
+  .border-focus {
+    border-color: var(--border-focus);
+  }
+}
+
+/* ==========================================================================
+   Dark Mode Global Surface & Contrast Enforcements (UI.md Pure Neutral Spec)
+   ========================================================================== */
+html[data-theme='dark'],
+html.dark {
+  /* Solid raised surfaces for dark cards and containers */
+  .dark\:bg-slate-900,
+  .bg-slate-900 {
+    background-color: var(--bg-surface-raised) !important;
+  }
+
+  /* Any translucent slate variations used on cards become solid raised surfaces */
+  .dark\:bg-slate-900\/60,
+  .dark\:bg-slate-900\/50,
+  .dark\:bg-slate-900\/80,
+  .dark\:bg-slate-900\/90,
+  .bg-slate-900\/90,
+  .bg-slate-900\/50 {
+    background-color: var(--bg-surface-raised) !important;
+  }
+
+  /* Elevated surfaces (dropdowns, popovers, sub-containers, inputs) */
+  .dark\:bg-slate-800,
+  .bg-slate-800 {
+    background-color: var(--bg-elevated) !important;
+  }
+
+  .dark\:bg-slate-800\/60,
+  .dark\:bg-slate-800\/50,
+  .dark\:bg-slate-800\/70,
+  .bg-slate-800\/60,
+  .bg-slate-800\/70 {
+    background-color: var(--bg-surface-raised) !important;
+  }
+
+  /* Sunken surfaces (inset boxes, code blocks) */
+  .dark\:bg-slate-950,
+  .bg-slate-950 {
+    background-color: var(--bg-surface-sunken) !important;
+  }
+
+  /* Borders: clean subtle neutral borders */
+  .dark\:border-slate-800,
+  .dark\:border-slate-700,
+  .dark\:border-slate-700\/60,
+  .dark\:border-slate-700\/70,
+  .border-slate-700\/60,
+  .border-slate-700\/70,
+  .border-slate-800 {
+    border-color: var(--border-subtle) !important;
+  }
+
+  /* Crisp high-contrast foreground text */
+  .dark\:text-white,
+  .dark\:text-slate-100 {
+    color: var(--text-primary) !important;
+  }
+
+  .dark\:text-slate-200,
+  .dark\:text-slate-300,
+  .dark\:text-slate-400 {
+    color: var(--text-secondary) !important;
+  }
+
+  .dark\:text-slate-500 {
+    color: var(--text-tertiary) !important;
+  }
+
+  /* Neutralize murky colored pill/badge backgrounds to clean subtle translucent overlays */
+  .dark\:bg-indigo-950\/60,
+  .dark\:bg-indigo-950\/50,
+  .dark\:bg-indigo-950\/40,
+  .dark\:bg-purple-950\/60,
+  .dark\:bg-purple-950\/50,
+  .dark\:bg-purple-950\/40,
+  .dark\:bg-blue-950\/60,
+  .dark\:bg-blue-950\/50,
+  .dark\:bg-emerald-950\/60,
+  .dark\:bg-emerald-950\/50,
+  .dark\:bg-rose-950\/60,
+  .dark\:bg-rose-950\/50,
+  .dark\:bg-amber-950\/60,
+  .dark\:bg-amber-950\/50,
+  .dark\:bg-sky-950\/60,
+  .dark\:bg-sky-950\/40 {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+  }
 }

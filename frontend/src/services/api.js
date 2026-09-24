@@ -748,6 +748,176 @@ export const trackCampaignRecipient = async (recipientId, eventType) => {
   return response.data;
 };
 
+// Step 14: Developer Webhooks, API Keys & Third-Party Integrations (Spec §31, §36, §37, §41)
+export const getApiKeys = async () => {
+  const response = await api.get('/v1/integrations/api-keys');
+  return response.data;
+};
+
+export const createApiKey = async (data) => {
+  const response = await api.post('/v1/integrations/api-keys', data);
+  return response.data;
+};
+
+export const revokeApiKey = async (id) => {
+  const response = await api.delete(`/v1/integrations/api-keys/${id}`);
+  return response.data;
+};
+
+export const getWebhooks = async () => {
+  const response = await api.get('/v1/integrations/webhooks');
+  return response.data;
+};
+
+export const createWebhook = async (data) => {
+  const response = await api.post('/v1/integrations/webhooks', data);
+  return response.data;
+};
+
+export const updateWebhook = async (id, data) => {
+  const response = await api.patch(`/v1/integrations/webhooks/${id}`, data);
+  return response.data;
+};
+
+export const deleteWebhook = async (id) => {
+  const response = await api.delete(`/v1/integrations/webhooks/${id}`);
+  return response.data;
+};
+
+export const getWebhookDeliveries = async (params = {}) => {
+  const response = await api.get('/v1/integrations/webhooks/deliveries', { params });
+  return response.data;
+};
+
+export const testDispatchWebhook = async (id, data = {}) => {
+  const response = await api.post(`/v1/integrations/webhooks/${id}/test`, data);
+  return response.data;
+};
+
+export const getIntegrations = async () => {
+  const response = await api.get('/v1/integrations/marketplace');
+  return response.data;
+};
+
+export const updateIntegration = async (provider, data) => {
+  const response = await api.patch(`/v1/integrations/marketplace/${provider}`, data);
+  return response.data;
+};
+
+export const triggerIntegrationSync = async (provider, action = 'manual_sync') => {
+  const response = await api.post(`/v1/integrations/marketplace/${provider}/sync`, { action });
+  return response.data;
+};
+
+export const getIntegrationLogs = async (params = {}) => {
+  const response = await api.get('/v1/integrations/logs', { params });
+  return response.data;
+};
+
+// -------------------------------------------------------------------
+// FORMS & LANDING PAGES ENGINE API (Spec §23, §38)
+// -------------------------------------------------------------------
+
+export const getForms = async () => {
+  const response = await api.get('/v1/forms');
+  return response.data;
+};
+
+export const getFormById = async (id) => {
+  const response = await api.get(`/v1/forms/${id}`);
+  return response.data;
+};
+
+export const createForm = async (data) => {
+  const response = await api.post('/v1/forms', data);
+  return response.data;
+};
+
+export const updateForm = async (id, data) => {
+  const response = await api.put(`/v1/forms/${id}`, data);
+  return response.data;
+};
+
+export const deleteForm = async (id) => {
+  const response = await api.delete(`/v1/forms/${id}`);
+  return response.data;
+};
+
+export const getPublicForm = async (slug) => {
+  const response = await api.get(`/v1/forms/public/${slug}`);
+  return response.data;
+};
+
+export const submitPublicForm = async (slug, data) => {
+  const response = await api.post(`/v1/forms/public/${slug}/submit`, data);
+  return response.data;
+};
+
+export const getFormSubmissions = async (params = {}) => {
+  const response = await api.get('/v1/forms/submissions/all', { params });
+  return response.data;
+};
+
+export const getFormSubmissionById = async (id) => {
+  const response = await api.get(`/v1/forms/submissions/${id}`);
+  return response.data;
+};
+
+export const getRoutingRules = async () => {
+  const response = await api.get('/v1/forms/routing/rules');
+  return response.data;
+};
+
+export const createRoutingRule = async (data) => {
+  const response = await api.post('/v1/forms/routing/rules', data);
+  return response.data;
+};
+
+export const updateRoutingRule = async (id, data) => {
+  const response = await api.put(`/v1/forms/routing/rules/${id}`, data);
+  return response.data;
+};
+
+export const deleteRoutingRule = async (id) => {
+  const response = await api.delete(`/v1/forms/routing/rules/${id}`);
+  return response.data;
+};
+
+export const simulateLeadRouting = async (payload) => {
+  const response = await api.post('/v1/forms/routing/simulate', payload);
+  return response.data;
+};
+
+export const getLandingPages = async () => {
+  const response = await api.get('/v1/forms/landing-pages/all');
+  return response.data;
+};
+
+export const getLandingPageById = async (id) => {
+  const response = await api.get(`/v1/forms/landing-pages/${id}`);
+  return response.data;
+};
+
+export const createLandingPage = async (data) => {
+  const response = await api.post('/v1/forms/landing-pages/all', data);
+  return response.data;
+};
+
+export const updateLandingPage = async (id, data) => {
+  const response = await api.put(`/v1/forms/landing-pages/${id}`, data);
+  return response.data;
+};
+
+export const deleteLandingPage = async (id) => {
+  const response = await api.delete(`/v1/forms/landing-pages/${id}`);
+  return response.data;
+};
+
+export const getPublicLandingPage = async (slug) => {
+  const response = await api.get(`/v1/forms/public/pages/${slug}`);
+  return response.data;
+};
+
 export default api;
 
 

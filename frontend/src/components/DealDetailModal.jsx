@@ -6,16 +6,13 @@ import {
   Building2, 
   User, 
   Calendar, 
-  DollarSign, 
-  Percent, 
   Clock, 
   Plus, 
   Loader2, 
   FileText,
-  Trash2,
-  TrendingUp,
-  AlertCircle
+  Trash2
 } from 'lucide-react';
+import { Button, Badge } from './ui';
 
 export default function DealDetailModal({ dealId, onClose, onUpdated, stages = [] }) {
   const [deal, setDeal] = useState(null);
@@ -91,199 +88,175 @@ export default function DealDetailModal({ dealId, onClose, onUpdated, stages = [
   if (!dealId) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-[var(--bg-overlay)] backdrop-blur-xs transition-opacity"
+        onClick={onClose}
+      />
+
+      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-[var(--bg-modal)] border border-[var(--border-subtle)] rounded-[var(--radius-lg)] shadow-[var(--shadow-lg)] overflow-hidden z-10 animate-in fade-in duration-150">
         {/* Header */}
-        <div className="p-6 border-b border-slate-200 flex items-start justify-between bg-slate-50/50">
+        <div className="p-5 border-b border-[var(--border-subtle)] flex items-start justify-between bg-[var(--bg-surface-raised)]">
           {loading ? (
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
-              <span>Loading deal details...</span>
+            <div className="flex items-center gap-2 text-xs text-[var(--text-tertiary)]">
+              <Loader2 className="w-4 h-4 animate-spin text-[var(--text-tertiary)]" />
+              <span>Loading opportunity...</span>
             </div>
           ) : deal ? (
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-sm">
-                <Briefcase className="w-6 h-6" />
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-[var(--radius-md)] bg-[var(--bg-surface-sunken)] border border-[var(--border-subtle)] text-[var(--accent)] flex items-center justify-center font-bold text-sm">
+                <Briefcase className="w-5 h-5" />
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                    deal.status === 'won' ? 'bg-emerald-100 text-emerald-800' :
-                    deal.status === 'lost' ? 'bg-rose-100 text-rose-800' :
-                    'bg-indigo-100 text-indigo-800'
-                  }`}>
-                    {deal.status}
-                  </span>
-                  <span className="text-xs text-slate-400">Deal #{deal.id}</span>
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 mt-1">
+                <h3 className="text-base font-semibold text-[var(--text-primary)]">
                   {deal.title}
                 </h3>
-                <div className="flex items-center gap-3 text-xs text-slate-500 mt-1">
-                  {deal.company_name && (
-                    <span className="inline-flex items-center gap-1 font-medium text-slate-700">
-                      <Building2 className="w-3.5 h-3.5 text-slate-400" />
-                      <span>{deal.company_name}</span>
-                    </span>
-                  )}
-                  {deal.contact_name && (
-                    <span className="inline-flex items-center gap-1">
-                      <User className="w-3.5 h-3.5 text-slate-400" />
-                      <span>{deal.contact_name}</span>
-                    </span>
-                  )}
-                </div>
+                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                  Pipeline: {deal.pipeline_name || 'Standard Sales Pipeline'}
+                </p>
               </div>
             </div>
-          ) : (
-            <p className="text-sm text-slate-500">Deal not found</p>
-          )}
+          ) : null}
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             {deal && (
               <button
                 onClick={handleDelete}
+                className="p-1 rounded text-[var(--text-tertiary)] hover:text-[var(--danger)] hover:bg-[var(--danger-soft)] transition-colors"
                 title="Delete Deal"
-                className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
             )}
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+              className="p-1 rounded-full text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* Content Body */}
+        {/* Modal Body */}
         {deal && (
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            {/* KPI Deal Highlights */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Deal Value</span>
-                <span className="text-xl font-bold text-emerald-600">
-                  ${parseFloat(deal.value).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                </span>
-                <span className="text-[10px] text-slate-500 block mt-0.5">{deal.currency}</span>
-              </div>
-
-              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Win Probability</span>
-                <span className="text-xl font-bold text-indigo-600">
-                  {deal.stage_probability}%
-                </span>
-                <span className="text-[10px] text-slate-500 block mt-0.5">
-                  Weighted: ${(deal.value * (deal.stage_probability / 100)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+          <div className="flex-1 overflow-y-auto p-5 space-y-5">
+            {/* Quick Metrics */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 bg-[var(--bg-surface-sunken)] rounded-[var(--radius-md)] border border-[var(--border-subtle)] text-xs">
+              <div>
+                <span className="text-[var(--text-tertiary)] block mb-0.5">Deal Value</span>
+                <span className="font-semibold text-[var(--text-primary)] tabular-nums">
+                  ${parseFloat(deal.value || 0).toLocaleString()}
                 </span>
               </div>
-
-              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Target Close</span>
-                <span className="text-sm font-semibold text-slate-700 block mt-1">
-                  {deal.expected_close_date ? new Date(deal.expected_close_date).toLocaleDateString() : 'Not Set'}
+              <div>
+                <span className="text-[var(--text-tertiary)] block mb-0.5">Expected Close</span>
+                <span className="font-medium text-[var(--text-primary)]">
+                  {deal.expected_close_date ? new Date(deal.expected_close_date).toLocaleDateString() : 'N/A'}
                 </span>
-                <span className="text-[10px] text-slate-400 block mt-0.5">Owner: {deal.owner_name || 'Admin'}</span>
+              </div>
+              <div>
+                <span className="text-[var(--text-tertiary)] block mb-0.5">Probability</span>
+                <span className="font-medium text-[var(--accent)] tabular-nums">
+                  {deal.probability}%
+                </span>
+              </div>
+              <div>
+                <span className="text-[var(--text-tertiary)] block mb-0.5">Stage</span>
+                <select
+                  disabled={changingStage}
+                  value={deal.stage_id}
+                  onChange={(e) => handleStageChange(Number(e.target.value))}
+                  className="bg-[var(--bg-input)] border border-[var(--border-default)] rounded-[var(--radius-sm)] px-2 py-0.5 text-xs font-medium text-[var(--text-primary)] focus:outline-none focus:border-[var(--border-focus)] cursor-pointer"
+                >
+                  {stages.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
-            {/* Stage Selector Bar */}
-            <div className="p-4 bg-indigo-50/50 border border-indigo-100 rounded-xl space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-indigo-950 uppercase tracking-wider flex items-center gap-1.5">
-                  <TrendingUp className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>Pipeline Stage Progression</span>
-                </label>
-                {changingStage && (
-                  <span className="text-[11px] text-indigo-600 font-medium flex items-center gap-1">
-                    <Loader2 className="w-3 h-3 animate-spin" /> Saving stage...
+            {/* Associated Entities */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="p-3 bg-[var(--bg-surface-raised)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] flex items-center gap-2.5">
+                <Building2 className="w-4 h-4 text-[var(--text-tertiary)] shrink-0" />
+                <div className="min-w-0">
+                  <span className="text-[11px] text-[var(--text-tertiary)] block">Company</span>
+                  <span className="font-medium text-[var(--text-primary)] truncate block">
+                    {deal.company_name || 'None associated'}
                   </span>
-                )}
+                </div>
               </div>
 
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
-                {stages.map((st) => {
-                  const isCurrent = st.id === deal.stage_id;
-                  return (
-                    <button
-                      key={st.id}
-                      onClick={() => handleStageChange(st.id)}
-                      disabled={changingStage}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 border ${
-                        isCurrent
-                          ? 'bg-indigo-600 text-white border-indigo-700 shadow-sm'
-                          : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-300 hover:bg-slate-50'
-                      }`}
-                    >
-                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: isCurrent ? '#ffffff' : st.color || '#6366f1' }}></span>
-                      <span>{st.name}</span>
-                      <span className="text-[10px] opacity-80">({st.probability}%)</span>
-                    </button>
-                  );
-                })}
+              <div className="p-3 bg-[var(--bg-surface-raised)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] flex items-center gap-2.5">
+                <User className="w-4 h-4 text-[var(--text-tertiary)] shrink-0" />
+                <div className="min-w-0">
+                  <span className="text-[11px] text-[var(--text-tertiary)] block">Primary Contact</span>
+                  <span className="font-medium text-[var(--text-primary)] truncate block">
+                    {deal.contact_name ? `${deal.contact_name} (${deal.contact_email || ''})` : 'None associated'}
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Quick Note Input (Creates Activity on Deal) */}
-            <form onSubmit={handleAddNote} className="space-y-2">
-              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                <FileText className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Add Deal Note (§10 Unified Timeline)</span>
+            {/* Quick Note Input */}
+            <form onSubmit={handleAddNote} className="space-y-1.5">
+              <label className="text-xs font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
+                <span>Add Timeline Note</span>
               </label>
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="Log next action, meeting feedback, or pricing terms..."
+                  placeholder="Log stage progression note or update..."
                   value={noteContent}
                   onChange={(e) => setNoteContent(e.target.value)}
-                  className="flex-1 px-3.5 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100"
+                  className="flex-1 h-9 px-3 text-xs bg-[var(--bg-input)] border border-[var(--border-default)] rounded-[var(--radius-md)] text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:border-[var(--border-focus)] transition-colors"
                 />
-                <button
+                <Button
+                  variant="primary"
                   type="submit"
                   disabled={submittingNote || !noteContent.trim()}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm disabled:opacity-50 transition-colors flex items-center gap-1.5"
+                  loading={submittingNote}
+                  icon={Plus}
                 >
-                  {submittingNote ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
-                  <span>Post</span>
-                </button>
+                  Post
+                </Button>
               </div>
             </form>
 
-            {/* Chronological Activity Feed */}
-            <div>
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-slate-500" />
-                <span>Deal Activity & History</span>
+            {/* Unified Activity Timeline */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-[var(--text-tertiary)]" />
+                <span>Activity & Progression Timeline</span>
               </h4>
 
-              <div className="space-y-3 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+              <div className="space-y-2.5 relative pl-4 border-l border-[var(--border-subtle)]">
                 {(deal.activities || []).length === 0 ? (
-                  <p className="text-xs text-slate-400 pl-8">No activities recorded yet on this opportunity.</p>
+                  <p className="text-xs text-[var(--text-tertiary)] py-2">No activities recorded yet.</p>
                 ) : (
                   deal.activities.map((act) => {
                     const payload = typeof act.payload_json === 'string' ? JSON.parse(act.payload_json) : act.payload_json;
                     return (
-                      <div key={act.id} className="relative pl-8 text-xs">
-                        <div className="absolute left-1.5 top-1 w-3 h-3 rounded-full bg-white border-2 border-indigo-600"></div>
-                        <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-semibold text-slate-800 capitalize">
+                      <div key={act.id} className="relative text-xs">
+                        <div className="absolute -left-[21px] top-1.5 w-2 h-2 rounded-full bg-[var(--accent)]" />
+                        <div className="p-3 bg-[var(--bg-surface-raised)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-[var(--text-primary)] capitalize">
                               {act.activity_type.replace('_', ' ')}
                             </span>
-                            <span className="text-[10px] text-slate-400">
+                            <span className="text-[10px] text-[var(--text-tertiary)]">
                               {new Date(act.created_at).toLocaleString()}
                             </span>
                           </div>
-                          <p className="text-slate-600">
-                            {act.activity_type === 'status_change'
-                              ? `Stage changed from "${payload.from}" to "${payload.to}" (${payload.probability}% win probability)`
-                              : payload?.content || payload?.message || JSON.stringify(payload)}
+                          <p className="text-[var(--text-secondary)] leading-relaxed">
+                            {payload?.content || payload?.message || JSON.stringify(payload)}
                           </p>
                           {act.actor_name && (
-                            <span className="text-[10px] text-indigo-600 font-medium mt-1 inline-block">
+                            <span className="text-[10px] text-[var(--text-tertiary)] block pt-0.5">
                               Logged by {act.actor_name}
                             </span>
                           )}
